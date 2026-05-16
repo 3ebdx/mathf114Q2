@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MATHF114 Q2 — Cours Interactifs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1916;
+      --text-muted: #6b6860;
+      --accent: #1d3557;
+      --accent-light: #e8edf3;
+      --tag: #d4e1f7;
+      --tag-text: #1d3557;
+      --hover: #f0ede6;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* HEADER */
+    header {
+      padding: 3rem 2rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .site-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tag-text);
+      background: var(--tag);
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* CONTEXT BOX */
+    .context-box {
+      max-width: 760px;
+      margin: 0 auto 3rem;
+      padding: 0 2rem;
+    }
+
+    .context-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1.5rem 1.75rem;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--text-muted);
+    }
+
+    .context-inner strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .context-inner p + p {
+      margin-top: 0.85rem;
+    }
+
+    .context-inner .scores {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    .score-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green { background: #4caf82; }
+    .dot-orange { background: #e07b39; }
+
+    /* GRID */
+    .grid-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .grid-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .chapter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chapter-card::after {
+      content: '→';
+      position: absolute;
+      right: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%) translateX(4px);
+      font-size: 16px;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .chapter-card:hover {
+      background: var(--hover);
+      border-color: #c8c4b8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .chapter-card:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .chapter-num {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .chapter-title {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .chapter-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .chapter-badge {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .badge-new {
+      background: #fff3e0;
+      color: #b45309;
+    }
+
+    /* DIVIDER */
+    .divider {
+      max-width: 760px;
+      margin: 0 auto 2rem;
+      padding: 0 2rem;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ANIMATIONS */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chapter-card:nth-child(1) { animation: fadeIn 0.4s ease 0.05s forwards; opacity: 0; }
+    .chapter-card:nth-child(2) { animation: fadeIn 0.4s ease 0.1s forwards; opacity: 0; }
+    .chapter-card:nth-child(3) { animation: fadeIn 0.4s ease 0.15s forwards; opacity: 0; }
+    .chapter-card:nth-child(4) { animation: fadeIn 0.4s ease 0.2s forwards; opacity: 0; }
+    .chapter-card:nth-child(5) { animation: fadeIn 0.4s ease 0.25s forwards; opacity: 0; }
+
+    @media (max-width: 480px) {
+      .chapters-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="fade-in">
+    <div class="site-tag">MATHF114 — ULB · Q2</div>
+    <h1>Cours interactifs</h1>
+    <p class="subtitle">Clique sur un chapitre pour accéder au cours.</p>
+  </header>
+
+  <div class="context-box fade-in" style="animation-delay: 0.1s;">
+    <div class="context-inner">
+      <p>
+        <strong>Comment ce cours a été construit.</strong>
+        Basé sur l'analyse de 7 examens MATHF114 Q2 (Juin 2022 à Août 2025) et le syllabus d'exercices officiel 2025-26. Les thèmes couverts sont ceux qui reviennent systématiquement : chaque chapitre a été sélectionné parce qu'il représente au minimum 20 points sur 100 à chaque session. Les démonstrations ont été volontairement réduites au strict minimum exigible. Les équations différentielles sont un nouveau thème confirmé pour 2025-26 — jamais tombé avant, donc traité sans données historiques mais aligné sur le niveau des TPs.
+      </p>
+      <p>
+        <strong>Dans le meilleur des cas</strong>, les 5 chapitres couvrent ~90 pts sur 100 : valeurs propres (25 pts), matrices sur Z<sub>p</sub> (25 pts), applications linéaires (25 pts), vrai/faux sous-espaces (20 pts), avec les EDO en bonus. <strong>Dans le pire des cas</strong>, un exercice surprise hors pattern peut tomber — ça arrive 1 fois sur 7 environ. Même dans ce scénario, maîtriser ces 5 chapitres garantit ~65 pts, soit largement au-dessus de la moyenne.
+      </p>
+      <div class="scores">
+        <div class="score-pill">
+          <div class="score-dot dot-green"></div>
+          Meilleur cas : ~90 pts couverts
+        </div>
+        <div class="score-pill">
+          <div class="score-dot dot-orange"></div>
+          Pire cas : ~65 pts garantis
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="grid-section">
+    <div class="grid-label">Chapitres</div>
+    <div class="chapters-grid">
+
+      <a href="https://3ebdx.github.io/mathf114Q2/chap1" class="chapter-card">
+        <div class="chapter-num">Chapitre 01</div>
+        <div class="chapter-title">Équations Différentielles</div>
+        <div class="chapter-desc">EDO ordre 1 séparables, linéaires. EDO ordre 2 à coefficients constants.</div>
+        <span class="chapter-badge badge-new">Nouveau 2025-26</span>
+      </a>
+
+      <a href="https://3ebdx.github.io/mathf114Q2/chap2" class="chapter-card">
+        <div class="chapter-num">Chapitre 02</div>
+        <div class="chapter-title">Valeurs Propres & Diagonalisation</div>
+        <div class="chapter-desc">Polynôme caractéristique, spectre, sous-espaces propres, calcul de M<sup>n</sup>.</div>
+        <span class="chapter-badge">25 pts · 7/7 examens</span>
+      </a>
+
+      <a href="https://3ebdx.github.io/mathf114Q2/chap3" class="chapter-card">
+        <div class="chapter-num">Chapitre 03</div>
+        <div class="chapter-title">Matrices Inverses & Arithmétique Modulaire</div>
+        <div class="chapter-desc">Gauss sur Z<sub>p</sub>, déterminant, inverse, systèmes linéaires, indicatrice d'Euler.</div>
+        <span class="chapter-badge">25 pts · 7/7 examens</span>
+      </a>
+
+      <a href="https://3ebdx.github.io/mathf114Q2/chap4" class="chapter-card">
+        <div class="chapter-num">Chapitre 04</div>
+        <div class="chapter-title">Sous-espaces & Raisonnement Vrai/Faux</div>
+        <div class="chapter-desc">Axiomes SEV, corps Z<sub>p</sub>, bases, parties libres, preuves et contre-exemples.</div>
+        <span class="chapter-badge">20 pts · 6/7 examens</span>
+      </a>
+
+      <a href="https://3ebdx.github.io/mathf114Q2/chap5" class="chapter-card">
+        <div class="chapter-num">Chapitre 05</div>
+        <div class="chapter-title">Applications Linéaires</div>
+        <div class="chapter-desc">Matrice d'une AL, noyau, image, rang, injectivité, surjectivité, théorème rang-noyau.</div>
+        <span class="chapter-badge">25 pts · 7/7 examens</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer>
+    MATHF114 — ULB · Cours interactifs · Basé sur 7 examens (2022–2025)
+  </footer>
+
+</body>
+</html>

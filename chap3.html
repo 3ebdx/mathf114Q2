@@ -1,0 +1,2230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrices Secrètes — MATHF114 Q2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+<style>
+:root {
+  --bg: #f5f4f1;
+  --card: #ffffff;
+  --border: #e2e0d8;
+  --border-strong: #c8c4b8;
+  --text: #1a1916;
+  --text-muted: #6b6860;
+  --accent-violet: #4a3ff7;
+  --accent-pink: #d63070;
+  --accent-green: #1a9e6e;
+  --accent-ocre: #c47a00;
+  --accent-violet-light: #ede9ff;
+  --accent-pink-light: #fde8ef;
+  --accent-green-light: #e3f7f0;
+  --accent-ocre-light: #fff3d6;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-strong: 0 4px 24px rgba(0,0,0,0.12);
+  --radius: 12px;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --font-title: 'Syne', sans-serif;
+  --progress-color: var(--accent-violet);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* PROGRESS BAR */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: var(--accent-violet);
+  z-index: 200;
+  transition: width 0.4s ease;
+}
+
+/* HEADER */
+.site-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 2rem;
+}
+
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  gap: 1rem;
+}
+
+.site-title {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.site-title span {
+  color: var(--accent-violet);
+}
+
+.nav-scroll {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nav-scroll::-webkit-scrollbar { display: none; }
+
+.nav-btn {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s;
+}
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.nav-btn.active {
+  background: var(--accent-violet);
+  color: #fff;
+  border-color: var(--accent-violet);
+}
+
+/* SECTIONS */
+.section {
+  display: none;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  animation: fadeIn 0.3s ease;
+}
+.section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* TYPOGRAPHY */
+h1 {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.section-lead {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 2rem;
+}
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.badge-violet { background: var(--accent-violet-light); color: var(--accent-violet); }
+.badge-pink { background: var(--accent-pink-light); color: var(--accent-pink); }
+.badge-green { background: var(--accent-green-light); color: var(--accent-green); }
+.badge-ocre { background: var(--accent-ocre-light); color: var(--accent-ocre); }
+
+/* MATH BLOCKS */
+.math-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-violet);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+.math-block.green { border-left-color: var(--accent-green); }
+.math-block.pink { border-left-color: var(--accent-pink); }
+.math-block.ocre { border-left-color: var(--accent-ocre); }
+
+/* FEEDBACK */
+.feedback {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin-top: 0.5rem;
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+.feedback.visible { display: block; }
+.feedback.correct {
+  background: var(--accent-green-light);
+  border: 1px solid var(--accent-green);
+  color: #0d5c3f;
+}
+.feedback.wrong {
+  background: var(--accent-pink-light);
+  border: 1px solid var(--accent-pink);
+  color: #8b1a40;
+}
+.feedback.hint {
+  background: var(--accent-ocre-light);
+  border: 1px solid var(--accent-ocre);
+  color: #7a4a00;
+}
+.feedback.info {
+  background: var(--accent-violet-light);
+  border: 1px solid var(--accent-violet);
+  color: #2a1fa0;
+}
+
+/* INPUTS */
+.answer-input {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  width: 80px;
+  text-align: center;
+  transition: border-color 0.18s;
+}
+.answer-input:focus {
+  outline: none;
+  border-color: var(--accent-violet);
+}
+.answer-input.correct { border-color: var(--accent-green); background: var(--accent-green-light); }
+.answer-input.wrong { border-color: var(--accent-pink); background: var(--accent-pink-light); }
+
+/* BUTTONS */
+.btn {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.55rem 1.1rem;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-primary {
+  background: var(--accent-violet);
+  color: #fff;
+}
+.btn-primary:hover { background: #3a2ee0; transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover { background: var(--border); }
+.btn-green { background: var(--accent-green); color: #fff; }
+.btn-pink { background: var(--accent-pink); color: #fff; }
+
+.btn-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+/* ACCORDION */
+.accordion-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.9rem 1.1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.18s;
+  margin-bottom: 0.5rem;
+}
+.accordion-btn:hover { background: var(--border); }
+.accordion-btn.open { background: var(--accent-violet-light); border-color: var(--accent-violet); color: var(--accent-violet); }
+.accordion-btn .chevron { transition: transform 0.2s; font-size: 1rem; }
+.accordion-btn.open .chevron { transform: rotate(180deg); }
+
+.accordion-content {
+  display: none;
+  padding: 1rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  margin-top: -0.25rem;
+}
+.accordion-content.open { display: block; }
+
+/* REVEAL PANEL */
+.reveal-panel {
+  display: none;
+  padding: 1rem 1.25rem;
+  background: var(--accent-green-light);
+  border: 1px solid var(--accent-green);
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  animation: fadeIn 0.25s ease;
+}
+.reveal-panel.show { display: block; }
+
+/* INVERSE TABLE */
+.inv-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.inv-cell {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+.inv-cell:hover { border-color: var(--accent-violet); background: var(--accent-violet-light); }
+.inv-cell.selected { background: var(--accent-violet); color: #fff; border-color: var(--accent-violet); }
+.inv-cell .elem { font-weight: 700; font-size: 1.1rem; }
+.inv-cell .label { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
+.inv-cell.selected .label { color: rgba(255,255,255,0.7); }
+
+/* INVERSE RESULT */
+#inv-result {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+#inv-result.active {
+  background: var(--accent-violet-light);
+  border-color: var(--accent-violet);
+  color: var(--accent-violet);
+  font-weight: 700;
+}
+
+/* PIPELINE */
+.pipe-step {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.pipe-step.locked {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.pipe-step.active-step {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 2px rgba(74,63,247,0.15);
+}
+.pipe-step.done-step {
+  border-color: var(--accent-green);
+}
+.pipe-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.pipe-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pipe-num.violet { background: var(--accent-violet); color: #fff; }
+.pipe-num.green { background: var(--accent-green); color: #fff; }
+.pipe-num.pink { background: var(--accent-pink); color: #fff; }
+.pipe-num.ocre { background: var(--accent-ocre); color: #fff; }
+.pipe-body { padding: 1.25rem; background: var(--card); }
+
+.matrix-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.6rem;
+  margin: 0.5rem 0;
+}
+.matrix-input {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  width: 44px; height: 36px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--card);
+}
+.matrix-input:focus { outline: none; border-color: var(--accent-violet); }
+.matrix-input.correct { border-color: var(--accent-green); background: var(--accent-green-light); }
+.matrix-input.wrong { border-color: var(--accent-pink); background: var(--accent-pink-light); }
+
+/* QUIZ */
+.quiz-q {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.quiz-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+.quiz-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.choice-btn {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.choice-btn:hover { border-color: var(--accent-violet); background: var(--accent-violet-light); }
+.choice-btn.selected-correct {
+  background: var(--accent-green);
+  color: #fff;
+  border-color: var(--accent-green);
+}
+.choice-btn.selected-wrong {
+  background: var(--accent-pink);
+  color: #fff;
+  border-color: var(--accent-pink);
+}
+.choice-btn.reveal-correct {
+  background: var(--accent-green-light);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+.choice-btn:disabled { cursor: not-allowed; }
+
+/* SCORE */
+.score-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.score-num {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent-violet);
+}
+.score-denom { font-size: 1rem; color: var(--text-muted); }
+
+/* PIÈGE SECTION */
+.piege-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.piege-trigger {
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.25rem;
+  border: none;
+  background: var(--bg);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: background 0.18s;
+}
+.piege-trigger:hover { background: var(--border); }
+.piege-icon {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--accent-pink-light);
+  color: var(--accent-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+.piege-content {
+  display: none;
+  padding: 1.25rem;
+}
+.piege-content.show { display: block; }
+
+/* BOSS FIGHT */
+.timer-display {
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent-violet);
+  text-align: center;
+  padding: 1rem;
+  border: 2px solid var(--accent-violet);
+  border-radius: var(--radius);
+  background: var(--accent-violet-light);
+  margin: 1rem 0;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+}
+.timer-display.urgent {
+  color: var(--accent-pink);
+  border-color: var(--accent-pink);
+  background: var(--accent-pink-light);
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ENTRAÎNEMENT */
+.exercise-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.exercise-header {
+  background: var(--accent-violet);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-title);
+  font-weight: 700;
+}
+.exercise-header.pink { background: var(--accent-pink); }
+.exercise-header.green { background: var(--accent-green); }
+.exercise-body { padding: 1.25rem; background: var(--card); }
+
+/* DIVIDER */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+/* STEP ROW */
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.step-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent-violet);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+.hero-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  background: var(--accent-violet-light);
+  color: var(--accent-violet);
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  margin-bottom: 1rem;
+}
+.hero h1 { font-size: 2.8rem; margin-bottom: 0.75rem; }
+.hero p { color: var(--text-muted); max-width: 500px; margin: 0 auto 2rem; }
+
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+.stat-label { font-size: 0.82rem; color: var(--text-muted); }
+
+/* INLINE PAIR */
+.inline-pair {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+/* CODE MONO */
+.mono { font-family: var(--font-mono); }
+
+/* TAG */
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+/* SCROLLABLE TABLE */
+.scroll-table {
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+table {
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  width: 100%;
+}
+th {
+  background: var(--accent-violet);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+}
+td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.75rem;
+  text-align: center;
+}
+tr:nth-child(even) td { background: var(--bg); }
+tr:hover td { background: var(--accent-violet-light); }
+
+/* HIGHLIGHT */
+.hl { background: var(--accent-ocre-light); padding: 0.1rem 0.3rem; border-radius: 3px; font-weight: 600; }
+.hl-green { background: var(--accent-green-light); color: #0d5c3f; padding: 0.1rem 0.3rem; border-radius: 3px; font-weight: 600; }
+.hl-pink { background: var(--accent-pink-light); color: #8b1a40; padding: 0.1rem 0.3rem; border-radius: 3px; font-weight: 600; }
+.hl-violet { background: var(--accent-violet-light); color: var(--accent-violet); padding: 0.1rem 0.3rem; border-radius: 3px; font-weight: 600; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .header-inner { height: auto; padding: 0.5rem 0; flex-wrap: wrap; }
+  .hero h1 { font-size: 2rem; }
+  .section { padding: 1.5rem 1rem 3rem; }
+}
+
+/* GAUSS STEP TABLE */
+.gauss-table {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+.g-cell {
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+.g-cell.pivot { background: var(--accent-violet); color: #fff; font-weight: 700; }
+.g-cell.sep { color: var(--border-strong); }
+.g-cell.identity { background: var(--accent-green-light); color: var(--accent-green); font-weight: 700; }
+
+/* BOSS STATUS */
+.boss-status {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.boss-check {
+  font-size: 0.82rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--font-mono);
+}
+.boss-check.done {
+  background: var(--accent-green-light);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+/* EXPL BOX */
+.expl-box {
+  background: var(--accent-violet-light);
+  border: 1px solid var(--accent-violet);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  color: var(--accent-violet);
+  margin-top: 0.5rem;
+}
+
+/* WARN BOX */
+.warn-box {
+  background: var(--accent-ocre-light);
+  border: 1px solid var(--accent-ocre);
+  border-left: 4px solid var(--accent-ocre);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  color: #7a4a00;
+  margin: 0.75rem 0;
+}
+
+/* Z-BODY SELECTOR */
+.z-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.z-btn {
+  padding: 0.4rem 1rem;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.z-btn:hover { border-color: var(--accent-violet); }
+.z-btn.active { background: var(--accent-violet); color: #fff; border-color: var(--accent-violet); }
+
+/* CHECK MARK */
+.check { color: var(--accent-green); font-weight: 700; }
+.cross { color: var(--accent-pink); font-weight: 700; }
+
+/* SCORE DISPLAY */
+.score-display {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="site-title">Matrices <span>Secrètes</span></div>
+    <div class="nav-scroll">
+      <button class="nav-btn active" onclick="showSection('accueil', this)">0. Accueil</button>
+      <button class="nav-btn" onclick="showSection('theorie', this)">1. Théorie</button>
+      <button class="nav-btn" onclick="showSection('inverses', this)">2. Table</button>
+      <button class="nav-btn" onclick="showSection('pipeline', this)">3. Pipeline</button>
+      <button class="nav-btn" onclick="showSection('entrainement', this)">4. Entraînement</button>
+      <button class="nav-btn" onclick="showSection('euler', this)">5. Euler</button>
+      <button class="nav-btn" onclick="showSection('pieges', this)">6. Pièges</button>
+      <button class="nav-btn" onclick="showSection('boss', this)">7. Boss</button>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== SECTION 0: ACCUEIL ==================== -->
+<section id="accueil" class="section active">
+  <div class="hero">
+    <div class="hero-tag">MATHF114 · Q2 · ULB</div>
+    <h1>Matrices Secrètes</h1>
+    <p>Chapitres XII &amp; XV — Gauss dans \(\mathbb{Z}_p\), Matrice inverse, Corps, Indicatrice d'Euler. ~25 pts sur 100.</p>
+  </div>
+
+  <div class="quick-stats">
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent-violet)">25</div>
+      <div class="stat-label">points aux examens</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent-pink)">3</div>
+      <div class="stat-label">étapes du pipeline</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent-green)">Z5</div>
+      <div class="stat-label">corps le + fréquent</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent-ocre)">7</div>
+      <div class="stat-label">examens analysés</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="badge badge-violet">PATTERN EXAM</div>
+      <h3 style="margin:0">Le combo en 3 étapes — toujours le même</h3>
+    </div>
+    <div class="step-row">
+      <div class="step-dot">1</div>
+      <div>Calculer le <strong>déterminant</strong> d'une matrice \(3{\times}3\) dans \(\text{Mat}(3{\times}3, \mathbb{Z}_p)\)</div>
+    </div>
+    <div class="step-row">
+      <div class="step-dot">2</div>
+      <div>Trouver son <strong>inverse</strong> par la méthode de Gauss dans \(\mathbb{Z}_p\)</div>
+    </div>
+    <div class="step-row">
+      <div class="step-dot">3</div>
+      <div>Utiliser cet inverse pour <strong>résoudre un système linéaire</strong> dans \((\mathbb{Z}_p)^3\)</div>
+    </div>
+    <div class="step-row">
+      <div class="step-dot" style="background:var(--accent-ocre)">+</div>
+      <div>Bonus quasi-systématique : calculer <strong>\(\varphi(n)\)</strong> avec l'indicatrice d'Euler</div>
+    </div>
+    <div class="warn-box" style="margin-top:1rem">
+      Corps les plus fréquents aux examens : <strong>\(\mathbb{Z}_5\)</strong> et <strong>\(\mathbb{Z}_7\)</strong>. Août 2025 Exercice 4 = \(\mathbb{Z}_5\).
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Comment naviguer ce site</h3>
+    <div class="step-row"><div class="step-dot">1</div><div><strong>Théorie flash</strong> — 3 blocs ultra-condensés à lire d'abord</div></div>
+    <div class="step-row"><div class="step-dot">2</div><div><strong>Table des inverses</strong> — mini-outil interactif : clique pour voir l'inverse</div></div>
+    <div class="step-row"><div class="step-dot">3</div><div><strong>Pipeline</strong> — l'exam Août 2025 Ex.4 guidé étape par étape</div></div>
+    <div class="step-row"><div class="step-dot">4</div><div><strong>Entraînement</strong> — 3 exercices tirés d'examens passés</div></div>
+    <div class="step-row"><div class="step-dot">5</div><div><strong>Euler</strong> — quiz sur \(\varphi(n)\)</div></div>
+    <div class="step-row"><div class="step-dot">6</div><div><strong>Pièges</strong> — les erreurs classiques expliquées</div></div>
+    <div class="step-row"><div class="step-dot">7</div><div><strong>Boss Fight</strong> — exam Août 2025 Ex.4 en conditions réelles, chrono 25 min</div></div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 1: THÉORIE ==================== -->
+<section id="theorie" class="section">
+  <h1>Théorie Flash</h1>
+  <p class="section-lead">3 blocs ultra-condensés. Lis, clique sur les accordéons, puis passe à la pratique.</p>
+
+  <!-- BLOC 1: Arithmétique dans Zp -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge badge-violet">BLOC 1</div>
+      <h3 style="margin:0">Arithmétique dans \(\mathbb{Z}_p\)</h3>
+    </div>
+
+    <p style="margin-bottom:0.75rem">Dans \(\mathbb{Z}_p = \{0, 1, \ldots, p-1\}\) avec \(p\) premier, toutes les opérations se font <strong>modulo \(p\)</strong>.</p>
+
+    <div class="math-block">
+      \(a + b \pmod{p}\) &nbsp; et &nbsp; \(a \times b \pmod{p}\)
+    </div>
+
+    <div class="warn-box">
+      ✗ Il n'existe pas de division dans \(\mathbb{Z}_p\). &nbsp;→&nbsp; On multiplie par l'<strong>inverse multiplicatif</strong>.
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-inv')">
+      Inverse multiplicatif — comment le trouver <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="acc-inv">
+      <p>L'inverse de \(a\) dans \(\mathbb{Z}_p\) est l'élément \(b\) tel que \(a \times b \equiv 1 \pmod{p}\).</p>
+      <p style="margin-top:0.5rem"><strong>Méthode — table exhaustive :</strong> tester \(a \times 1, a \times 2, \ldots\) jusqu'à trouver \(\equiv 1\).</p>
+      <div class="math-block green" style="margin-top:0.75rem">
+        <strong>Exemples dans \(\mathbb{Z}_5\) :</strong><br>
+        \(2^{-1} = 3\) car \(2 \times 3 = 6 \equiv 1 \pmod{5}\)<br>
+        \(3^{-1} = 2\) car \(3 \times 2 = 6 \equiv 1 \pmod{5}\)<br>
+        \(4^{-1} = 4\) car \(4 \times 4 = 16 \equiv 1 \pmod{5}\)
+      </div>
+      <div class="math-block ocre" style="margin-top:0.75rem">
+        <strong>Exemples dans \(\mathbb{Z}_7\) :</strong><br>
+        \(2^{-1} = 4\) car \(2 \times 4 = 8 \equiv 1 \pmod{7}\)<br>
+        \(3^{-1} = 5\) car \(3 \times 5 = 15 \equiv 1 \pmod{7}\)<br>
+        \(4^{-1} = 2\) car \(4 \times 2 = 8 \equiv 1 \pmod{7}\)<br>
+        \(5^{-1} = 3\) car \(5 \times 3 = 15 \equiv 1 \pmod{7}\)<br>
+        \(6^{-1} = 6\) car \(6 \times 6 = 36 \equiv 1 \pmod{7}\)
+      </div>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-neg')">
+      Nombres négatifs dans \(\mathbb{Z}_p\) <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="acc-neg">
+      <p>Un négatif se convertit en positif en ajoutant \(p\) :</p>
+      <div class="math-block">
+        Dans \(\mathbb{Z}_5\) : \(-1 = 4\), &nbsp;\(-2 = 3\), &nbsp;\(-3 = 2\), &nbsp;\(-4 = 1\)<br>
+        Dans \(\mathbb{Z}_7\) : \(-1 = 6\), &nbsp;\(-2 = 5\), &nbsp;\(-3 = 4\), &nbsp;\(-4 = 3\), &nbsp;\(-5 = 2\), &nbsp;\(-6 = 1\)
+      </div>
+      <div class="warn-box">
+        <strong>Règle :</strong> si tu obtiens un négatif, ajoute \(p\) jusqu'à être dans \(\{0, \ldots, p-1\}\).
+      </div>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-det0')">
+      Déterminant nul dans \(\mathbb{Z}_p\) — attention ! <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="acc-det0">
+      <p>Un déterminant peut être nul dans \(\mathbb{Z}_p\) même s'il vaut un entier non nul dans \(\mathbb{Z}\) !</p>
+      <div class="math-block pink">
+        Exemple : \(\det = 5\) dans \(\mathbb{Z}_5\) &nbsp;→&nbsp; \(5 \equiv 0 \pmod{5}\)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ la matrice est <strong>non inversible</strong> dans \(\mathbb{Z}_5\) !
+      </div>
+      <p style="margin-top:0.5rem">Toujours réduire le déterminant modulo \(p\) avant de conclure.</p>
+    </div>
+  </div>
+
+  <!-- BLOC 2: Gauss dans Zp -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge badge-pink">BLOC 2</div>
+      <h3 style="margin:0">Gauss dans \(\mathbb{Z}_p\) — trouver l'inverse d'une matrice</h3>
+    </div>
+
+    <p style="margin-bottom:0.75rem">Pour inverser \(M \in \text{Mat}(3{\times}3, \mathbb{Z}_p)\), on fait la méthode de Gauss-Jordan sur \([M | I]\).</p>
+
+    <div class="step-row"><div class="step-dot" style="background:var(--accent-pink)">1</div><div>Écrire la matrice augmentée \([M | I_3]\)</div></div>
+    <div class="step-row"><div class="step-dot" style="background:var(--accent-pink)">2</div><div>Appliquer des <strong>opérations sur les lignes</strong> pour transformer \(M\) en \(I_3\)</div></div>
+    <div class="step-row"><div class="step-dot" style="background:var(--accent-pink)">3</div><div>La partie droite devient \(M^{-1}\)</div></div>
+
+    <div class="warn-box">
+      <strong>Opérations autorisées :</strong><br>
+      — \(L_i \leftarrow \lambda \cdot L_i\) avec \(\lambda \neq 0\) dans \(\mathbb{Z}_p\)<br>
+      — \(L_i \leftarrow L_i + \lambda \cdot L_j\)<br>
+      — échange de deux lignes
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-pivot')">
+      Comment obtenir un pivot = 1 ? <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="acc-pivot">
+      <p>Si le pivot en position \((i,i)\) est \(a \neq 1\), multiplier la ligne par \(a^{-1}\) dans \(\mathbb{Z}_p\).</p>
+      <div class="math-block">
+        Exemple \(\mathbb{Z}_5\) : pivot = 2, alors \(L_i \leftarrow 3 \cdot L_i\) (car \(2^{-1} = 3\) dans \(\mathbb{Z}_5\))
+      </div>
+      <p style="margin-top:0.5rem">Tous les coefficients de la ligne sont multipliés par \(3\), tout modulo 5.</p>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-elim')">
+      Comment éliminer une colonne ? <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="acc-elim">
+      <p>Pour annuler le coefficient \(a_{ji}\) (ligne \(j\), colonne \(i\)) une fois le pivot en \((i,i)\) fixé à 1 :</p>
+      <div class="math-block">
+        \(L_j \leftarrow L_j - a_{ji} \cdot L_i\) &nbsp; (ou équivalent dans \(\mathbb{Z}_p\))
+      </div>
+      <p style="margin-top:0.5rem">Ne jamais écrire "\(\div 2\)" — écrire "\(\times 3\)" (si on est dans \(\mathbb{Z}_5\)).</p>
+    </div>
+  </div>
+
+  <!-- BLOC 3: Euler -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge badge-green">BLOC 3</div>
+      <h3 style="margin:0">Indicatrice d'Euler \(\varphi(n)\)</h3>
+    </div>
+
+    <p style="margin-bottom:0.75rem">\(\varphi(n)\) = nombre d'entiers dans \(\{1, \ldots, n\}\) premiers avec \(n\).</p>
+
+    <div class="scroll-table">
+      <table>
+        <tr><th>Forme de \(n\)</th><th>Formule</th><th>Exemple</th></tr>
+        <tr><td>\(p\) premier</td><td>\(\varphi(p) = p - 1\)</td><td>\(\varphi(11) = 10\)</td></tr>
+        <tr><td>\(p^2\)</td><td>\(\varphi(p^2) = p(p-1)\)</td><td>\(\varphi(25) = 20\)</td></tr>
+        <tr><td>\(p \times q\) (p, q premiers distincts)</td><td>\(\varphi(pq) = (p-1)(q-1)\)</td><td>\(\varphi(15) = 8\)</td></tr>
+        <tr><td>général</td><td>\(\varphi(n) = n \prod_{p | n}\left(1 - \frac{1}{p}\right)\)</td><td>\(\varphi(12) = 4\)</td></tr>
+      </table>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-euler2')">
+      \(\varphi(n)\) = nombre d'inversibles dans \(\mathbb{Z}_n\) <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="acc-euler2">
+      <p>Un élément \(a \in \mathbb{Z}_n\) est inversible ssi \(\text{PGCD}(a, n) = 1\).</p>
+      <div class="math-block green">
+        \(\mathbb{Z}_{10}\) : inversibles = \(\{1, 3, 7, 9\}\) &nbsp;→&nbsp; \(\varphi(10) = 4\)<br>
+        Car \(10 = 2 \times 5\), donc \(\varphi(10) = (2-1)(5-1) = 4\)
+      </div>
+      <p style="margin-top:0.5rem">Pour \(\mathbb{Z}_p\) (\(p\) premier), tous les éléments non-nuls sont inversibles → \(p-1\) inversibles.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 2: TABLE DES INVERSES ==================== -->
+<section id="inverses" class="section">
+  <h1>Table des Inverses</h1>
+  <p class="section-lead">Clique sur un élément pour voir son inverse et la vérification. Change de corps avec les boutons.</p>
+
+  <div class="z-selector">
+    <button class="z-btn active" onclick="selectZp(5, this)">Z5</button>
+    <button class="z-btn" onclick="selectZp(7, this)">Z7</button>
+    <button class="z-btn" onclick="selectZp(11, this)">Z11</button>
+    <button class="z-btn" onclick="selectZp(13, this)">Z13</button>
+  </div>
+
+  <div class="card">
+    <h3 id="inv-title">Éléments de \(\mathbb{Z}_5\)</h3>
+    <div class="inv-table" id="inv-table"></div>
+    <div id="inv-result">← Clique sur un élément</div>
+  </div>
+
+  <div class="card">
+    <h3>Récapitulatif rapide</h3>
+    <div id="inv-summary"></div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 3: PIPELINE ==================== -->
+<section id="pipeline" class="section">
+  <h1>Le Pipeline — Exam Août 2025</h1>
+  <p class="section-lead">Exercice 4 exact de l'examen Août 2025 — corps \(\mathbb{Z}_5\). Chaque étape se déverrouille après validation.</p>
+
+  <div class="warn-box" style="margin-bottom:1.5rem">
+    La matrice de l'examen est :
+    \[\begin{pmatrix}3 & 3 & 0\\ 2 & 4 & 3\\ 3 & 2 & 3\end{pmatrix} \in \text{Mat}(3{\times}3, \mathbb{Z}_5)\]
+  </div>
+
+  <!-- STEP 1: Det -->
+  <div class="pipe-step active-step" id="pipe1">
+    <div class="pipe-header">
+      <div class="pipe-num violet">1</div>
+      <div>Calculer le déterminant dans \(\mathbb{Z}_5\)</div>
+    </div>
+    <div class="pipe-body">
+      <p style="margin-bottom:0.75rem">On développe selon la première ligne :</p>
+      <div class="math-block">
+        \[\det(M) = 3 \cdot \det\begin{pmatrix}4&3\\2&3\end{pmatrix} - 3 \cdot \det\begin{pmatrix}2&3\\3&3\end{pmatrix} + 0\]
+      </div>
+      <p style="margin-top:0.75rem">Calcule : \(3 \cdot (4{\cdot}3 - 3{\cdot}2) - 3 \cdot (2{\cdot}3 - 3{\cdot}3)\)</p>
+      <div class="math-block green">
+        \(= 3(12 - 6) - 3(6 - 9) = 3 \cdot 6 - 3 \cdot (-3) = 18 + 9 = 27\)<br>
+        Dans \(\mathbb{Z}_5\) : \(27 \pmod 5 = \) ?
+      </div>
+      <div class="inline-pair" style="margin-top:1rem">
+        <span>Résultat final dans \(\mathbb{Z}_5\) :</span>
+        <input class="answer-input" id="pipe1-ans" type="text" placeholder="?" maxlength="2">
+        <button class="btn btn-primary" onclick="checkPipe1()">Valider</button>
+        <button class="btn btn-secondary" onclick="showHint('hint1')">Indice</button>
+      </div>
+      <div class="feedback" id="pipe1-fb"></div>
+      <div class="feedback hint" id="hint1">
+        \(27 = 5 \times 5 + 2\), donc \(27 \pmod 5 = 2\). Le déterminant est 2, donc la matrice est inversible dans \(\mathbb{Z}_5\) (car \(2 \neq 0\)).
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Inverse -->
+  <div class="pipe-step locked" id="pipe2">
+    <div class="pipe-header">
+      <div class="pipe-num pink">2</div>
+      <div>Trouver l'inverse par Gauss dans \(\mathbb{Z}_5\)</div>
+    </div>
+    <div class="pipe-body">
+      <p style="margin-bottom:0.75rem">On part de \([M | I_3]\) et on applique Gauss-Jordan dans \(\mathbb{Z}_5\).</p>
+      <div class="math-block">
+        Étape de départ :<br>
+        \[\begin{pmatrix}3&3&0&|&1&0&0\\2&4&3&|&0&1&0\\3&2&3&|&0&0&1\end{pmatrix}\]
+      </div>
+      <p style="margin:0.75rem 0"><strong>Résultat de l'examen :</strong> l'inverse est</p>
+      <div class="math-block pink">
+        \[M^{-1} = \begin{pmatrix}3&3&2\\4&2&3\\1&4&3\end{pmatrix} \in \text{Mat}(3{\times}3, \mathbb{Z}_5)\]
+      </div>
+      <p style="margin-bottom:0.75rem">Vérifie en saisissant un coefficient de \(M^{-1}\) : l'entrée en position (1,1) vaut :</p>
+      <div class="inline-pair">
+        <span>Position (ligne 1, col 1) :</span>
+        <input class="answer-input" id="pipe2-ans" type="text" placeholder="?" maxlength="1">
+        <button class="btn btn-primary" onclick="checkPipe2()">Valider</button>
+      </div>
+      <div class="feedback" id="pipe2-fb"></div>
+
+      <button class="accordion-btn" onclick="toggleAccordion('acc-gauss-detail')" style="margin-top:1rem">
+        Voir le déroulé complet de Gauss <span class="chevron">▼</span>
+      </button>
+      <div class="accordion-content" id="acc-gauss-detail">
+        <p style="font-size:0.85rem; margin-bottom:0.5rem">Les opérations clés utilisées dans le corrigé :</p>
+        <div class="math-block" style="font-size:0.82rem">
+          <strong>1.</strong> \(L_3 \leftarrow L_3 - L_1\) : \([3,2,3|0,0,1] \to [0,4,3|4,0,1]\)<br>
+          <strong>2.</strong> \(L_1 \leftarrow 2L_1\) (car \(2 \cdot 3 = 6 \equiv 1\) dans \(\mathbb{Z}_5\), pivot = 1)<br>
+          Résultat : \([1,1,0|2,0,0]\)<br>
+          <strong>3.</strong> \(L_2 \leftarrow L_2 - 2L_1\) : pivot colonne 1 éliminé en L2<br>
+          <strong>4.</strong> On continue jusqu'à obtenir \([I_3 | M^{-1}]\)<br>
+          <strong>Résultat final :</strong> \(M^{-1} = \begin{pmatrix}3&3&2\\4&2&3\\1&4&3\end{pmatrix}\) dans \(\mathbb{Z}_5\)
+        </div>
+        <div class="warn-box">
+          Vérification : \(M \cdot M^{-1} = I_3\) dans \(\mathbb{Z}_5\) — l'examen le confirme.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Système -->
+  <div class="pipe-step locked" id="pipe3">
+    <div class="pipe-header">
+      <div class="pipe-num ocre">3</div>
+      <div>Résoudre le système dans \((\mathbb{Z}_5)^3\)</div>
+    </div>
+    <div class="pipe-body">
+      <p style="margin-bottom:0.75rem">Le système est :</p>
+      <div class="math-block">
+        \[\begin{cases}3x + 3y = 1\\ 2x + 4y + 3z = 2\\ 3x + 2y + 3z = 2\end{cases} \quad \text{dans } \mathbb{Z}_5\]
+      </div>
+      <p style="margin:0.75rem 0">En forme matricielle : \(M \mathbf{x} = \mathbf{b}\) avec \(\mathbf{b} = (1, 2, 2)^T\)</p>
+      <p style="margin-bottom:0.75rem">Donc \(\mathbf{x} = M^{-1} \mathbf{b}\) :</p>
+      <div class="math-block green">
+        \[\begin{pmatrix}x\\y\\z\end{pmatrix} = \begin{pmatrix}3&3&2\\4&2&3\\1&4&3\end{pmatrix}\begin{pmatrix}1\\2\\2\end{pmatrix} = \begin{pmatrix}3{+}6{+}4\\4{+}4{+}6\\1{+}8{+}6\end{pmatrix} = \begin{pmatrix}13\\14\\15\end{pmatrix} \equiv \begin{pmatrix}3\\4\\0\end{pmatrix} \pmod 5\]
+      </div>
+      <p style="margin:0.75rem 0">Donc \(x = ?\), \(y = ?\), \(z = ?\)</p>
+      <div class="inline-pair">
+        <span>\(x =\)</span>
+        <input class="answer-input" id="pipe3-x" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(y =\)</span>
+        <input class="answer-input" id="pipe3-y" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(z =\)</span>
+        <input class="answer-input" id="pipe3-z" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <button class="btn btn-primary" onclick="checkPipe3()">Valider</button>
+      </div>
+      <div class="feedback" id="pipe3-fb"></div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Euler bonus -->
+  <div class="pipe-step locked" id="pipe4">
+    <div class="pipe-header">
+      <div class="pipe-num green">+</div>
+      <div>Bonus — Indicatrice d'Euler (question a de l'exam)</div>
+    </div>
+    <div class="pipe-body">
+      <p style="margin-bottom:0.75rem">L'exam demandait aussi : <strong>Calculer \(\varphi(11)\)</strong></p>
+      <div class="inline-pair">
+        <span>\(\varphi(11) =\)</span>
+        <input class="answer-input" id="pipe4-ans" type="text" placeholder="?" maxlength="3">
+        <button class="btn btn-primary" onclick="checkPipe4()">Valider</button>
+      </div>
+      <div class="feedback" id="pipe4-fb"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem">
+    <button class="btn btn-secondary" onclick="resetPipeline()">↺ Recommencer le pipeline</button>
+  </div>
+</section>
+
+<!-- ==================== SECTION 4: ENTRAÎNEMENT ==================== -->
+<section id="entrainement" class="section">
+  <h1>Entraînement</h1>
+  <p class="section-lead">3 exercices tirés d'examens réels. Corps différents, correction interactive détaillée.</p>
+
+  <!-- EX A: Z7 (Examen précédent - matrice dans Z7) -->
+  <div class="exercise-block">
+    <div class="exercise-header">
+      Exercice A — Corps \(\mathbb{Z}_7\) &nbsp;|&nbsp; Examen type
+    </div>
+    <div class="exercise-body">
+      <div class="warn-box">
+        Matrice dans \(\mathbb{Z}_7\) :
+        \[\begin{pmatrix}4&1&5\\3&0&6\\1&1&1\end{pmatrix}\]
+        (Tiré d'un examen précédent avec \(\mathbb{Z}_7\))
+      </div>
+
+      <h3 style="margin-top:1rem">Étape 1 — Déterminant dans \(\mathbb{Z}_7\)</h3>
+      <p>Développement selon la première ligne :</p>
+      <div class="math-block">
+        \(\det = 4(0{\cdot}1 - 6{\cdot}1) - 1(3{\cdot}1 - 6{\cdot}1) + 5(3{\cdot}1 - 0{\cdot}1)\)
+      </div>
+      <div class="inline-pair" style="margin-top:0.75rem">
+        <span>Résultat dans \(\mathbb{Z}_7\) :</span>
+        <input class="answer-input" id="exA-det" type="text" placeholder="?" maxlength="2">
+        <button class="btn btn-primary" onclick="checkExA_det()">Vérifier</button>
+        <button class="btn btn-secondary" onclick="showHint('hintA1')">Indice</button>
+      </div>
+      <div class="feedback" id="exA-det-fb"></div>
+      <div class="feedback hint" id="hintA1">
+        \(= 4(-6) - 1(-3) + 5(3) = -24 + 3 + 15 = -6\)<br>
+        Dans \(\mathbb{Z}_7\) : \(-6 \equiv 1 \pmod 7\). Le déterminant est \(1 \neq 0\), inversible !
+      </div>
+
+      <div class="divider"></div>
+      <h3>Étape 2 — Inverse dans \(\mathbb{Z}_7\)</h3>
+      <p>Le corrigé donne \(M^{-1}\) dans \(\mathbb{Z}_7\) :</p>
+
+      <button class="accordion-btn" onclick="toggleAccordion('acc-invA')">
+        Voir l'inverse et le déroulé Gauss <span class="chevron">▼</span>
+      </button>
+      <div class="accordion-content" id="acc-invA">
+        <div class="math-block pink">
+          \[M^{-1} = \begin{pmatrix}1&4&6\\3&6&5\\3&4&4\end{pmatrix} \in \text{Mat}(3{\times}3, \mathbb{Z}_7)\]
+        </div>
+        <p style="font-size:0.85rem; margin-top:0.5rem">Opérations Gauss clés dans \(\mathbb{Z}_7\) :</p>
+        <div class="math-block" style="font-size:0.82rem">
+          — Pivot L1 = 4, donc \(L_1 \leftarrow 2L_1\) (car \(4^{-1} = 2\) dans \(\mathbb{Z}_7\))<br>
+          — Éliminations sur L2 et L3<br>
+          — Puis remonter pour forme réduite
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <h3>Étape 3 — Système dans \((\mathbb{Z}_7)^3\)</h3>
+      <p>Supposons \(M\mathbf{x} = (2, 3, 1)^T\). Calcule \(\mathbf{x} = M^{-1}\mathbf{b}\) :</p>
+      <div class="math-block">
+        \[\begin{pmatrix}1&4&6\\3&6&5\\3&4&4\end{pmatrix}\begin{pmatrix}2\\3\\1\end{pmatrix} = ?\]
+      </div>
+      <div class="inline-pair">
+        <span>\(x =\)</span>
+        <input class="answer-input" id="exA-x" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(y =\)</span>
+        <input class="answer-input" id="exA-y" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(z =\)</span>
+        <input class="answer-input" id="exA-z" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <button class="btn btn-primary" onclick="checkExA_sys()">Vérifier</button>
+      </div>
+      <div class="feedback" id="exA-sys-fb"></div>
+      <div class="reveal-panel" id="revA-sys">
+        <strong>Calcul :</strong><br>
+        \(x = 1(2) + 4(3) + 6(1) = 2 + 12 + 6 = 20 \equiv 6 \pmod 7\)<br>
+        \(y = 3(2) + 6(3) + 5(1) = 6 + 18 + 5 = 29 \equiv 1 \pmod 7\)<br>
+        \(z = 3(2) + 4(3) + 4(1) = 6 + 12 + 4 = 22 \equiv 1 \pmod 7\)<br>
+        Solution : \((x, y, z) = (6, 1, 1)\) dans \(\mathbb{Z}_7\).
+      </div>
+    </div>
+  </div>
+
+  <!-- EX B: Z5 variante -->
+  <div class="exercise-block">
+    <div class="exercise-header pink">
+      Exercice B — Corps \(\mathbb{Z}_5\) &nbsp;|&nbsp; Matrice du syllabus
+    </div>
+    <div class="exercise-body">
+      <div class="warn-box">
+        Matrice dans \(\mathbb{Z}_5\) (exercice 8.8 du syllabus) :
+        \[\begin{pmatrix}2&1&2\\4&4&3\\1&3&2\end{pmatrix}\]
+      </div>
+
+      <h3 style="margin-top:1rem">Étape 1 — Déterminant dans \(\mathbb{Z}_5\)</h3>
+      <div class="inline-pair" style="margin-top:0.5rem">
+        <span>Résultat dans \(\mathbb{Z}_5\) :</span>
+        <input class="answer-input" id="exB-det" type="text" placeholder="?" maxlength="2">
+        <button class="btn btn-primary" onclick="checkExB_det()">Vérifier</button>
+        <button class="btn btn-secondary" onclick="showHint('hintB1')">Indice</button>
+      </div>
+      <div class="feedback" id="exB-det-fb"></div>
+      <div class="feedback hint" id="hintB1">
+        Développement par la ligne 1 :<br>
+        \(= 2(4{\cdot}2 - 3{\cdot}3) - 1(4{\cdot}2 - 3{\cdot}1) + 2(4{\cdot}3 - 4{\cdot}1)\)<br>
+        \(= 2(8-9) - 1(8-3) + 2(12-4)\)<br>
+        \(= 2(-1) - 1(5) + 2(8) = -2 - 5 + 16 = 9 \equiv 4 \pmod 5\)
+      </div>
+
+      <div class="divider"></div>
+      <h3>Étape 2 — Inversible ?</h3>
+      <div class="inline-pair">
+        <span>La matrice est-elle inversible dans \(\mathbb{Z}_5\) ?</span>
+        <button class="choice-btn" onclick="checkYesNo(this, 'yes', 'exB-inv')">Oui</button>
+        <button class="choice-btn" onclick="checkYesNo(this, 'no', 'exB-inv')">Non</button>
+      </div>
+      <div class="feedback" id="exB-inv"></div>
+
+      <div class="divider"></div>
+      <h3>Étape 3 — Système avec \(\mathbf{b} = (1, 2, 3)^T\) dans \(\mathbb{Z}_5\)</h3>
+      <p style="font-size:0.87rem; color:var(--text-muted); margin-bottom:0.5rem">
+        L'inverse dans \(\mathbb{Z}_5\) est \(\begin{pmatrix}2&1&4\\0&2&1\\4&0&4\end{pmatrix}\) (calculé par Gauss).
+      </p>
+      <div class="inline-pair">
+        <span>\(x =\)</span>
+        <input class="answer-input" id="exB-x" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(y =\)</span>
+        <input class="answer-input" id="exB-y" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(z =\)</span>
+        <input class="answer-input" id="exB-z" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <button class="btn btn-primary" onclick="checkExB_sys()">Vérifier</button>
+      </div>
+      <div class="feedback" id="exB-sys-fb"></div>
+      <div class="reveal-panel" id="revB-sys">
+        <strong>Calcul :</strong><br>
+        \(x = 2(1)+1(2)+4(3) = 2+2+12 = 16 \equiv 1 \pmod 5\)<br>
+        \(y = 0(1)+2(2)+1(3) = 0+4+3 = 7 \equiv 2 \pmod 5\)<br>
+        \(z = 4(1)+0(2)+4(3) = 4+0+12 = 16 \equiv 1 \pmod 5\)<br>
+        Solution : \((x, y, z) = (1, 2, 1)\) dans \(\mathbb{Z}_5\).
+      </div>
+    </div>
+  </div>
+
+  <!-- EX C: Z7 avec inverse Gauss complet -->
+  <div class="exercise-block">
+    <div class="exercise-header green">
+      Exercice C — Corps \(\mathbb{Z}_7\) &nbsp;|&nbsp; Exercice 8.10 du syllabus
+    </div>
+    <div class="exercise-body">
+      <div class="warn-box">
+        Matrice dans \(\mathbb{Z}_7\) (exercice 8.10 du syllabus) :
+        \[\begin{pmatrix}1&0&3\\2&1&3\\1&6&2\end{pmatrix}\]
+      </div>
+
+      <h3 style="margin-top:1rem">Étape 1 — Déterminant dans \(\mathbb{Z}_7\)</h3>
+      <div class="inline-pair">
+        <span>Résultat dans \(\mathbb{Z}_7\) :</span>
+        <input class="answer-input" id="exC-det" type="text" placeholder="?" maxlength="2">
+        <button class="btn btn-primary" onclick="checkExC_det()">Vérifier</button>
+        <button class="btn btn-secondary" onclick="showHint('hintC1')">Indice</button>
+      </div>
+      <div class="feedback" id="exC-det-fb"></div>
+      <div class="feedback hint" id="hintC1">
+        \(\det = 1(1{\cdot}2 - 3{\cdot}6) - 0 + 3(2{\cdot}6 - 1{\cdot}1) = (2-18) + 3(12-1) = -16 + 33 = 17 \equiv 3 \pmod 7\)<br>
+        Inversible dans \(\mathbb{Z}_7\) !
+      </div>
+
+      <div class="divider"></div>
+      <h3>Étape 2 — Inverse par Gauss dans \(\mathbb{Z}_7\)</h3>
+      <button class="accordion-btn" onclick="toggleAccordion('acc-invC')">
+        Voir le déroulé Gauss complet dans \(\mathbb{Z}_7\) <span class="chevron">▼</span>
+      </button>
+      <div class="accordion-content" id="acc-invC">
+        <div class="math-block" style="font-size:0.82rem">
+          Départ : \(\begin{pmatrix}1&0&3\\2&1&3\\1&6&2\end{pmatrix}\bigg|\begin{pmatrix}1&0&0\\0&1&0\\0&0&1\end{pmatrix}\)<br><br>
+          \(L_2 \leftarrow L_2 - 2L_1\) : \(\begin{pmatrix}1&0&3\\0&1&4\\1&6&2\end{pmatrix}\bigg|\ldots\)<br>
+          \(L_3 \leftarrow L_3 - L_1\) : \(\begin{pmatrix}1&0&3\\0&1&4\\0&6&6\end{pmatrix}\bigg|\ldots\)<br>
+          \(L_3 \leftarrow L_3 - 6L_2 = L_3 + L_2\) (car \(-6 \equiv 1\) dans \(\mathbb{Z}_7\)) :<br>
+          \(\begin{pmatrix}1&0&3\\0&1&4\\0&0&3\end{pmatrix}\bigg|\ldots\)<br>
+          \(L_3 \leftarrow 5L_3\) (car \(3^{-1} = 5\) dans \(\mathbb{Z}_7\)) :<br>
+          \(\begin{pmatrix}1&0&3\\0&1&4\\0&0&1\end{pmatrix}\bigg|\ldots\)<br>
+          Remontée : \(L_2 \leftarrow L_2 - 4L_3\), \(L_1 \leftarrow L_1 - 3L_3\)
+        </div>
+        <div class="math-block pink">
+          \[M^{-1} = \begin{pmatrix}4&3&6\\0&6&4\\4&6&1\end{pmatrix} \times 5 \pmod 7\]
+          (Résultat final dans \(\mathbb{Z}_7\) — voir corrigé syllabus)
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <h3>Résumé : ce qu'il faut retenir de ces 3 exercices</h3>
+      <div class="card" style="background:var(--accent-green-light); border-color:var(--accent-green)">
+        <div class="step-row"><div class="step-dot">✓</div><div>Le déterminant se calcule comme dans \(\mathbb{R}\), puis on réduit modulo \(p\)</div></div>
+        <div class="step-row"><div class="step-dot">✓</div><div>Gauss-Jordan : toutes les opérations ligne sont modulo \(p\)</div></div>
+        <div class="step-row"><div class="step-dot">✓</div><div>Pour diviser par \(a\), multiplier par \(a^{-1}\) dans \(\mathbb{Z}_p\)</div></div>
+        <div class="step-row"><div class="step-dot">✓</div><div>Résoudre \(M\mathbf{x}=\mathbf{b}\) : calculer \(\mathbf{x} = M^{-1}\mathbf{b}\) et réduire modulo \(p\)</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 5: EULER QUIZ ==================== -->
+<section id="euler" class="section">
+  <h1>Quiz Euler</h1>
+  <p class="section-lead">5 questions sur l'indicatrice d'Euler. Feedback immédiat. Vise le score parfait.</p>
+
+  <div class="score-bar">
+    <div>
+      <div class="score-num" id="euler-score">0</div>
+      <div class="score-denom">/ <span id="euler-total">0</span> répondues</div>
+    </div>
+    <div style="flex:1">
+      <div style="height:6px; background:var(--border); border-radius:3px; overflow:hidden;">
+        <div id="euler-bar" style="height:100%; width:0; background:var(--accent-green); transition:width 0.3s;"></div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem">Score en temps réel</div>
+    </div>
+    <button class="btn btn-secondary" onclick="resetEuler()" style="font-size:0.8rem">↺ Reset</button>
+  </div>
+
+  <div id="euler-questions"></div>
+</section>
+
+<!-- ==================== SECTION 6: PIÈGES ==================== -->
+<section id="pieges" class="section">
+  <h1>Pièges &amp; Erreurs Classiques</h1>
+  <p class="section-lead">Clique sur chaque piège pour voir l'erreur et la correction. Ces erreurs coûtent des points aux examens.</p>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p1')">
+      <div class="piege-icon">✗</div>
+      <div>"J'ai écrit \(\frac{1}{2}\) dans \(\mathbb{Z}_5\)"</div>
+    </button>
+    <div class="piege-content" id="p1">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR FATALE : les fractions n'existent pas dans \(\mathbb{Z}_5\) !
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : dans \(\mathbb{Z}_5\), "\(\frac{1}{2}\)" = \(2^{-1}\) = 3, car \(2 \times 3 = 6 \equiv 1 \pmod 5\).<br>
+        On écrit \(\times 3\), jamais \(\div 2\).
+      </div>
+    </div>
+  </div>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p2')">
+      <div class="piege-icon">✗</div>
+      <div>"Mon déterminant vaut 5, donc la matrice est inversible dans \(\mathbb{Z}_5\)"</div>
+    </button>
+    <div class="piege-content" id="p2">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR : \(5 \equiv 0 \pmod 5\) — le déterminant est nul dans \(\mathbb{Z}_5\) !
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : toujours réduire le déterminant modulo \(p\). Si \(\det \equiv 0 \pmod p\), la matrice n'est PAS inversible dans \(\mathbb{Z}_p\).
+      </div>
+    </div>
+  </div>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p3')">
+      <div class="piege-icon">✗</div>
+      <div>"Pour éliminer, j'ai fait \(L_2 = L_2 / 2\) dans \(\mathbb{Z}_7\)"</div>
+    </button>
+    <div class="piege-content" id="p3">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR DE NOTATION : dans \(\mathbb{Z}_p\) on ne divise jamais !
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : écrire \(L_2 \leftarrow 4 \cdot L_2\) (car \(2^{-1} = 4\) dans \(\mathbb{Z}_7\), car \(2 \times 4 = 8 \equiv 1\)).<br>
+        Jamais de barre de fraction dans les opérations sur les lignes dans \(\mathbb{Z}_p\).
+      </div>
+    </div>
+  </div>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p4')">
+      <div class="piege-icon">✗</div>
+      <div>"J'obtiens \(-3\) dans \(\mathbb{Z}_5\), je laisse \(-3\)"</div>
+    </button>
+    <div class="piege-content" id="p4">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR : les éléments de \(\mathbb{Z}_5\) sont \(\{0,1,2,3,4\}\), jamais négatifs !
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : \(-3 \equiv 2 \pmod 5\) (car \(-3 + 5 = 2\)).<br>
+        Règle générale : si \(x < 0\), ajouter \(p\) autant de fois que nécessaire pour être dans \(\{0, \ldots, p-1\}\).
+      </div>
+    </div>
+  </div>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p5')">
+      <div class="piege-icon">✗</div>
+      <div>"Pour \(\varphi(25)\), j'ai répondu \(24\) (formule \(p-1\))"</div>
+    </button>
+    <div class="piege-content" id="p5">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR : \(25 = 5^2\), ce n'est pas un nombre premier !
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : \(\varphi(p^2) = p(p-1) = 5 \times 4 = 20\).<br>
+        La formule \(\varphi(p) = p-1\) ne s'applique qu'aux <em>nombres premiers</em>, pas aux puissances.
+      </div>
+    </div>
+  </div>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p6')">
+      <div class="piege-icon">✗</div>
+      <div>"J'ai multiplié \(M^{-1}\mathbf{b}\) sans réduire modulo \(p\) à la fin"</div>
+    </button>
+    <div class="piege-content" id="p6">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR CLASSIQUE : le résultat final doit toujours être réduit modulo \(p\) !
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : Exemple exam Août 2025 — le produit donne \((13, 14, 15)^T\), puis on réduit :<br>
+        \(13 \equiv 3\), \(14 \equiv 4\), \(15 \equiv 0 \pmod 5\).<br>
+        La réponse finale est \((3, 4, 0)\).
+      </div>
+    </div>
+  </div>
+
+  <div class="piege-card">
+    <button class="piege-trigger" onclick="togglePiege('p7')">
+      <div class="piege-icon">✗</div>
+      <div>"L'opération \(L_2 \leftarrow L_2 + \frac{1}{2} L_3\) dans \(\mathbb{Z}_5\)"</div>
+    </button>
+    <div class="piege-content" id="p7">
+      <div class="feedback wrong visible" style="margin-bottom:0.75rem">
+        ERREUR DE NOTATION : on n'écrit jamais de fraction dans les opérations sur lignes dans \(\mathbb{Z}_p\).
+      </div>
+      <div class="feedback correct visible">
+        CORRECTION : \(\frac{1}{2} = 3\) dans \(\mathbb{Z}_5\). Écrire \(L_2 \leftarrow L_2 + 3L_3\).<br>
+        L'examinateur déduit des points si tu écris "\(\frac{1}{2}\)" au lieu de l'inverse multiplicatif.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 7: BOSS FIGHT ==================== -->
+<section id="boss" class="section">
+  <h1>Boss Fight</h1>
+  <p class="section-lead">Exercice 4 complet de l'examen Août 2025 — conditions réelles, chrono 25 minutes.</p>
+
+  <div id="boss-start">
+    <div class="card" style="text-align:center; padding:2rem;">
+      <div style="font-size:3rem; margin-bottom:0.5rem">!</div>
+      <h2>Exercice 4 — Examen Août 2025</h2>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem">
+        Conditions réelles. 4 questions. Chrono 25 minutes.<br>
+        Prépare du papier brouillon. Clique pour démarrer.
+      </p>
+      <button class="btn btn-pink" onclick="startBoss()" style="font-size:1rem; padding:0.75rem 2rem;">
+        Démarrer le Boss Fight
+      </button>
+    </div>
+  </div>
+
+  <div id="boss-game" style="display:none">
+    <div class="timer-display" id="boss-timer">25:00</div>
+
+    <div class="boss-status">
+      <div class="boss-check" id="bcheck-a">a. Euler</div>
+      <div class="boss-check" id="bcheck-b">b. Déterminant</div>
+      <div class="boss-check" id="bcheck-c">c. Inverse Gauss</div>
+      <div class="boss-check" id="bcheck-d">d. Système</div>
+    </div>
+
+    <div class="card" style="background:var(--bg); border:2px solid var(--text);">
+      <h3>EXERCICE 4 — Examen MATH F-114, Août 2025</h3>
+      <div class="divider"></div>
+
+      <p><strong>(a) (/3)</strong> Donner \(\varphi(11)\) (où \(\varphi\) est l'indicatrice d'Euler). Justifier.</p>
+
+      <div class="inline-pair" style="margin:0.75rem 0">
+        <span>\(\varphi(11) =\)</span>
+        <input class="answer-input" id="boss-a" type="text" placeholder="?" maxlength="3">
+        <button class="btn btn-secondary" onclick="markBoss('a', 11-1, 'bcheck-a')">Valider</button>
+      </div>
+
+      <div class="divider"></div>
+      <p><strong>(b) (/6)</strong> Calculer le déterminant de la matrice suivante dans \(\text{Mat}(3{\times}3, \mathbb{Z}_5)\) :</p>
+      <div class="math-block">
+        \[\begin{pmatrix}3&3&0\\2&4&3\\3&2&3\end{pmatrix}\]
+      </div>
+      <div class="inline-pair" style="margin:0.75rem 0">
+        <span>\(\det(M) \equiv\)</span>
+        <input class="answer-input" id="boss-b" type="text" placeholder="?" maxlength="2">
+        <span>\(\pmod 5\)</span>
+        <button class="btn btn-secondary" onclick="markBoss('b', 2, 'bcheck-b')">Valider</button>
+      </div>
+
+      <div class="divider"></div>
+      <p><strong>(c) (/8)</strong> Utiliser la méthode de Gauss pour trouver l'inverse de la matrice ci-dessus dans \(\mathbb{Z}_5\).</p>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem">Saisis l'inverse calculé (entrée (1,1) de \(M^{-1}\)) :</p>
+      <div class="inline-pair" style="margin:0.75rem 0">
+        <span>\((M^{-1})_{11} =\)</span>
+        <input class="answer-input" id="boss-c" type="text" placeholder="?" maxlength="1">
+        <button class="btn btn-secondary" onclick="markBoss('c', 3, 'bcheck-c')">Valider</button>
+      </div>
+
+      <div class="divider"></div>
+      <p><strong>(d) (/8)</strong> Grâce aux calculs précédents, résoudre le système linéaire dans \((\mathbb{Z}_5)^3\) :</p>
+      <div class="math-block">
+        \[\begin{cases}3x + 3y = 1\\ 2x + 4y + 3z = 2\\ 3x + 2y + 3z = 2\end{cases}\]
+      </div>
+      <div class="inline-pair" style="margin:0.75rem 0">
+        <span>\(x =\)</span>
+        <input class="answer-input" id="boss-dx" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(y =\)</span>
+        <input class="answer-input" id="boss-dy" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <span>\(z =\)</span>
+        <input class="answer-input" id="boss-dz" type="text" placeholder="?" maxlength="1" style="width:50px">
+        <button class="btn btn-secondary" onclick="markBossD()">Valider</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-pink" onclick="submitBoss()">Terminer et voir le corrigé</button>
+      <button class="btn btn-secondary" onclick="abandonBoss()">Abandonner</button>
+    </div>
+  </div>
+
+  <div id="boss-result" style="display:none">
+    <div class="card">
+      <h2>Corrigé complet — Exercice 4, Août 2025</h2>
+      <div class="divider"></div>
+
+      <h3>(a) \(\varphi(11)\)</h3>
+      <div class="math-block green">
+        11 est un nombre premier. Donc \(\varphi(11) = 11 - 1 = \mathbf{10}\).<br>
+        Justification : les entiers premiers avec 11 dans \(\{1,\ldots,11\}\) sont exactement \(\{1,2,3,4,5,6,7,8,9,10\}\).
+      </div>
+
+      <div class="divider"></div>
+      <h3>(b) Déterminant dans \(\mathbb{Z}_5\)</h3>
+      <div class="math-block">
+        \[\det\begin{pmatrix}3&3&0\\2&4&3\\3&2&3\end{pmatrix} = 3\det\begin{pmatrix}4&3\\2&3\end{pmatrix} - 3\det\begin{pmatrix}2&3\\3&3\end{pmatrix}\]
+        \[= 3(12-6) - 3(6-9) = 3 \cdot 6 - 3 \cdot (-3) = 18 + 9 = 27 \equiv \mathbf{2} \pmod 5\]
+      </div>
+      <div class="feedback correct visible">Le déterminant vaut 2 dans \(\mathbb{Z}_5\). La matrice est inversible (det \(\neq 0\)).</div>
+
+      <div class="divider"></div>
+      <h3>(c) Inverse par Gauss dans \(\mathbb{Z}_5\)</h3>
+      <div class="math-block">
+        Opérations clés :<br>
+        \(L_3 \leftarrow L_3 - L_1\) : \([3,2,3] \to [0,4,3]\)<br>
+        \(L_1 \leftarrow 2L_1\) (car \(3^{-1} = 2\) dans \(\mathbb{Z}_5\)) : \([3,3,0] \to [1,1,0]\)<br>
+        \(L_2 \leftarrow L_2 - 2L_1\) : \([2,4,3] \to [0,2,3]\)<br>
+        — Pivot L2 = 2, \(L_2 \leftarrow 3L_2\) (car \(2^{-1} = 3\)) : \([0,2,3] \to [0,1,4]\)<br>
+        — Éliminations L1 et L3...<br><br>
+        \[M^{-1} = \begin{pmatrix}\mathbf{3}&3&2\\4&2&3\\1&4&3\end{pmatrix} \pmod 5\]
+      </div>
+      <div class="feedback correct visible">
+        Vérification : \(M \cdot M^{-1} = I_3\) dans \(\mathbb{Z}_5\). ✓
+      </div>
+
+      <div class="divider"></div>
+      <h3>(d) Résolution du système</h3>
+      <div class="math-block">
+        \[M\mathbf{x} = \mathbf{b} \Rightarrow \mathbf{x} = M^{-1}\mathbf{b}\]
+        \[\begin{pmatrix}x\\y\\z\end{pmatrix} = \begin{pmatrix}3&3&2\\4&2&3\\1&4&3\end{pmatrix}\begin{pmatrix}1\\2\\2\end{pmatrix} = \begin{pmatrix}3+6+4\\4+4+6\\1+8+6\end{pmatrix} = \begin{pmatrix}13\\14\\15\end{pmatrix} \equiv \begin{pmatrix}\mathbf{3}\\\mathbf{4}\\\mathbf{0}\end{pmatrix} \pmod 5\]
+      </div>
+      <div class="feedback correct visible" style="font-size:1rem">
+        <strong>Solution : \((x, y, z) = (3, 4, 0)\) dans \(\mathbb{Z}_5\)</strong>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <button class="btn btn-primary" onclick="resetBoss()">↺ Refaire le Boss Fight</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ==================== PROGRESS BAR ====================
+const sections = ['accueil','theorie','inverses','pipeline','entrainement','euler','pieges','boss'];
+
+function updateProgress(idx) {
+  const pct = ((idx) / (sections.length - 1)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const idx = sections.indexOf(id);
+  updateProgress(idx);
+  window.scrollTo(0, 0);
+  // Re-render KaTeX for newly visible section
+  setTimeout(() => {
+    try {
+      renderMathInElement(document.getElementById(id), {
+        delimiters: [
+          {left: '\\[', right: '\\]', display: true},
+          {left: '\\(', right: '\\)', display: false}
+        ]
+      });
+    } catch(e) {}
+  }, 50);
+}
+
+// ==================== ACCORDION ====================
+function toggleAccordion(id) {
+  const content = document.getElementById(id);
+  const btn = content.previousElementSibling;
+  const isOpen = content.classList.contains('open');
+  content.classList.toggle('open');
+  btn.classList.toggle('open');
+  if (!isOpen) {
+    setTimeout(() => {
+      try {
+        renderMathInElement(content, {
+          delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]
+        });
+      } catch(e) {}
+    }, 50);
+  }
+}
+
+// ==================== PIEGES ====================
+function togglePiege(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+// ==================== INVERSE TABLE ====================
+let currentZp = 5;
+
+function modInverse(a, p) {
+  for (let b = 1; b < p; b++) {
+    if ((a * b) % p === 1) return b;
+  }
+  return null;
+}
+
+function selectZp(p, btn) {
+  currentZp = p;
+  document.querySelectorAll('.z-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderInvTable(p);
+}
+
+function renderInvTable(p) {
+  const table = document.getElementById('inv-table');
+  const summary = document.getElementById('inv-summary');
+  const title = document.getElementById('inv-title');
+  title.textContent = ''; // clear for re-render
+  table.innerHTML = '';
+  document.getElementById('inv-result').className = '';
+  document.getElementById('inv-result').textContent = '← Clique sur un élément';
+
+  let summaryHtml = '<div class="scroll-table"><table><tr><th>a</th><th>a\u207B\u00B9 dans \u2124' + p + '</th><th>Vérification</th></tr>';
+  for (let a = 1; a < p; a++) {
+    const inv = modInverse(a, p);
+    const cell = document.createElement('div');
+    cell.className = 'inv-cell';
+    cell.innerHTML = `<div class="elem">${a}</div><div class="label">dans \u2124${p}</div>`;
+    cell.onclick = () => selectElement(a, p, cell);
+    table.appendChild(cell);
+    summaryHtml += `<tr><td>${a}</td><td>${inv}</td><td>${a} × ${inv} = ${a*inv} ≡ 1 (mod ${p})</td></tr>`;
+  }
+  summaryHtml += '</table></div>';
+  summary.innerHTML = summaryHtml;
+
+  // Also add 0
+  const cell0 = document.createElement('div');
+  cell0.className = 'inv-cell';
+  cell0.innerHTML = `<div class="elem">0</div><div class="label">dans \u2124${p}</div>`;
+  cell0.onclick = () => {
+    document.querySelectorAll('.inv-cell').forEach(c => c.classList.remove('selected'));
+    cell0.classList.add('selected');
+    const res = document.getElementById('inv-result');
+    res.className = '';
+    res.textContent = '0 n\'a pas d\'inverse (0 × x = 0 ≠ 1 pour tout x)';
+    setTimeout(() => { res.className = 'active'; }, 10);
+  };
+  table.insertBefore(cell0, table.firstChild);
+
+  try {
+    renderMathInElement(table.parentElement.parentElement, {
+      delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]
+    });
+  } catch(e) {}
+
+  // Update title via innerHTML
+  title.innerHTML = `Éléments de \\(\\mathbb{Z}_{${p}}\\)`;
+  try { renderMathInElement(title, {delimiters:[{left:'\\(',right:'\\)',display:false}]}); } catch(e){}
+}
+
+function selectElement(a, p, cell) {
+  document.querySelectorAll('.inv-cell').forEach(c => c.classList.remove('selected'));
+  cell.classList.add('selected');
+  const inv = modInverse(a, p);
+  const res = document.getElementById('inv-result');
+  res.innerHTML = `${a}⁻¹ = ${inv} dans ℤ${p} &nbsp;|&nbsp; ${a} × ${inv} = ${a*inv} ≡ 1 (mod ${p})`;
+  res.className = 'active';
+}
+
+// ==================== PIPELINE ====================
+let pipeStep = 1;
+
+function showFeedback(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'feedback ' + type + ' visible';
+  el.innerHTML = msg;
+}
+
+function showHint(id) {
+  const el = document.getElementById(id);
+  el.className = 'feedback hint visible';
+}
+
+function advancePipeline(nextStep) {
+  pipeStep = nextStep;
+  const el = document.getElementById('pipe' + nextStep);
+  if (el) {
+    el.classList.remove('locked');
+    el.classList.add('active-step');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Mark previous as done
+    const prev = document.getElementById('pipe' + (nextStep - 1));
+    if (prev) {
+      prev.classList.remove('active-step');
+      prev.classList.add('done-step');
+    }
+    setTimeout(() => {
+      try {
+        renderMathInElement(el, {
+          delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]
+        });
+      } catch(e) {}
+    }, 50);
+  }
+}
+
+function checkPipe1() {
+  const ans = document.getElementById('pipe1-ans').value.trim();
+  if (ans === '2') {
+    document.getElementById('pipe1-ans').className = 'answer-input correct';
+    showFeedback('pipe1-fb', 'correct', '✓ Exact ! \(27 = 5 \\times 5 + 2\), donc \(\\det(M) = 2\) dans \(\\mathbb{Z}_5\). La matrice est inversible !');
+    setTimeout(() => advancePipeline(2), 800);
+  } else {
+    document.getElementById('pipe1-ans').className = 'answer-input wrong';
+    showFeedback('pipe1-fb', 'wrong', '✗ Pas tout à fait. Rappel : \(27 \\div 5 = 5\) reste \(2\). Clique sur "Indice" si besoin.');
+  }
+  renderMath('pipe1-fb');
+}
+
+function checkPipe2() {
+  const ans = document.getElementById('pipe2-ans').value.trim();
+  if (ans === '3') {
+    document.getElementById('pipe2-ans').className = 'answer-input correct';
+    showFeedback('pipe2-fb', 'correct', '✓ Correct ! L\'entrée (1,1) de \(M^{-1}\) est bien 3.');
+    setTimeout(() => advancePipeline(3), 800);
+  } else {
+    document.getElementById('pipe2-ans').className = 'answer-input wrong';
+    showFeedback('pipe2-fb', 'wrong', '✗ L\'entrée (1,1) de \(M^{-1}\) est 3. Relis le corrigé dans l\'accordéon.');
+  }
+  renderMath('pipe2-fb');
+}
+
+function checkPipe3() {
+  const x = document.getElementById('pipe3-x').value.trim();
+  const y = document.getElementById('pipe3-y').value.trim();
+  const z = document.getElementById('pipe3-z').value.trim();
+  if (x === '3' && y === '4' && z === '0') {
+    ['pipe3-x','pipe3-y','pipe3-z'].forEach(id => document.getElementById(id).className = 'answer-input correct');
+    showFeedback('pipe3-fb', 'correct', '✓ Parfait ! \((x,y,z) = (3,4,0)\) dans \(\\mathbb{Z}_5\). C\'est la solution de l\'exam Août 2025 !');
+    setTimeout(() => advancePipeline(4), 800);
+  } else {
+    showFeedback('pipe3-fb', 'wrong', '✗ Relis le calcul : \(M^{-1}\\mathbf{b} = (13,14,15)^T \\equiv (3,4,0) \\pmod 5\).');
+  }
+  renderMath('pipe3-fb');
+}
+
+function checkPipe4() {
+  const ans = document.getElementById('pipe4-ans').value.trim();
+  if (ans === '10') {
+    document.getElementById('pipe4-ans').className = 'answer-input correct';
+    showFeedback('pipe4-fb', 'correct', '✓ Exact ! 11 est premier, donc \(\\varphi(11) = 11 - 1 = 10\). Pipeline complet !');
+    document.getElementById('pipe4').classList.remove('active-step');
+    document.getElementById('pipe4').classList.add('done-step');
+  } else {
+    document.getElementById('pipe4-ans').className = 'answer-input wrong';
+    showFeedback('pipe4-fb', 'wrong', '✗ 11 est premier, donc \(\\varphi(11) = 11 - 1 = ?\).');
+  }
+  renderMath('pipe4-fb');
+}
+
+function resetPipeline() {
+  pipeStep = 1;
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('pipe' + i);
+    el.classList.remove('active-step', 'done-step', 'locked');
+    if (i > 1) el.classList.add('locked');
+    if (i === 1) el.classList.add('active-step');
+  }
+  ['pipe1-ans','pipe2-ans','pipe3-x','pipe3-y','pipe3-z','pipe4-ans'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.className = 'answer-input'; }
+  });
+  ['pipe1-fb','pipe2-fb','pipe3-fb','pipe4-fb','hint1'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'feedback';
+  });
+}
+
+// ==================== ENTRAINEMENT ====================
+function checkExA_det() {
+  const ans = document.getElementById('exA-det').value.trim();
+  if (ans === '1') {
+    document.getElementById('exA-det').className = 'answer-input correct';
+    showFeedback('exA-det-fb', 'correct', '✓ Correct ! \(\\det = -6 \\equiv 1 \\pmod 7\). Matrice inversible dans \(\\mathbb{Z}_7\) !');
+  } else {
+    document.getElementById('exA-det').className = 'answer-input wrong';
+    showFeedback('exA-det-fb', 'wrong', '✗ Relis l\'indice. Le déterminant vaut 1 dans \(\\mathbb{Z}_7\).');
+  }
+  renderMath('exA-det-fb');
+}
+
+function checkYesNo(btn, choice, fbId) {
+  if (choice === 'yes') {
+    btn.className = 'choice-btn selected-correct';
+    const fb = document.getElementById(fbId);
+    fb.className = 'feedback correct visible';
+    fb.innerHTML = '✓ Oui ! Le déterminant vaut 4 \u2260 0 dans \u2124\u2085, donc la matrice est inversible.';
+  } else {
+    btn.className = 'choice-btn selected-wrong';
+    const fb = document.getElementById(fbId);
+    fb.className = 'feedback wrong visible';
+    fb.innerHTML = '✗ Non — det = 4 \u2260 0 dans \u2124\u2085 \u21D2 inversible.';
+  }
+  renderMath(fbId);
+}
+
+function checkExA_sys() {
+  const x = document.getElementById('exA-x').value.trim();
+  const y = document.getElementById('exA-y').value.trim();
+  const z = document.getElementById('exA-z').value.trim();
+  if (x === '6' && y === '1' && z === '1') {
+    showFeedback('exA-sys-fb', 'correct', '✓ Parfait ! \((x,y,z) = (6,1,1)\) dans \(\\mathbb{Z}_7\).');
+    document.getElementById('revA-sys').classList.add('show');
+  } else {
+    showFeedback('exA-sys-fb', 'wrong', '✗ Relis le calcul. La réponse est \((6, 1, 1)\).');
+    document.getElementById('revA-sys').classList.add('show');
+  }
+  renderMath('exA-sys-fb');
+}
+
+function checkExB_det() {
+  const ans = document.getElementById('exB-det').value.trim();
+  if (ans === '4') {
+    document.getElementById('exB-det').className = 'answer-input correct';
+    showFeedback('exB-det-fb', 'correct', '✓ Correct ! \(\\det = 9 \\equiv 4 \\pmod 5\).');
+  } else {
+    document.getElementById('exB-det').className = 'answer-input wrong';
+    showFeedback('exB-det-fb', 'wrong', '✗ Clique sur "Indice". La réponse est 4.');
+  }
+  renderMath('exB-det-fb');
+}
+
+function checkExB_sys() {
+  const x = document.getElementById('exB-x').value.trim();
+  const y = document.getElementById('exB-y').value.trim();
+  const z = document.getElementById('exB-z').value.trim();
+  if (x === '1' && y === '2' && z === '1') {
+    showFeedback('exB-sys-fb', 'correct', '✓ \((x,y,z) = (1,2,1)\) dans \(\\mathbb{Z}_5\).');
+    document.getElementById('revB-sys').classList.add('show');
+  } else {
+    showFeedback('exB-sys-fb', 'wrong', '✗ La réponse est \((1,2,1)\). Voir le calcul ci-dessous.');
+    document.getElementById('revB-sys').classList.add('show');
+  }
+  renderMath('exB-sys-fb');
+}
+
+function checkExC_det() {
+  const ans = document.getElementById('exC-det').value.trim();
+  if (ans === '3') {
+    document.getElementById('exC-det').className = 'answer-input correct';
+    showFeedback('exC-det-fb', 'correct', '✓ Exact ! \(\\det = 17 \\equiv 3 \\pmod 7\). Inversible dans \(\\mathbb{Z}_7\).');
+  } else {
+    document.getElementById('exC-det').className = 'answer-input wrong';
+    showFeedback('exC-det-fb', 'wrong', '✗ Clique sur "Indice". Le déterminant est 3 dans \(\\mathbb{Z}_7\).');
+  }
+  renderMath('exC-det-fb');
+}
+
+// ==================== EULER QUIZ ====================
+const eulerQuestions = [
+  {
+    q: 'Calculer \\(\\varphi(11)\\)',
+    choices: ['9', '10', '11', '8'],
+    answer: 1,
+    expl: '11 est premier, donc \\(\\varphi(11) = 11 - 1 = 10\\).'
+  },
+  {
+    q: 'Calculer \\(\\varphi(25)\\)',
+    choices: ['24', '20', '10', '5'],
+    answer: 1,
+    expl: '\\(25 = 5^2\\), donc \\(\\varphi(25) = 5(5-1) = 5 \\times 4 = 20\\). Attention : \\(25\\) n\'est pas premier !'
+  },
+  {
+    q: 'Combien d\'éléments inversibles dans \\(\\mathbb{Z}_{10}\\) ?',
+    choices: ['6', '4', '8', '9'],
+    answer: 1,
+    expl: '\\(10 = 2 \\times 5\\), donc \\(\\varphi(10) = (2-1)(5-1) = 4\\). Les inversibles sont \\(\\{1, 3, 7, 9\\}\\).'
+  },
+  {
+    q: 'Calculer \\(\\varphi(7)\\)',
+    choices: ['5', '7', '6', '8'],
+    answer: 2,
+    expl: '7 est premier, donc \\(\\varphi(7) = 7 - 1 = 6\\).'
+  },
+  {
+    q: 'Calculer \\(\\varphi(p^2)\\) pour \\(p\\) premier quelconque',
+    choices: ['\\(p^2 - 1\\)', '\\(p-1\\)', '\\(p(p-1)\\)', '\\(p^2\\)'],
+    answer: 2,
+    expl: '\\(\\varphi(p^2) = p^2 - p = p(p-1)\\). On exclut les multiples de \\(p\\) dans \\(\\{1,\\ldots,p^2\\}\\), il y en a \\(p\\).'
+  }
+];
+
+let eulerScore = 0;
+let eulerAnswered = 0;
+
+function renderEulerQuestions() {
+  const container = document.getElementById('euler-questions');
+  container.innerHTML = '';
+  eulerQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.id = 'eq' + i;
+    div.innerHTML = `
+      <div class="quiz-num">Question ${i+1} / ${eulerQuestions.length}</div>
+      <p>${q.q}</p>
+      <div class="quiz-choices" id="eqc${i}">
+        ${q.choices.map((c, j) => `<button class="choice-btn" onclick="answerEuler(${i},${j},this)">${c}</button>`).join('')}
+      </div>
+      <div class="feedback" id="eqf${i}"></div>
+    `;
+    container.appendChild(div);
+  });
+  setTimeout(() => {
+    try { renderMathInElement(container, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]}); } catch(e) {}
+  }, 50);
+}
+
+function answerEuler(qi, choice, btn) {
+  const q = eulerQuestions[qi];
+  const btns = document.querySelectorAll('#eqc' + qi + ' .choice-btn');
+  btns.forEach(b => b.disabled = true);
+
+  if (choice === q.answer) {
+    btn.className = 'choice-btn selected-correct';
+    eulerScore++;
+  } else {
+    btn.className = 'choice-btn selected-wrong';
+    btns[q.answer].className = 'choice-btn reveal-correct';
+  }
+
+  eulerAnswered++;
+  const fb = document.getElementById('eqf' + qi);
+  fb.className = 'feedback ' + (choice === q.answer ? 'correct' : 'wrong') + ' visible';
+  fb.innerHTML = q.expl;
+
+  document.getElementById('euler-score').textContent = eulerScore;
+  document.getElementById('euler-total').textContent = eulerAnswered;
+  document.getElementById('euler-bar').style.width = (eulerScore / eulerQuestions.length * 100) + '%';
+
+  setTimeout(() => {
+    try { renderMathInElement(fb, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]}); } catch(e) {}
+  }, 50);
+}
+
+function resetEuler() {
+  eulerScore = 0;
+  eulerAnswered = 0;
+  document.getElementById('euler-score').textContent = '0';
+  document.getElementById('euler-total').textContent = '0';
+  document.getElementById('euler-bar').style.width = '0';
+  renderEulerQuestions();
+}
+
+// ==================== BOSS FIGHT ====================
+let bossTimer = null;
+let bossSeconds = 25 * 60;
+let bossChecks = {a: false, b: false, c: false, d: false};
+
+function startBoss() {
+  document.getElementById('boss-start').style.display = 'none';
+  document.getElementById('boss-game').style.display = 'block';
+  bossSeconds = 25 * 60;
+  bossTimer = setInterval(() => {
+    bossSeconds--;
+    const m = Math.floor(bossSeconds / 60);
+    const s = bossSeconds % 60;
+    const display = document.getElementById('boss-timer');
+    display.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (bossSeconds <= 120) display.classList.add('urgent');
+    if (bossSeconds <= 0) {
+      clearInterval(bossTimer);
+      submitBoss();
+    }
+  }, 1000);
+  setTimeout(() => {
+    try {
+      renderMathInElement(document.getElementById('boss-game'), {
+        delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]
+      });
+    } catch(e) {}
+  }, 100);
+}
+
+function markBoss(q, correct, checkId) {
+  const val = document.getElementById('boss-' + q).value.trim();
+  if (parseInt(val) === correct) {
+    bossChecks[q] = true;
+    document.getElementById(checkId).className = 'boss-check done';
+    document.getElementById(checkId).textContent += ' ✓';
+    document.getElementById('boss-' + q).className = 'answer-input correct';
+  } else {
+    document.getElementById('boss-' + q).className = 'answer-input wrong';
+  }
+}
+
+function markBossD() {
+  const x = document.getElementById('boss-dx').value.trim();
+  const y = document.getElementById('boss-dy').value.trim();
+  const z = document.getElementById('boss-dz').value.trim();
+  if (x === '3' && y === '4' && z === '0') {
+    bossChecks.d = true;
+    document.getElementById('bcheck-d').className = 'boss-check done';
+    document.getElementById('bcheck-d').textContent += ' ✓';
+    ['boss-dx','boss-dy','boss-dz'].forEach(id => document.getElementById(id).className = 'answer-input correct');
+  } else {
+    ['boss-dx','boss-dy','boss-dz'].forEach(id => document.getElementById(id).className = 'answer-input wrong');
+  }
+}
+
+function submitBoss() {
+  clearInterval(bossTimer);
+  document.getElementById('boss-game').style.display = 'none';
+  document.getElementById('boss-result').style.display = 'block';
+  setTimeout(() => {
+    try {
+      renderMathInElement(document.getElementById('boss-result'), {
+        delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]
+      });
+    } catch(e) {}
+  }, 100);
+}
+
+function abandonBoss() {
+  clearInterval(bossTimer);
+  document.getElementById('boss-game').style.display = 'none';
+  document.getElementById('boss-start').style.display = 'block';
+}
+
+function resetBoss() {
+  bossChecks = {a:false, b:false, c:false, d:false};
+  ['boss-a','boss-b','boss-c','boss-dx','boss-dy','boss-dz'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { el.value=''; el.className='answer-input'; }
+  });
+  ['bcheck-a','bcheck-b','bcheck-c','bcheck-d'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'boss-check';
+    el.textContent = ['a. Euler','b. Déterminant','c. Inverse Gauss','d. Système'][i];
+  });
+  document.getElementById('boss-result').style.display = 'none';
+  document.getElementById('boss-start').style.display = 'block';
+}
+
+// ==================== UTILITY ====================
+function renderMath(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  setTimeout(() => {
+    try {
+      renderMathInElement(el, {
+        delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]
+      });
+    } catch(e) {}
+  }, 30);
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '\\[', right: '\\]', display: true},
+      {left: '\\(', right: '\\)', display: false}
+    ]
+  });
+  renderInvTable(5);
+  renderEulerQuestions();
+});
+</script>
+</body>
+</html>

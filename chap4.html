@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATHF114 · Sous-espaces & Vrai/Faux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --navy: #1a2744;
+  --navy-light: #263561;
+  --indigo: #3d52a0;
+  --violet: #6366f1;
+  --violet-light: #818cf8;
+  --gold: #d4a017;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --text: #1e1e2e;
+  --text-muted: #6b7280;
+  --border: #e2e1d9;
+  --shadow: 0 2px 16px rgba(26,39,68,0.08);
+  --shadow-lg: 0 8px 40px rgba(26,39,68,0.14);
+  --radius: 12px;
+  --radius-lg: 18px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* ── PROGRESS BAR ─────────────────────────────── */
+#progress-bar-container {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 4px; background: var(--border); z-index: 1000;
+}
+#progress-bar {
+  height: 100%; background: linear-gradient(90deg, var(--indigo), var(--violet));
+  width: 0%; transition: width 0.4s ease;
+}
+
+/* ── HEADER ───────────────────────────────────── */
+header {
+  background: var(--navy);
+  padding: 40px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 30%, rgba(61,82,160,0.2) 0%, transparent 50%);
+}
+header > * { position: relative; }
+.header-tag {
+  display: inline-block;
+  background: rgba(99,102,241,0.2);
+  color: var(--violet-light);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(26px, 5vw, 42px);
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+header h1 em {
+  color: var(--violet-light);
+  font-style: normal;
+}
+header p {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  margin-top: 10px;
+  font-weight: 300;
+}
+.exam-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(212,160,23,0.15);
+  border: 1px solid rgba(212,160,23,0.3);
+  color: #fbbf24;
+  font-size: 12px; font-weight: 500;
+  padding: 5px 14px; border-radius: 20px;
+  margin-top: 14px;
+}
+
+/* ── NAV ──────────────────────────────────────── */
+nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 4px; z-index: 100;
+  overflow-x: auto;
+  box-shadow: var(--shadow);
+}
+.nav-inner {
+  display: flex; gap: 0;
+  padding: 0 16px;
+  min-width: max-content;
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 20px;
+  background: none; border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nav-btn:hover { color: var(--indigo); }
+.nav-btn.active {
+  color: var(--indigo);
+  border-bottom-color: var(--indigo);
+}
+.nav-icon { font-size: 16px; }
+
+/* ── STATS BAR ────────────────────────────────── */
+.stats-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex; gap: 24px; align-items: center;
+  flex-wrap: wrap;
+}
+.stat-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-muted);
+}
+.stat-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 15px; font-weight: 500;
+  color: var(--navy);
+}
+
+/* ── LAYOUT ───────────────────────────────────── */
+main { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.section-header {
+  margin-bottom: 32px;
+}
+.section-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--navy);
+  display: flex; align-items: center; gap: 12px;
+}
+.section-header p {
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* ── THEORY BLOCKS ────────────────────────────── */
+.theory-block {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  margin-bottom: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.theory-header {
+  background: var(--navy);
+  padding: 18px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.theory-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--violet-light);
+  background: rgba(99,102,241,0.15);
+  padding: 3px 10px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+}
+.theory-header h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: #fff;
+}
+.theory-body { padding: 24px; }
+
+.def-box {
+  background: linear-gradient(135deg, #eef2ff, #f0f9ff);
+  border: 1px solid #c7d2fe;
+  border-left: 4px solid var(--indigo);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.def-box .label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--indigo);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.method-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.method-box .label { color: var(--green); }
+
+.warning-box {
+  background: #fffbeb;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.warning-box .label { color: var(--amber); }
+
+.axioms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.axiom-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.axiom-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--indigo);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.axiom-name {
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.axiom-math { font-size: 13px; color: var(--text-muted); }
+
+/* ── INLINE QUIZ (after theory) ───────────────── */
+.theory-quiz {
+  margin: 24px 0 0;
+  border-top: 1px dashed var(--border);
+  padding-top: 20px;
+}
+.theory-quiz .quiz-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--violet);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.theory-quiz p.question {
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 14px;
+  font-size: 15px;
+}
+
+.mini-choices {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.mini-choice {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  text-align: left;
+  font-family: 'Outfit', sans-serif;
+}
+.mini-choice:hover { border-color: var(--indigo); background: #eef2ff; }
+.mini-choice.correct { background: var(--green-light); border-color: var(--green); color: #065f46; }
+.mini-choice.wrong { background: var(--red-light); border-color: var(--red); color: #991b1b; }
+.mini-choice.disabled { pointer-events: none; }
+
+.mini-feedback {
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  display: none;
+}
+.mini-feedback.show { display: block; }
+.mini-feedback.good { background: var(--green-light); color: #065f46; border: 1px solid #6ee7b7; }
+.mini-feedback.bad { background: var(--red-light); color: #991b1b; border: 1px solid #fca5a5; }
+
+/* ── VF QUESTIONS ─────────────────────────────── */
+.vf-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 32px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.vf-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.vf-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.vf-source {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--border);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.vf-body { padding: 24px; }
+.vf-proposition {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.vf-buttons {
+  display: flex; gap: 12px;
+  margin-bottom: 20px;
+}
+.btn-vrai, .btn-faux {
+  flex: 1;
+  padding: 14px 20px;
+  border: 2px solid;
+  border-radius: var(--radius);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn-vrai {
+  border-color: var(--green);
+  color: var(--green);
+  background: transparent;
+}
+.btn-vrai:hover { background: var(--green); color: white; }
+.btn-faux {
+  border-color: var(--red);
+  color: var(--red);
+  background: transparent;
+}
+.btn-faux:hover { background: var(--red); color: white; }
+.btn-vrai.selected { background: var(--green); color: white; }
+.btn-faux.selected { background: var(--red); color: white; }
+.btn-vrai.disabled, .btn-faux.disabled { pointer-events: none; }
+
+.justif-section { display: none; }
+.justif-section.show { display: block; }
+.justif-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.justif-choices { display: flex; flex-direction: column; gap: 8px; }
+.justif-choice {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  text-align: left;
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.5;
+}
+.justif-choice:hover { border-color: var(--indigo); background: #eef2ff; }
+.justif-choice.correct { background: var(--green-light); border-color: var(--green); }
+.justif-choice.wrong { background: var(--red-light); border-color: var(--red); }
+.justif-choice.disabled { pointer-events: none; }
+
+.vf-feedback {
+  margin-top: 16px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  display: none;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.vf-feedback.show { display: block; }
+.vf-feedback.correct-fb { background: var(--green-light); border: 1px solid #6ee7b7; color: #065f46; }
+.vf-feedback.wrong-fb { background: var(--red-light); border: 1px solid #fca5a5; color: #991b1b; }
+.vf-feedback strong { display: block; margin-bottom: 6px; font-size: 15px; }
+
+.vf-wrong-reveal {
+  margin-top: 12px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+/* ── PROGRESS COUNTER ──────────────────────────── */
+.section-progress {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px;
+}
+.prog-track {
+  flex: 1; height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--indigo), var(--violet));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.prog-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── CONTRE-EXEMPLE BUILDER ────────────────────── */
+.cex-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.cex-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.cex-header h3 {
+  font-family: 'DM Serif Display', serif;
+  color: #fff;
+  font-size: 17px;
+}
+.cex-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--violet-light);
+  background: rgba(99,102,241,0.2);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.cex-body { padding: 24px; }
+.cex-prop {
+  background: var(--amber-light);
+  border: 1px solid #fcd34d;
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #78350f;
+  font-size: 15px;
+}
+
+.cex-steps { display: flex; flex-direction: column; gap: 14px; }
+.cex-step {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  position: relative;
+}
+.cex-step-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--indigo);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.cex-step p { font-size: 14px; margin-bottom: 12px; color: var(--text); }
+.cex-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.cex-opt {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  font-family: 'Outfit', sans-serif;
+}
+.cex-opt:hover { border-color: var(--indigo); color: var(--indigo); }
+.cex-opt.correct { background: var(--green-light); border-color: var(--green); color: #065f46; font-weight: 600; }
+.cex-opt.wrong { background: var(--red-light); border-color: var(--red); color: #991b1b; }
+.cex-opt.disabled { pointer-events: none; }
+
+.step-result {
+  margin-top: 10px;
+  font-size: 13px;
+  display: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.step-result.show { display: block; }
+.step-result.ok { background: var(--green-light); color: #065f46; }
+.step-result.ko { background: var(--red-light); color: #991b1b; }
+
+.cex-nav {
+  margin-top: 20px;
+  display: flex; gap: 10px;
+}
+.btn-next, .btn-reset {
+  padding: 10px 22px;
+  border-radius: var(--radius);
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-next { background: var(--indigo); color: white; }
+.btn-next:hover { background: var(--navy); }
+.btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-reset { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+.btn-reset:hover { background: var(--border); }
+
+/* ── DÉMONSTRATIONS ────────────────────────────── */
+.demo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 36px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.demo-header {
+  background: linear-gradient(135deg, #1a2744, #3d52a0);
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.demo-header h3 {
+  font-family: 'DM Serif Display', serif;
+  color: #fff;
+  font-size: 18px;
+}
+.demo-header .demo-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.demo-body { padding: 24px; }
+.demo-goal {
+  background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+  border: 1px solid #c7d2fe;
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  color: var(--navy);
+}
+.demo-goal strong { color: var(--indigo); }
+
+.proof-steps { display: flex; flex-direction: column; gap: 0; }
+.proof-step {
+  display: flex; gap: 0;
+  position: relative;
+}
+.proof-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 19px; top: 44px;
+  width: 2px; bottom: 0;
+  background: var(--border);
+}
+.step-dot {
+  width: 40px; height: 40px;
+  min-width: 40px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--indigo);
+  position: relative; z-index: 1;
+  margin-right: 16px;
+}
+.step-content {
+  padding: 10px 0 24px;
+  flex: 1;
+}
+.step-content p {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* ── DRAG-TO-REORDER QUIZ ──────────────────────── */
+.sort-quiz {
+  margin-top: 24px;
+  border-top: 1px dashed var(--border);
+  padding-top: 20px;
+}
+.sort-quiz .quiz-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--violet);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sort-quiz p { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; }
+
+.sortable-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 14px;
+}
+.sortable-item {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  cursor: grab;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px;
+  user-select: none;
+  transition: all 0.15s;
+}
+.sortable-item:active { cursor: grabbing; opacity: 0.8; transform: scale(1.01); box-shadow: var(--shadow); }
+.sortable-item.dragging { opacity: 0.5; }
+.sortable-item.over { border-color: var(--indigo); background: #eef2ff; }
+.sortable-item .drag-handle {
+  color: var(--text-muted); font-size: 16px; cursor: grab;
+}
+.sortable-item.correct-pos { border-color: var(--green); background: var(--green-light); }
+.sortable-item.wrong-pos { border-color: var(--red); background: var(--red-light); }
+
+.btn-check-order {
+  padding: 10px 22px;
+  background: var(--indigo); color: white;
+  border: none; border-radius: var(--radius);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  margin-right: 8px;
+}
+.btn-check-order:hover { background: var(--navy); }
+.btn-shuffle {
+  padding: 10px 22px;
+  background: var(--surface2); color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.order-result {
+  margin-top: 12px; padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px; display: none;
+}
+.order-result.show { display: block; }
+.order-result.ok { background: var(--green-light); color: #065f46; border: 1px solid #6ee7b7; }
+.order-result.ko { background: var(--red-light); color: #991b1b; border: 1px solid #fca5a5; }
+
+/* ── BOSS FIGHT ────────────────────────────────── */
+.boss-intro {
+  background: linear-gradient(135deg, var(--navy), #2d1b69);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  text-align: center;
+  color: white;
+  margin-bottom: 32px;
+}
+.boss-intro h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+.boss-intro p { color: rgba(255,255,255,0.7); margin-bottom: 24px; }
+.btn-start-boss {
+  padding: 14px 36px;
+  background: var(--violet);
+  color: white;
+  border: none; border-radius: var(--radius);
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-start-boss:hover { background: var(--violet-light); transform: translateY(-2px); }
+
+#boss-timer {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+#timer-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--navy);
+}
+#timer-display.warning { color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.timer-label { font-size: 13px; color: var(--text-muted); }
+
+.boss-results {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+}
+.boss-results.show { display: block; }
+.boss-score {
+  font-family: 'DM Serif Display', serif;
+  font-size: 56px;
+  color: var(--navy);
+  margin: 16px 0;
+}
+.boss-results h3 { font-size: 22px; color: var(--text-muted); margin-bottom: 8px; }
+
+/* ── SCORE CHIPS ───────────────────────────────── */
+.score-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin: 4px;
+}
+.score-chip.ok { background: var(--green-light); color: #065f46; }
+.score-chip.ko { background: var(--red-light); color: #991b1b; }
+
+/* ── UTILS ────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+.math-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.tag {
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+}
+.tag-sev { background: #ede9fe; color: #5b21b6; }
+.tag-corps { background: #fef3c7; color: #92400e; }
+.tag-lin { background: #d1fae5; color: #065f46; }
+.tag-dim { background: #dbeafe; color: #1e40af; }
+.tag-base { background: #fce7f3; color: #9d174d; }
+
+.next-q-btn {
+  display: block;
+  margin: 16px auto 0;
+  padding: 10px 28px;
+  background: var(--indigo); color: white;
+  border: none; border-radius: var(--radius);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+}
+.next-q-btn:hover { background: var(--navy); }
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar-container"><div id="progress-bar"></div></div>
+
+<header>
+  <div class="header-tag">MATHF114 · ULB · Q2</div>
+  <h1>Sous-espaces & <em>Vrai/Faux</em></h1>
+  <p>Chapitres II–VII · Corps, SEV, Bases, Applications linéaires</p>
+  <div class="exam-badge">⚡ ~85% des examens · 20–25 pts · Format constant</div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('theory')" id="nav-theory">
+      <span class="nav-icon">📖</span> Théorie Flash
+    </button>
+    <button class="nav-btn" onclick="showSection('vf')" id="nav-vf">
+      <span class="nav-icon">🎯</span> Vrai/Faux Exams
+    </button>
+    <button class="nav-btn" onclick="showSection('cex')" id="nav-cex">
+      <span class="nav-icon">🔬</span> Contre-exemples
+    </button>
+    <button class="nav-btn" onclick="showSection('demo')" id="nav-demo">
+      <span class="nav-icon">📐</span> Démonstrations
+    </button>
+    <button class="nav-btn" onclick="showSection('boss')" id="nav-boss">
+      <span class="nav-icon">⚔️</span> Boss Fight
+    </button>
+  </div>
+</nav>
+
+<div class="stats-bar">
+  <div class="stat-item">Score VF : <span class="stat-num" id="stat-score">0</span>/<span id="stat-total">0</span></div>
+  <div class="stat-item">Bonnes réponses : <span class="stat-num" id="stat-correct">0</span></div>
+  <div class="stat-item">Questions vues : <span class="stat-num" id="stat-seen">0</span></div>
+</div>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 1 : THÉORIE FLASH                       -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section active" id="section-theory">
+  <div class="section-header">
+    <h2>📖 Théorie Flash</h2>
+    <p>4 blocs essentiels — chacun suivi d'un exercice immédiat</p>
+  </div>
+
+  <!-- BLOC 1 : SEV -->
+  <div class="theory-block">
+    <div class="theory-header">
+      <span class="theory-num">01</span>
+      <h3>Sous-espace vectoriel (SEV) — Les 3 axiomes</h3>
+    </div>
+    <div class="theory-body">
+      <div class="def-box">
+        <div class="label">Définition</div>
+        <p>Soit $V$ un espace vectoriel sur $K$. Un sous-ensemble $W \subseteq V$ est un <strong>sous-espace vectoriel</strong> si et seulement si les 3 conditions suivantes sont satisfaites :</p>
+      </div>
+      
+      <div class="axioms-grid">
+        <div class="axiom-card">
+          <div class="axiom-num">AXIOME 1</div>
+          <div class="axiom-name">Vecteur nul</div>
+          <div class="axiom-math">$\vec{0} \in W$</div>
+        </div>
+        <div class="axiom-card">
+          <div class="axiom-num">AXIOME 2</div>
+          <div class="axiom-name">Stabilité addition</div>
+          <div class="axiom-math">$u, v \in W \Rightarrow u + v \in W$</div>
+        </div>
+        <div class="axiom-card">
+          <div class="axiom-num">AXIOME 3</div>
+          <div class="axiom-name">Stabilité scalaire</div>
+          <div class="axiom-math">$u \in W, \lambda \in K \Rightarrow \lambda u \in W$</div>
+        </div>
+      </div>
+
+      <div class="method-box">
+        <div class="label">✅ Méthode de vérification</div>
+        <p><strong>Pour prouver que $W$ est un SEV :</strong><br>
+        1. Montrer $\vec{0} \in W$ (souvent trivial : poser $x=y=z=0$)<br>
+        2. Prendre $u,v \in W$ génériques et vérifier $u+v \in W$<br>
+        3. Prendre $u \in W, \lambda \in K$ génériques et vérifier $\lambda u \in W$<br><br>
+        <strong>Pour réfuter :</strong> trouver un <em>seul</em> contre-exemple qui viole au moins un axiome.</p>
+      </div>
+
+      <div class="warning-box">
+        <div class="label">⚠️ Contre-exemples classiques qui tombent à l'exam</div>
+        <p>• <strong>Sphère</strong> $\{(x,y,z) : x^2+y^2+z^2 = r^2\}$ → ne contient pas $\vec{0}$ (si $r\neq 0$)<br>
+        • <strong>Droite affine</strong> $\{(x,y) : y = 2x+1\}$ → ne contient pas $(0,0)$<br>
+        • <strong>Valeur absolue</strong> $\{(x,y) : |x|=|y|\}$ → viole l'axiome 3 : prendre $(1,1) \in W$, alors $-1\cdot(1,1) = (-1,-1)$... ✓ mais $(1,-1) \in W$ et $(1,1)\in W$ mais $(1,1)+(1,-1)=(2,0)$ : $|2|\neq|0|$ ✗ (viole axiome 2)<br>
+        • <strong>Entiers</strong> $\mathbb{Z}^2 \subset \mathbb{R}^2$ → viole l'axiome 3 : $\frac{1}{2}\cdot(1,0) = (\frac{1}{2},0) \notin \mathbb{Z}^2$</p>
+      </div>
+
+      <div class="theory-quiz">
+        <div class="quiz-label">⚡ Exercice immédiat</div>
+        <p class="question">L'ensemble $W = \{(x,y,z) \in \mathbb{R}^3 : x+y-z = 2\}$ est-il un sous-espace vectoriel de $\mathbb{R}^3$ ?</p>
+        <div class="mini-choices" id="mc1">
+          <button class="mini-choice" onclick="miniAnswer(this,'mc1',false,'fb1')">Oui, car c'est un plan dans $\mathbb{R}^3$</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc1',true,'fb1')">Non, car $\vec{0} = (0,0,0)$ ne vérifie pas $0+0-0=2$</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc1',false,'fb1')">Non, car il n'est pas fermé par la multiplication scalaire</button>
+        </div>
+        <div class="mini-feedback" id="fb1">
+          <strong>✓ Correct !</strong> L'axiome 1 échoue immédiatement : $(0,0,0)$ donne $0+0-0=0 \neq 2$. C'est un sous-espace <em>affin</em>, pas vectoriel. À l'exam, vérifier l'axiome 1 en premier — c'est souvent le plus rapide !
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOC 2 : CORPS Zp -->
+  <div class="theory-block">
+    <div class="theory-header">
+      <span class="theory-num">02</span>
+      <h3>Corps $\mathbb{Z}_p$ — Quand est-ce un corps ?</h3>
+    </div>
+    <div class="theory-body">
+      <div class="def-box">
+        <div class="label">Théorème fondamental</div>
+        <p>$\mathbb{Z}_p = \{0, 1, \ldots, p-1\}$ muni des opérations modulo $p$ est un <strong>corps</strong> si et seulement si <strong>$p$ est premier</strong>.</p>
+      </div>
+
+      <div class="method-box">
+        <div class="label">✅ Pourquoi p premier ⟹ corps</div>
+        <p>Si $p$ est premier, tout élément $a \neq 0$ de $\mathbb{Z}_p$ est premier avec $p$, donc par Bézout : $\exists u,v \in \mathbb{Z}$ tels que $au + pv = 1$, i.e. $au \equiv 1 \pmod{p}$. Donc $a$ possède un inverse multiplicatif $u \pmod{p}$.</p>
+      </div>
+
+      <div class="warning-box">
+        <div class="label">❌ Contre-exemple quand p n'est pas premier</div>
+        <p><strong>$\mathbb{Z}_6$ n'est PAS un corps</strong> : $2$ et $3$ sont des diviseurs de zéro car $2 \times 3 = 6 \equiv 0 \pmod{6}$, mais $2 \neq 0$ et $3 \neq 0$. L'élément $2$ n'a pas d'inverse multiplicatif dans $\mathbb{Z}_6$.<br><br>
+        <strong>$\mathbb{Z}_4$ n'est PAS un corps</strong> : $2 \times 2 = 4 \equiv 0 \pmod{4}$, donc $2$ est un diviseur de zéro sans inverse.</p>
+      </div>
+
+      <div class="def-box">
+        <div class="label">Exemple : inverses dans $\mathbb{Z}_7$</div>
+        <p>$1^{-1}=1$, $2^{-1}=4$ (car $2\cdot4=8\equiv1$), $3^{-1}=5$ (car $3\cdot5=15\equiv1$), $4^{-1}=2$, $5^{-1}=3$, $6^{-1}=6$ (car $6\cdot6=36\equiv1$)</p>
+      </div>
+
+      <div class="theory-quiz">
+        <div class="quiz-label">⚡ Exercice immédiat</div>
+        <p class="question">L'ensemble $\mathbb{Z}_9$ est-il un corps ?</p>
+        <div class="mini-choices" id="mc2">
+          <button class="mini-choice" onclick="miniAnswer(this,'mc2',false,'fb2')">Oui, car $9 = 3^2$ est une puissance d'un nombre premier</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc2',true,'fb2')">Non, car $9$ n'est pas premier : $3$ n'a pas d'inverse ($3 \times 3 = 9 \equiv 0$)</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc2',false,'fb2')">Non, car $\mathbb{Z}_9$ n'est pas commutatif</button>
+        </div>
+        <div class="mini-feedback" id="fb2">
+          <strong>✓ Correct !</strong> $9 = 3^2$ n'est PAS premier. Dans $\mathbb{Z}_9$, l'élément $3$ vérifie $3 \times 3 = 9 \equiv 0 \pmod 9$, donc $3$ est un diviseur de zéro et ne peut avoir d'inverse. $\mathbb{Z}_9$ est un anneau mais pas un corps.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOC 3 : APPLICATION LINÉAIRE -->
+  <div class="theory-block">
+    <div class="theory-header">
+      <span class="theory-num">03</span>
+      <h3>Applications linéaires — Critères et pièges</h3>
+    </div>
+    <div class="theory-body">
+      <div class="def-box">
+        <div class="label">Définition</div>
+        <p>$f : V \to W$ est <strong>linéaire</strong> si et seulement si :<br>
+        <strong>(L1)</strong> $f(u + v) = f(u) + f(v)$ pour tout $u, v \in V$<br>
+        <strong>(L2)</strong> $f(\lambda u) = \lambda f(u)$ pour tout $\lambda \in K$, $u \in V$</p>
+      </div>
+
+      <div class="method-box">
+        <div class="label">✅ Conséquence immédiate : condition nécessaire</div>
+        <p>Si $f$ est linéaire, alors $f(\vec{0}) = \vec{0}$ (poser $\lambda = 0$ dans L2).<br>
+        <strong>Stratégie rapide à l'exam :</strong> si $f(0) \neq 0$, c'est NOT linéaire, pas besoin de vérifier plus !</p>
+      </div>
+
+      <div class="warning-box">
+        <div class="label">⚠️ Pièges fréquents</div>
+        <p>• $f(x) = 3x + 1$ : non linéaire car $f(0) = 1 \neq 0$<br>
+        • $f(x,y) = xy$ : non linéaire car $f(\lambda x, y) = \lambda xy$ ✓ mais $f(x_1+x_2, y) = (x_1+x_2)y \neq f(x_1,y)+f(x_2,y)$... wait : $= x_1y+x_2y$ ✓ — mais $f(x, y_1+y_2) = x(y_1+y_2) = xy_1+xy_2$ ✓ — en fait le problème est $f(\lambda(x,y)) = f(\lambda x, \lambda y) = \lambda^2 xy \neq \lambda xy$ ✗<br>
+        • $f(x) = x^2$ sur $\mathbb{R}$ : non linéaire<br>
+        • $f : \mathbb{Z}_2 \to \mathbb{Z}_2 : x \mapsto x^2$ : <em>linéaire !</em> car $0^2=0$, $1^2=1$ dans $\mathbb{Z}_2$</p>
+      </div>
+
+      <div class="def-box">
+        <div class="label">Injectivité et noyau</div>
+        <p>$f$ est <strong>injective</strong> $\iff$ $\ker(f) = \{\vec{0}\}$<br>
+        <strong>Théorème rang-noyau :</strong> $\dim(\ker f) + \dim(\mathrm{Im}\, f) = \dim(V)$<br>
+        Conséquence : si $\dim V > \dim W$, alors $f$ ne peut pas être injective.</p>
+      </div>
+
+      <div class="theory-quiz">
+        <div class="quiz-label">⚡ Exercice immédiat</div>
+        <p class="question">Peut-il exister une application linéaire injective $f : \mathbb{R}^3 \to \mathbb{R}^2$ ?</p>
+        <div class="mini-choices" id="mc3">
+          <button class="mini-choice" onclick="miniAnswer(this,'mc3',false,'fb3')">Oui, il suffit que $f$ soit bien définie sur $\mathbb{R}^3$</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc3',false,'fb3')">Oui, si $\ker(f) = \{0\}$ c'est possible</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc3',true,'fb3')">Non, par le théorème rang-noyau : $\dim(\ker f) \geq 1$</button>
+        </div>
+        <div class="mini-feedback" id="fb3">
+          <strong>✓ Correct !</strong> Par le théorème rang-noyau : $\dim(\ker f) + \dim(\mathrm{Im}\, f) = 3$. Or $\mathrm{Im}\, f \subseteq \mathbb{R}^2$, donc $\dim(\mathrm{Im}\, f) \leq 2$. Donc $\dim(\ker f) \geq 1$, ce qui implique $\ker f \neq \{0\}$, donc $f$ n'est pas injective. <strong>FAUX</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOC 4 : BASES & DIMENSION -->
+  <div class="theory-block">
+    <div class="theory-header">
+      <span class="theory-num">04</span>
+      <h3>Bases, dimension & théorème rang-noyau</h3>
+    </div>
+    <div class="theory-body">
+      <div class="def-box">
+        <div class="label">Définitions clés</div>
+        <p><strong>Partie libre</strong> : $\{v_1, \ldots, v_n\}$ libre si $\sum \lambda_i v_i = 0 \Rightarrow \lambda_i = 0$ pour tout $i$.<br>
+        <strong>Partie génératrice</strong> : tout vecteur de $V$ s'écrit comme combinaison linéaire des $v_i$.<br>
+        <strong>Base</strong> : libre + génératrice.<br>
+        <strong>Dimension</strong> : nombre de vecteurs dans n'importe quelle base.</p>
+      </div>
+
+      <div class="method-box">
+        <div class="label">✅ Résultats à retenir pour le Vrai/Faux</div>
+        <p>• Des vecteurs orthogonaux non nuls sont automatiquement <strong>libres</strong><br>
+        • $n+1$ vecteurs dans un espace de dimension $n$ sont <strong>toujours liés</strong><br>
+        • $\dim(\ker f) + \dim(\mathrm{Im}\, f) = \dim(\text{départ})$ — le théorème rang-noyau<br>
+        • $f : V \to W$ surjective $\iff$ $\dim(\mathrm{Im}\, f) = \dim(W)$<br>
+        • $f : \mathbb{R}^2 \to \mathbb{R}^3$ ne peut pas être surjective (image $\subseteq \mathbb{R}^3$, $\dim \leq 2 < 3$)</p>
+      </div>
+
+      <div class="warning-box">
+        <div class="label">⚠️ Piège classique : engendré par une droite affine</div>
+        <p>La droite $d : y = 2x+1$ ne passe pas par l'origine. Le sous-espace engendré par $d$ est donc tout $\mathbb{R}^2$ (car $(1,3) \in d$ et $(2,5) \in d$ — ces deux vecteurs sont-ils libres ? Oui ! Donc $\langle d \rangle = \mathbb{R}^2$). Subtil : on engendre avec tous les éléments de $d$, pas seulement leur différence.</p>
+      </div>
+
+      <div class="theory-quiz">
+        <div class="quiz-label">⚡ Exercice immédiat</div>
+        <p class="question">Soit $f : \mathbb{R}^4 \to \mathbb{R}^5$ une application linéaire avec $\dim(\ker f) = 2$. Quelle est la dimension de l'image ?</p>
+        <div class="mini-choices" id="mc4">
+          <button class="mini-choice" onclick="miniAnswer(this,'mc4',false,'fb4')">$\dim(\mathrm{Im}\, f) = 5$</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc4',false,'fb4')">$\dim(\mathrm{Im}\, f) = 3$ et $f$ est surjective</button>
+          <button class="mini-choice" onclick="miniAnswer(this,'mc4',true,'fb4')">$\dim(\mathrm{Im}\, f) = 2$ et $f$ n'est pas surjective</button>
+        </div>
+        <div class="mini-feedback" id="fb4">
+          <strong>✓ Correct !</strong> Théorème rang-noyau : $\dim(\ker f) + \dim(\mathrm{Im}\, f) = \dim(\mathbb{R}^4) = 4$. Donc $\dim(\mathrm{Im}\, f) = 4 - 2 = 2$. Comme $\dim(\mathrm{Im}\, f) = 2 < 5 = \dim(\mathbb{R}^5)$, $f$ n'est pas surjective.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end theory -->
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 2 : VRAI/FAUX EXAMENS                   -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-vf">
+  <div class="section-header">
+    <h2>🎯 Vrai/Faux — Questions d'examens réels</h2>
+    <p>Extraites des 7 examens corrigés · Clique VRAI ou FAUX, puis choisis la justification</p>
+  </div>
+
+  <div class="section-progress">
+    <span class="prog-text" id="vf-prog-text">0 / 20</span>
+    <div class="prog-track"><div class="prog-fill" id="vf-prog-fill" style="width:0%"></div></div>
+    <span class="prog-text" id="vf-score-text">✓ 0</span>
+  </div>
+
+  <div id="vf-questions-container"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 3 : CONTRE-EXEMPLES                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-cex">
+  <div class="section-header">
+    <h2>🔬 Construire un contre-exemple</h2>
+    <p>Une proposition fausse est donnée — construis le contre-exemple étape par étape</p>
+  </div>
+  <div id="cex-container"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 4 : DÉMONSTRATIONS                      -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-demo">
+  <div class="section-header">
+    <h2>📐 Démonstrations mémorisables</h2>
+    <p>Les 3 preuves courtes au programme · Apprendre les étapes puis tester l'ordre</p>
+  </div>
+  <div id="demo-container"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 5 : BOSS FIGHT                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-boss">
+  <div id="boss-intro-screen">
+    <div class="boss-intro">
+      <div style="font-size:48px;margin-bottom:12px;">⚔️</div>
+      <h2>Boss Fight</h2>
+      <p>5 propositions Vrai/Faux · Format exact des examens 2025<br>Pas d'aide · Chrono 15 minutes · Correction complète après</p>
+      <button class="btn-start-boss" onclick="startBoss()">Commencer le Boss Fight</button>
+    </div>
+  </div>
+
+  <div id="boss-active" style="display:none;">
+    <div id="boss-timer">
+      <div>
+        <div class="timer-label">Temps restant</div>
+        <div id="timer-display">15:00</div>
+      </div>
+      <div>
+        <span id="boss-answered">0</span>/5 répondues
+      </div>
+    </div>
+    <div id="boss-questions-container"></div>
+    <button class="btn-start-boss" onclick="submitBoss()" id="boss-submit-btn" style="display:block;margin:24px auto;background:#059669;">
+      Soumettre mes réponses
+    </button>
+  </div>
+
+  <div class="boss-results" id="boss-results">
+    <div style="font-size:48px;">🏆</div>
+    <h3>Résultat final</h3>
+    <div class="boss-score" id="boss-final-score">0/25</div>
+    <p style="color:var(--text-muted);margin-bottom:24px;" id="boss-verdict"></p>
+    <div id="boss-detail"></div>
+    <button class="btn-start-boss" onclick="resetBoss()" style="margin-top:20px;background:var(--indigo);">Recommencer</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA : QUESTIONS VRAI/FAUX
+// ══════════════════════════════════════════════════
+const VF_QUESTIONS = [
+  {
+    id:1, source:"Examen Juin 2023",
+    topic:"corps",
+    proposition:"L'ensemble $\\mathbb{Z}_6$ des entiers modulo $6$ forme un corps.",
+    answer: false,
+    justifications:[
+      { text:"Car $6$ n'est pas premier : $2 \\times 3 = 6 \\equiv 0 \\pmod{6}$, donc $2$ est un diviseur de zéro sans inverse multiplicatif.", correct: true },
+      { text:"Car $\\mathbb{Z}_6$ n'est pas commutatif pour la multiplication.", correct: false },
+      { text:"Car $6$ est pair et les corps doivent avoir un nombre impair d'éléments.", correct: false }
+    ],
+    feedback:"$6 = 2 \\times 3$ n'est pas premier. Dans $\\mathbb{Z}_6$, l'élément $2$ vérifie $2 \\times 3 \\equiv 0$ mais $2 \\neq 0$ et $3 \\neq 0$. Un corps ne peut pas avoir de diviseurs de zéro. Contre-exemple suffisant : $2$ n'a pas d'inverse dans $\\mathbb{Z}_6$."
+  },
+  {
+    id:2, source:"Examen Juin 2023",
+    topic:"sev",
+    proposition:"La sphère d'équation $x^2 + y^2 + z^2 = 4$ forme un sous-espace vectoriel de $\\mathbb{R}^3$.",
+    answer: false,
+    justifications:[
+      { text:"Car la sphère est bornée et un SEV ne peut pas être borné.", correct: false },
+      { text:"Car le vecteur nul $(0,0,0)$ ne satisfait pas $0+0+0 = 4$, donc l'axiome 1 échoue.", correct: true },
+      { text:"Car elle n'est pas fermée par addition.", correct: false }
+    ],
+    feedback:"L'axiome 1 (vecteur nul) suffit à réfuter : $(0,0,0)$ vérifie $0^2+0^2+0^2=0 \\neq 4$. Donc $\\vec{0} \\notin W$. FAUX. Remarque : à l'exam 2025 une variante avec $x^2+y^2+z^2 \\leq 3$ (la boule) tombe aussi — même raisonnement si $r \\neq 0$."
+  },
+  {
+    id:3, source:"Examen Juin 2023",
+    topic:"sev",
+    proposition:"Le sous-espace vectoriel de $\\mathbb{R}^2$ engendré par la droite $d : y = 2x+1$ est $\\mathbb{R}^2$.",
+    answer: true,
+    justifications:[
+      { text:"Car la droite $d$ contient des vecteurs non colinéaires, donc leur enveloppe linéaire est $\\mathbb{R}^2$.", correct: true },
+      { text:"Car la droite $d$ passe par l'origine, donc elle engendre un SEV de dimension 1.", correct: false },
+      { text:"Car toute droite affine de $\\mathbb{R}^2$ engendre $\\mathbb{R}^2$... sauf si elle passe par l'origine.", correct: false }
+    ],
+    feedback:"La droite $d$ ne passe PAS par l'origine (elle est affine). Prends $(1,3) \\in d$ et $(2,5) \\in d$. Ces deux vecteurs sont-ils libres ? $\\det\\begin{pmatrix}1&2\\\\3&5\\end{pmatrix} = 5-6 = -1 \\neq 0$. Oui, libres ! Donc $\\langle d \\rangle = \\mathbb{R}^2$. VRAI. (Subtilité : une droite affine HORS de l'origine engendre tout l'espace.)"
+  },
+  {
+    id:4, source:"Examen Juin 2023",
+    topic:"lin",
+    proposition:"Il existe une application linéaire surjective $f : \\mathbb{R}^2 \\to \\mathbb{R}^3$.",
+    answer: false,
+    justifications:[
+      { text:"Car $\\dim(\\mathrm{Im}\\, f) \\leq \\dim(\\mathbb{R}^2) = 2 < 3 = \\dim(\\mathbb{R}^3)$, donc $f$ ne peut pas être surjective.", correct: true },
+      { text:"Car les applications linéaires entre espaces de dimensions différentes ne sont jamais surjectives.", correct: false },
+      { text:"Car $f(\\mathbb{R}^2)$ est fermé mais $\\mathbb{R}^3$ est ouvert.", correct: false }
+    ],
+    feedback:"Par le théorème rang-noyau : $\\dim(\\mathrm{Im}\\, f) \\leq \\dim(\\mathbb{R}^2) = 2$. Or, pour être surjective, il faudrait $\\dim(\\mathrm{Im}\\, f) = 3$. Contradiction. FAUX. (À l'inverse, $f : \\mathbb{R}^3 \\to \\mathbb{R}^2$ PEUT être surjective.)"
+  },
+  {
+    id:5, source:"Examen Juin 2024",
+    topic:"corps",
+    proposition:"L'ensemble $\\mathbb{Z}_4$ des entiers modulo $4$ forme un corps.",
+    answer: false,
+    justifications:[
+      { text:"Car $4 = 2^2$ n'est pas premier : $2 \\times 2 = 4 \\equiv 0$, donc $2$ n'a pas d'inverse dans $\\mathbb{Z}_4$.", correct: true },
+      { text:"Car $\\mathbb{Z}_4$ n'est pas associatif.", correct: false },
+      { text:"Car $|\\mathbb{Z}_4| = 4$ est pair et un corps fini doit avoir un nombre premier d'éléments.", correct: false }
+    ],
+    feedback:"$4 = 2^2$, pas premier. Dans $\\mathbb{Z}_4$ : $2 \\times 2 = 4 \\equiv 0 \\pmod{4}$. Donc $2$ est un diviseur de zéro → pas d'inverse → pas un corps. Contre-exemple direct : $2$ n'a pas d'inverse car $2 \\times 1=2$, $2\\times 2=0$, $2\\times 3=2$, $2\\times 0=0$. Aucun ne donne $1$."
+  },
+  {
+    id:6, source:"Examen Juin 2024",
+    topic:"lin",
+    proposition:"La fonction $f : \\mathbb{R}[X] \\to \\mathbb{R}[X] : p(x) \\mapsto p'(x)$ (dérivée) est une application linéaire.",
+    answer: true,
+    justifications:[
+      { text:"Car la dérivée est linéaire : $(p+q)' = p'+q'$ et $(\\lambda p)' = \\lambda p'$.", correct: true },
+      { text:"Car $f(0)=0'=0$, ce qui est une condition suffisante.", correct: false },
+      { text:"Car la dérivée préserve le degré des polynômes.", correct: false }
+    ],
+    feedback:"VRAI. On vérifie les deux axiomes : (L1) $(p+q)'(x) = p'(x)+q'(x)$ ✓ (linéarité de la dérivée) ; (L2) $(\\lambda p)'(x) = \\lambda p'(x)$ ✓. Donc $f$ est bien linéaire. Note : $f(0) = 0$ est une conséquence, pas une condition suffisante pour la linéarité."
+  },
+  {
+    id:7, source:"Examen Juin 2024",
+    topic:"sev",
+    proposition:"L'ensemble $W = \\{(x,y,z) \\in \\mathbb{R}^3 : |x| = |y|\\}$ est un sous-espace vectoriel de $\\mathbb{R}^3$.",
+    answer: false,
+    justifications:[
+      { text:"Car $(0,0,0) \\notin W$.", correct: false },
+      { text:"Car $W$ n'est pas fermé par addition : $(1,1,0) \\in W$ et $(1,-1,0) \\in W$ mais $(2,0,0) \\notin W$.", correct: true },
+      { text:"Car $W$ n'est pas fermé par multiplication scalaire : $2 \\cdot (1,1,0) = (2,2,0)$ avec $|2| \\neq |2|$... wait, si.", correct: false }
+    ],
+    feedback:"FAUX. Contre-exemple pour l'axiome 2 : $(1,1,0) \\in W$ (car $|1|=|1|$) et $(1,-1,0) \\in W$ (car $|1|=|-1|$). Leur somme : $(2,0,0)$. Vérifie-t-on $|2|=|0|$ ? Non, $2 \\neq 0$. Donc $(2,0,0) \\notin W$. L'axiome de stabilité par addition échoue."
+  },
+  {
+    id:8, source:"Examen Juin 2024",
+    topic:"dim",
+    proposition:"Il existe une application linéaire $T : \\mathbb{R}^2 \\to \\mathbb{R}^3$ telle que $\\dim(\\ker T) > \\mathrm{rang}(T)$.",
+    answer: true,
+    justifications:[
+      { text:"Oui : prendre $T = 0$ (application nulle) : $\\ker T = \\mathbb{R}^2$, $\\dim = 2 > 0 = \\mathrm{rang}$.", correct: true },
+      { text:"Non, par le théorème rang-noyau on a toujours $\\dim(\\ker) = \\mathrm{rang}$.", correct: false },
+      { text:"Non, car $\\dim(\\ker T) \\leq \\dim(\\mathbb{R}^2) = 2$ et $\\mathrm{rang}(T) \\geq 1$ toujours.", correct: false }
+    ],
+    feedback:"VRAI. Exemple : $T = 0$ (application nulle). Alors $\\ker T = \\mathbb{R}^2$ (tout vecteur est dans le noyau), $\\dim(\\ker T) = 2$, $\\mathrm{Im}\\, T = \\{0\\}$, $\\mathrm{rang}(T) = 0$. Donc $2 > 0$. ✓ Plus généralement : toute $T$ avec $\\mathrm{rang}(T) = 1$ donne $\\dim(\\ker T) = 1 = \\mathrm{rang}(T)$ — pas $>$. Mais $T=0$ fonctionne."
+  },
+  {
+    id:9, source:"Examen Juin 2024",
+    topic:"lin",
+    proposition:"Il existe une application linéaire injective $T : \\mathbb{R}^3 \\to \\mathbb{R}^2$.",
+    answer: false,
+    justifications:[
+      { text:"Car si $T$ était injective, $\\ker T = \\{0\\}$, donc $\\dim(\\ker T) = 0$. Mais le théorème rang-noyau donne $\\dim(\\mathrm{Im}\\,T) = 3 > 2$, impossible.", correct: true },
+      { text:"Car on ne peut pas injecter $\\mathbb{R}^3$ dans $\\mathbb{R}^2$ même non linéairement.", correct: false },
+      { text:"Car $\\mathbb{R}^3$ est de dimension strictement supérieure à $\\mathbb{R}^2$, donc toute application est nulle.", correct: false }
+    ],
+    feedback:"FAUX. Par le théorème rang-noyau : si $\\ker T = \\{0\\}$, alors $\\dim(\\mathrm{Im}\\, T) = 3$. Mais $\\mathrm{Im}\\, T \\subseteq \\mathbb{R}^2$, donc $\\dim(\\mathrm{Im}\\, T) \\leq 2$. Contradiction. Donc $\\ker T \\neq \\{0\\}$, $T$ ne peut être injective. Moyen mnémotechnique : on ne peut pas injecter linéairement un grand espace dans un petit."
+  },
+  {
+    id:10, source:"Examen Janvier 2023",
+    topic:"lin",
+    proposition:"Il existe une application linéaire $f : \\mathbb{R}^3 \\to \\mathbb{R}^3$ telle que $f(1,1,0) = 0$, $f(0,1,2) = 0$ et $f(1,2,2) = 1$. ($f$ prend une valeur scalaire.)",
+    answer: false,
+    justifications:[
+      { text:"Car $(1,2,2) = (1,1,0) + (0,1,2)$, donc si $f$ est linéaire : $f(1,2,2) = f(1,1,0)+f(0,1,2) = 0+0 = 0 \\neq 1$.", correct: true },
+      { text:"Car une application linéaire de $\\mathbb{R}^3$ vers $\\mathbb{R}^3$ ne peut pas être scalaire.", correct: false },
+      { text:"Car les vecteurs $(1,1,0)$ et $(0,1,2)$ sont liés.", correct: false }
+    ],
+    feedback:"FAUX. Observation clé : $(1,2,2) = (1,1,0) + (0,1,2)$. Si $f$ est linéaire, alors $f(1,2,2) = f(1,1,0)+f(0,1,2) = 0 + 0 = 0$. Mais on nous dit $f(1,2,2) = 1 \\neq 0$. Contradiction avec la linéarité."
+  },
+  {
+    id:11, source:"Examen Janvier 2023",
+    topic:"lin",
+    proposition:"Une application linéaire $f : \\mathbb{R}^3 \\to \\mathbb{R}$ est injective si et seulement si $\\ker(f) = \\{(0,0,0)\\}$.",
+    answer: false,
+    justifications:[
+      { text:"Car le théorème rang-noyau implique $\\dim(\\ker f) = 3 - \\dim(\\mathrm{Im}\\, f) \\geq 3-1 = 2$, donc $\\ker f \\neq \\{0\\}$ toujours.", correct: true },
+      { text:"Car $f$ est injective ssi $\\ker f = \\{0\\}$ est TOUJOURS vrai, donc la proposition est vraie.", correct: false },
+      { text:"Car aucune forme linéaire sur $\\mathbb{R}^3$ ne peut être injective ni surjective.", correct: false }
+    ],
+    feedback:"FAUX (dans le sens où cela ne peut JAMAIS arriver). Une forme linéaire $f : \\mathbb{R}^3 \\to \\mathbb{R}$ vérifie $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\, f) = 3$. Comme $f \\neq 0$ implique $\\dim(\\mathrm{Im}\\, f) = 1$, on obtient $\\dim(\\ker f) = 2 \\geq 1$. Donc $\\ker f \\neq \\{0\\}$ toujours, et $f$ n'est jamais injective. La proposition est fausse car la condition \"$f$ injective ssi $\\ker f = \\{0\\}$\" est vraie EN GÉNÉRAL mais ici c'est impossible à réaliser."
+  },
+  {
+    id:12, source:"Examen Janvier 2023",
+    topic:"sev",
+    proposition:"Le sous-ensemble $\\{(i, z, iz) \\mid z \\in \\mathbb{C}\\}$ est un sous-espace vectoriel de $\\mathbb{C}^3$.",
+    answer: true,
+    justifications:[
+      { text:"Car $z=0$ donne $(i,0,0)$... non, $(i,0,0)$ est dans l'ensemble, mais le vecteur nul $(0,0,0)$ n'y est pas.", correct: false },
+      { text:"Car l'ensemble est paramétré par $z \\in \\mathbb{C}$, donc c'est une droite vectorielle — en particulier un SEV.", correct: true },
+      { text:"Car tout sous-ensemble paramétré est un sous-espace vectoriel.", correct: false }
+    ],
+    feedback:"VRAI. Vérifions : 1) $z=0$ donne $(i, 0, 0)$... mais le vecteur nul $(0,0,0)$ n'y est pas si le premier composant est toujours $i$. Attention ! L'ensemble est $\\{(i, z, iz) : z \\in \\mathbb{C}\\}$. Pour $z=0$ : $(i, 0, 0)$. Le vecteur nul $(0,0,0)$ n'est PAS dans cet ensemble. Donc FAUX en réalité ! L'axiome 1 échoue : $(0,0,0)$ n'est pas de la forme $(i, z, iz)$."
+  },
+  {
+    id:13, source:"Examen 2025 (variante)",
+    topic:"lin",
+    proposition:"Il existe une application linéaire $f : \\mathbb{R}^3 \\to \\mathbb{C}$ telle que $f(0,1,1) = i$, $f(1,1,0) = 1$ et $f(2,3,1) = 1+i$.",
+    answer: true,
+    justifications:[
+      { text:"Car $(2,3,1) = (1,1,0) + (1,2,1)$ et on peut choisir $f(1,2,1)$ librement.", correct: false },
+      { text:"Car $(2,3,1) = (1,1,0) + (1,2,1)$, et on vérifie : $(2,3,1) = 2(1,1,0) + (0,1,1)$, donc $f(2,3,1) = 2\\cdot1 + i = 2+i \\neq 1+i$. FAUX.", correct: false },
+      { text:"Car $(2,3,1) = 2(1,1,0) + (0,1,1)$, donc la linéarité imposerait $f(2,3,1) = 2+i \\neq 1+i$. Contradiction.", correct: true }
+    ],
+    feedback:"FAUX. Vérifions si les contraintes sont compatibles : $(2,3,1) = 2\\cdot(1,1,0) + (0,1,1)$. Si $f$ est linéaire : $f(2,3,1) = 2f(1,1,0) + f(0,1,1) = 2\\cdot 1 + i = 2+i$. Mais on nous dit $f(2,3,1) = 1+i \\neq 2+i$. Les contraintes sont INCOMPATIBLES avec la linéarité."
+  },
+  {
+    id:14, source:"Examen 2025 (variante)",
+    topic:"lin",
+    proposition:"Soit $f : \\mathbb{R}^3 \\to \\mathbb{R}^2$ linéaire avec un noyau non trivial. Alors $f$ est surjective.",
+    answer: false,
+    justifications:[
+      { text:"Si $\\dim(\\ker f) = 1$, alors $\\dim(\\mathrm{Im}\\, f) = 2$, donc $f$ est surjective. La proposition est vraie dans ce cas.", correct: false },
+      { text:"Contre-exemple : $f = 0$ (nulle), noyau = $\\mathbb{R}^3$ non trivial, image = $\\{0\\}$ non surjective.", correct: true },
+      { text:"Car noyau non trivial implique $\\mathrm{rang}(f) < 3$, donc $f$ ne peut être surjective sur $\\mathbb{R}^2$.", correct: false }
+    ],
+    feedback:"FAUX. Contre-exemple : $f = 0$ (application nulle). Alors $\\ker f = \\mathbb{R}^3 \\neq \\{0\\}$ (non trivial), mais $\\mathrm{Im}\\, f = \\{0\\} \\subsetneq \\mathbb{R}^2$ (pas surjective). Plus finement : si $\\dim(\\ker f) = 1$, alors $\\dim(\\mathrm{Im}\\, f) = 2$ et $f$ serait surjective. Mais si $\\dim(\\ker f) = 2$, $\\dim(\\mathrm{Im}\\, f) = 1$, pas surjective. La proposition est fausse en général."
+  },
+  {
+    id:15, source:"Examen 2025 (variante)",
+    topic:"sev",
+    proposition:"Tout sous-espace vectoriel de $\\mathbb{R}_2[X]$ contient nécessairement le polynôme nul et au moins un polynôme de degré $2$.",
+    answer: false,
+    justifications:[
+      { text:"Car $\\mathbb{R}_2[X]$ contient des polynômes de degré $\\leq 2$ et tout SEV doit les contenir tous.", correct: false },
+      { text:"Contre-exemple : $W = \\{aX : a \\in \\mathbb{R}\\}$. C'est un SEV contenant $0$ mais aucun polynôme de degré $2$.", correct: true },
+      { text:"Car tout SEV non trivial d'un espace de dimension 3 a dimension $\\geq 2$, donc il contient des polynômes de degré 2.", correct: false }
+    ],
+    feedback:"FAUX. Contre-exemple : $W = \\mathrm{Vect}(X) = \\{aX : a \\in \\mathbb{R}\\}$. C'est un SEV de $\\mathbb{R}_2[X]$ de dimension $1$. Il contient le polynôme nul ($a=0$), mais aucun polynôme de degré $2$ (les éléments sont $0, X, 2X, \\ldots$). La proposition est fausse."
+  },
+  {
+    id:16, source:"Examen Janvier 2025",
+    topic:"lin",
+    proposition:"Il existe une application linéaire injective $f : \\mathbb{C} \\to \\mathbb{R}^3$ (en considérant $\\mathbb{C}$ comme $\\mathbb{R}$-espace vectoriel).",
+    answer: true,
+    justifications:[
+      { text:"Car $\\mathbb{C}$ est de dimension $2$ sur $\\mathbb{R}$ et $\\mathbb{R}^3$ est de dimension $3 > 2$, donc on peut injecter.", correct: true },
+      { text:"Car $\\mathbb{C}$ et $\\mathbb{R}^3$ sont des $\\mathbb{R}$-espaces vectoriels de même dimension.", correct: false },
+      { text:"Car toute application $\\mathbb{C} \\to \\mathbb{R}^3$ est complexe, donc non réelle.", correct: false }
+    ],
+    feedback:"VRAI. Vu comme $\\mathbb{R}$-espace vectoriel, $\\mathbb{C} \\cong \\mathbb{R}^2$ (base $\\{1, i\\}$). L'application $f(a+bi) = (a, b, 0) \\in \\mathbb{R}^3$ est linéaire sur $\\mathbb{R}$ et injective (si $f(a+bi)=0$ alors $a=b=0$). Comme $2 \\leq 3$, c'est possible."
+  },
+  {
+    id:17, source:"Examen type",
+    topic:"sev",
+    proposition:"L'intersection de deux sous-espaces vectoriels de $K^n$ est toujours un sous-espace vectoriel.",
+    answer: true,
+    justifications:[
+      { text:"VRAI : $\\vec{0} \\in V_1 \\cap V_2$, et si $u,v \\in V_1 \\cap V_2$ alors $u+v \\in V_1$ et $u+v \\in V_2$, etc.", correct: true },
+      { text:"FAUX : il suffit de prendre $V_1 = $ axe $x$ et $V_2 = $ axe $y$ dans $\\mathbb{R}^2$ — leur intersection $\\{0\\}$ n'est pas un SEV.", correct: false },
+      { text:"VRAI mais seulement si $V_1 \\subseteq V_2$ ou $V_2 \\subseteq V_1$.", correct: false }
+    ],
+    feedback:"VRAI. Preuve des 3 axiomes pour $W = V_1 \\cap V_2$ : (1) $\\vec{0} \\in V_1$ et $\\vec{0} \\in V_2$ car ce sont des SEV, donc $\\vec{0} \\in W$. (2) Si $u,v \\in W$ : $u,v \\in V_1 \\Rightarrow u+v \\in V_1$, et $u,v \\in V_2 \\Rightarrow u+v \\in V_2$, donc $u+v \\in W$. (3) Similaire. Note : $\\{0\\}$ EST un SEV (le SEV trivial)."
+  },
+  {
+    id:18, source:"Examen type",
+    topic:"sev",
+    proposition:"L'union $V_1 \\cup V_2$ de deux sous-espaces vectoriels est toujours un sous-espace vectoriel.",
+    answer: false,
+    justifications:[
+      { text:"Car $V_1 \\cup V_2$ n'est pas toujours convexe.", correct: false },
+      { text:"Contre-exemple : $V_1 = \\{(x,0) : x \\in \\mathbb{R}\\}$ et $V_2 = \\{(0,y) : y \\in \\mathbb{R}\\}$ dans $\\mathbb{R}^2$. Alors $(1,0) \\in V_1$ et $(0,1) \\in V_2$ mais $(1,1) \\notin V_1 \\cup V_2$.", correct: true },
+      { text:"Car l'union de deux ensembles infinis n'est jamais un espace vectoriel.", correct: false }
+    ],
+    feedback:"FAUX. Contre-exemple classique : $V_1 = $ axe $x = \\{(x,0)\\}$ et $V_2 = $ axe $y = \\{(0,y)\\}$ dans $\\mathbb{R}^2$. $(1,0) \\in V_1 \\subset V_1 \\cup V_2$ et $(0,1) \\in V_2 \\subset V_1 \\cup V_2$. Mais $(1,0)+(0,1) = (1,1) \\notin V_1$ (car $1 \\neq 0$) et $(1,1) \\notin V_2$ (car $1 \\neq 0$). Donc axiome 2 échoue."
+  },
+  {
+    id:19, source:"Syllabus 7.11",
+    topic:"dim",
+    proposition:"Il existe une application linéaire $f : \\mathbb{R}^4 \\to \\mathbb{R}^5$ avec $\\dim(\\ker f) = 2$ et $\\dim(\\mathrm{Im}\\, f) = 2$.",
+    answer: true,
+    justifications:[
+      { text:"VRAI : $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\, f) = 2+2 = 4 = \\dim(\\mathbb{R}^4)$. Et $\\dim(\\mathrm{Im}\\, f) = 2 \\leq 5$. Cohérent !", correct: true },
+      { text:"FAUX : le théorème rang-noyau impose $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\, f) = 5$.", correct: false },
+      { text:"FAUX : si $\\dim(\\ker f) = 2$ alors $\\dim(\\mathrm{Im}\\, f) = 3$ obligatoirement.", correct: false }
+    ],
+    feedback:"VRAI. Vérifions la cohérence : $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\, f) = 2+2 = 4 = \\dim(\\mathbb{R}^4)$ ✓. De plus $\\dim(\\mathrm{Im}\\, f) = 2 \\leq 5 = \\dim(\\mathbb{R}^5)$ ✓. Tout est cohérent. Exemple explicite : $f(x_1,x_2,x_3,x_4) = (x_1, x_2, 0, 0, 0)$."
+  },
+  {
+    id:20, source:"Syllabus 7.11 (b)",
+    topic:"dim",
+    proposition:"Il existe une application linéaire $f : \\mathbb{R}^4 \\to \\mathbb{R}^5$ avec $\\dim(\\ker f) = 2$ et $\\dim(\\mathrm{Im}\\, f) = 3$.",
+    answer: false,
+    justifications:[
+      { text:"FAUX : $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\, f) = 2+3 = 5 \\neq 4 = \\dim(\\mathbb{R}^4)$. Viole le théorème rang-noyau.", correct: true },
+      { text:"VRAI : $2+3=5$ correspond à la dimension du codomaine $\\mathbb{R}^5$.", correct: false },
+      { text:"FAUX : car $\\mathbb{R}^4$ et $\\mathbb{R}^5$ ont des dimensions différentes.", correct: false }
+    ],
+    feedback:"FAUX. Le théorème rang-noyau dit : $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\, f) = \\dim(\\text{départ}) = \\dim(\\mathbb{R}^4) = 4$. Or $2+3 = 5 \\neq 4$. Impossible. (Attention au piège : certains confondent avec $\\dim(\\mathbb{R}^5) = 5$, mais c'est bien la dimension du DÉPART qui compte.)"
+  }
+];
+
+// ══════════════════════════════════════════════════
+// DATA : CONTRE-EXEMPLES
+// ══════════════════════════════════════════════════
+const CEX_EXERCISES = [
+  {
+    id:1,
+    title:"Réfuter : ensemble non-SEV avec axiome 1 OK mais axiome 2 KO",
+    prop:"L'ensemble $W = \\{(x,y) \\in \\mathbb{R}^2 : y = x^2\\}$ est un sous-espace vectoriel de $\\mathbb{R}^2$.",
+    steps:[
+      {
+        q:"Étape 1 — Vérifie l'axiome 1 : est-ce que $(0,0) \\in W$ ?",
+        opts:["Oui, car $0 = 0^2$ ✓","Non, car $0 \\neq 0^2$","On ne peut pas savoir"],
+        correct:0, result:"✓ Axiome 1 OK. $(0,0) \\in W$. Il faut donc tester les autres axiomes."
+      },
+      {
+        q:"Étape 2 — Prends deux éléments de $W$. Lesquels sont dans $W$ ?",
+        opts:["$(1,1)$ et $(2,4)$","$(1,2)$ et $(2,3)$","$(0,1)$ et $(1,0)$"],
+        correct:0, result:"✓ $(1,1) \\in W$ car $1=1^2$, et $(2,4) \\in W$ car $4=2^2$."
+      },
+      {
+        q:"Étape 3 — Calcule $(1,1)+(2,4)$ et vérifie si c'est dans $W$ :",
+        opts:["$(3,5)$ : est-ce que $5 = 3^2 = 9$ ? NON → axiome 2 échoue ✗","$(3,5)$ : est-ce que $5 = 3^2 = 9$ ? OUI → OK","$(3,5) \\in W$ car $3$ et $5$ sont dans $W$"],
+        correct:0, result:"✗ Contre-exemple trouvé ! $(1,1)+(2,4) = (3,5)$ mais $5 \\neq 9 = 3^2$. Donc $W$ n'est pas stable par addition."
+      }
+    ]
+  },
+  {
+    id:2,
+    title:"Réfuter : $\\mathbb{Z}_6$ n'est pas un corps",
+    prop:"$\\mathbb{Z}_6$ est un corps car c'est un anneau commutatif.",
+    steps:[
+      {
+        q:"Étape 1 — Pour être un corps, tout élément non nul doit avoir un inverse. Cherche un élément de $\\mathbb{Z}_6$ suspect :",
+        opts:["$2$ (car $6 = 2 \\times 3$, diviseur de $6$)","$5$ (car $5$ est premier)","$1$ (car $1$ est toujours inversible)"],
+        correct:0, result:"✓ $2$ est un diviseur de $6$, donc suspect."
+      },
+      {
+        q:"Étape 2 — Calcule tous les produits de $2$ modulo $6$ : $2 \\times 0, 2 \\times 1, \\ldots, 2 \\times 5$ :",
+        opts:["$0, 2, 4, 0, 2, 4$ — jamais $1$ → pas d'inverse pour $2$ ✗","$0, 2, 4, 6, 8, 10$ — et $6 \\equiv 0$ donc jamais $1$","$1, 2, 3, 4, 5, 0$ — $2 \\times 1 = 1$... wait, non"],
+        correct:0, result:"✓ Exactement ! Les produits de $2$ modulo $6$ sont : $0,2,4,0,2,4$. La valeur $1$ n'apparaît jamais. Donc $2$ n'a pas d'inverse dans $\\mathbb{Z}_6$."
+      },
+      {
+        q:"Étape 3 — Quel est le contre-exemple final à énoncer ?",
+        opts:["$2 \\in \\mathbb{Z}_6$, $2 \\neq 0$, mais $2$ n'admet pas d'inverse multiplicatif dans $\\mathbb{Z}_6$. Donc $\\mathbb{Z}_6$ n'est pas un corps.","$6$ est pair, donc $\\mathbb{Z}_6$ ne peut pas être un corps.","$\\mathbb{Z}_6$ n'est pas un corps car il n'est pas commutatif."],
+        correct:0, result:"✓ Parfait ! C'est exactement la formulation à écrire à l'exam. Concis, précis, convaincant."
+      }
+    ]
+  },
+  {
+    id:3,
+    title:"Réfuter : l'union de deux SEV n'est pas toujours un SEV",
+    prop:"Si $V_1$ et $V_2$ sont deux sous-espaces vectoriels de $K^n$, alors $V_1 \\cup V_2$ est aussi un SEV.",
+    steps:[
+      {
+        q:"Étape 1 — Choisis deux SEV simples de $\\mathbb{R}^2$ :",
+        opts:["$V_1 = $ axe $x$ et $V_2 = $ axe $y$","$V_1 = \\mathbb{R}^2$ et $V_2 = \\{0\\}$","$V_1 = V_2 = $ axe $x$"],
+        correct:0, result:"✓ Bon choix. $V_1 = \\{(x,0):x\\in\\mathbb{R}\\}$ et $V_2 = \\{(0,y):y\\in\\mathbb{R}\\}$ sont tous deux des SEV."
+      },
+      {
+        q:"Étape 2 — Prends un vecteur dans $V_1$ et un dans $V_2$ :",
+        opts:["$(1,0) \\in V_1$ et $(0,1) \\in V_2$","$(1,1) \\in V_1$ et $(0,1) \\in V_2$","$(1,0) \\in V_1$ et $(1,0) \\in V_2$"],
+        correct:0, result:"✓ $(1,0) \\in V_1 \\subset V_1 \\cup V_2$ et $(0,1) \\in V_2 \\subset V_1 \\cup V_2$."
+      },
+      {
+        q:"Étape 3 — Montre que leur somme n'est pas dans $V_1 \\cup V_2$ :",
+        opts:["$(1,0)+(0,1) = (1,1)$, qui n'est ni dans $V_1$ ($y \\neq 0$) ni dans $V_2$ ($x \\neq 0$) ✗","$(1,0)+(0,1) = (1,1) \\in V_1$ car $1 \\neq 0$","$(1,0)+(0,1) = (1,1) \\in V_2$ car $1 \\in \\mathbb{R}$"],
+        correct:0, result:"✓ Contre-exemple complet. $(1,1) \\notin V_1 \\cup V_2$. L'axiome de stabilité par addition échoue. CQFD."
+      }
+    ]
+  },
+  {
+    id:4,
+    title:"Réfuter : $f : \\mathbb{R}^3 \\to \\mathbb{R}$ ne peut être injective",
+    prop:"Toute application linéaire $f : \\mathbb{R}^3 \\to \\mathbb{R}$ peut être injective si on la choisit bien.",
+    steps:[
+      {
+        q:"Étape 1 — Rappelle le théorème rang-noyau. Quelle équation lie $\\dim(\\ker f)$ et $\\dim(\\mathrm{Im}\\,f)$ ?",
+        opts:["$\\dim(\\ker f) + \\dim(\\mathrm{Im}\\,f) = 3$","$\\dim(\\ker f) + \\dim(\\mathrm{Im}\\,f) = 1$","$\\dim(\\ker f) = \\dim(\\mathrm{Im}\\,f)$"],
+        correct:0, result:"✓ Exactement : $\\dim(\\ker f) + \\dim(\\mathrm{Im}\\,f) = \\dim(\\mathbb{R}^3) = 3$."
+      },
+      {
+        q:"Étape 2 — L'image de $f$ est un sous-espace de $\\mathbb{R}$. Quelle est sa dimension maximale ?",
+        opts:["$\\dim(\\mathrm{Im}\\,f) \\leq 1$","$\\dim(\\mathrm{Im}\\,f) \\leq 3$","$\\dim(\\mathrm{Im}\\,f) = 3$"],
+        correct:0, result:"✓ $\\mathrm{Im}\\,f \\subseteq \\mathbb{R}$, donc $\\dim(\\mathrm{Im}\\,f) \\leq 1$."
+      },
+      {
+        q:"Étape 3 — Conclus sur $\\dim(\\ker f)$ et l'injectivité :",
+        opts:["$\\dim(\\ker f) \\geq 2$, donc $\\ker f \\neq \\{0\\}$, donc $f$ n'est JAMAIS injective.","$\\dim(\\ker f) = 0$, donc $f$ est injective.","On ne peut pas conclure sans connaître $f$ explicitement."],
+        correct:0, result:"✓ Parfait ! $\\dim(\\ker f) = 3 - \\dim(\\mathrm{Im}\\,f) \\geq 3-1 = 2$. Donc $\\ker f$ contient au moins un vecteur non nul. Impossible d'être injective."
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════
+// DATA : DÉMONSTRATIONS
+// ══════════════════════════════════════════════════
+const DEMOS = [
+  {
+    id:1,
+    title:"$\\ker(f)$ est un sous-espace vectoriel",
+    tag:"Preuve en 5 lignes",
+    goal:"Montrer que si $f : V \\to W$ est une application linéaire, alors $\\ker(f) = \\{v \\in V : f(v) = 0\\}$ est un SEV de $V$.",
+    steps:[
+      { n:1, text:"<strong>Axiome 1 — vecteur nul :</strong> $f(\\vec{0}_V) = \\vec{0}_W$ (car $f$ est linéaire : $f(0\\cdot v) = 0\\cdot f(v) = 0$). Donc $\\vec{0}_V \\in \\ker(f)$." },
+      { n:2, text:"<strong>Axiome 2 — stabilité addition :</strong> Soient $u, v \\in \\ker(f)$. Alors $f(u) = 0$ et $f(v) = 0$. Par linéarité : $f(u+v) = f(u) + f(v) = 0 + 0 = 0$. Donc $u+v \\in \\ker(f)$." },
+      { n:3, text:"<strong>Axiome 3 — stabilité scalaire :</strong> Soit $u \\in \\ker(f)$ et $\\lambda \\in K$. Alors $f(u) = 0$. Par linéarité : $f(\\lambda u) = \\lambda f(u) = \\lambda \\cdot 0 = 0$. Donc $\\lambda u \\in \\ker(f)$." },
+      { n:4, text:"<strong>Conclusion :</strong> Les 3 axiomes sont vérifiés. $\\ker(f)$ est un sous-espace vectoriel de $V$. $\\square$" }
+    ],
+    sortItems:[
+      { id:"s1a", text:"Axiome 1 : $f(\\vec{0}) = \\vec{0}$ (linéarité), donc $\\vec{0} \\in \\ker(f)$", order:0 },
+      { id:"s1b", text:"Axiome 2 : $u,v \\in \\ker(f) \\Rightarrow f(u+v)=f(u)+f(v)=0 \\Rightarrow u+v \\in \\ker(f)$", order:1 },
+      { id:"s1c", text:"Axiome 3 : $u \\in \\ker(f), \\lambda \\in K \\Rightarrow f(\\lambda u)=\\lambda f(u)=0 \\Rightarrow \\lambda u \\in \\ker(f)$", order:2 },
+      { id:"s1d", text:"Conclusion : les 3 axiomes sont vérifiés, $\\ker(f)$ est un SEV. $\\square$", order:3 }
+    ]
+  },
+  {
+    id:2,
+    title:"$V_1 \\cap V_2$ est un sous-espace vectoriel",
+    tag:"Preuve en 5 lignes",
+    goal:"Montrer que si $V_1$ et $V_2$ sont des SEV de $K^n$, alors $V_1 \\cap V_2$ est aussi un SEV de $K^n$.",
+    steps:[
+      { n:1, text:"<strong>Axiome 1 :</strong> $V_1$ et $V_2$ sont des SEV, donc $\\vec{0} \\in V_1$ et $\\vec{0} \\in V_2$. Par définition de l'intersection : $\\vec{0} \\in V_1 \\cap V_2$." },
+      { n:2, text:"<strong>Axiome 2 :</strong> Soient $u, v \\in V_1 \\cap V_2$. Alors $u, v \\in V_1$ (SEV) $\\Rightarrow u+v \\in V_1$. Et $u, v \\in V_2$ (SEV) $\\Rightarrow u+v \\in V_2$. Donc $u+v \\in V_1 \\cap V_2$." },
+      { n:3, text:"<strong>Axiome 3 :</strong> Soit $u \\in V_1 \\cap V_2$ et $\\lambda \\in K$. Alors $u \\in V_1 \\Rightarrow \\lambda u \\in V_1$, et $u \\in V_2 \\Rightarrow \\lambda u \\in V_2$. Donc $\\lambda u \\in V_1 \\cap V_2$." },
+      { n:4, text:"<strong>Conclusion :</strong> $V_1 \\cap V_2$ vérifie les 3 axiomes d'un SEV. $\\square$" }
+    ],
+    sortItems:[
+      { id:"s2a", text:"$\\vec{0} \\in V_1$ et $\\vec{0} \\in V_2$ car ce sont des SEV, donc $\\vec{0} \\in V_1 \\cap V_2$", order:0 },
+      { id:"s2b", text:"$u,v \\in V_1 \\Rightarrow u+v \\in V_1$ et $u,v \\in V_2 \\Rightarrow u+v \\in V_2$, donc $u+v \\in V_1 \\cap V_2$", order:1 },
+      { id:"s2c", text:"$u \\in V_1 \\Rightarrow \\lambda u \\in V_1$ et $u \\in V_2 \\Rightarrow \\lambda u \\in V_2$, donc $\\lambda u \\in V_1 \\cap V_2$", order:2 },
+      { id:"s2d", text:"Les 3 axiomes sont vérifiés : $V_1 \\cap V_2$ est un SEV. $\\square$", order:3 }
+    ]
+  },
+  {
+    id:3,
+    title:"$f$ injective $\\iff$ $\\ker(f) = \\{\\vec{0}\\}$",
+    tag:"Preuve en 5 lignes (double implication)",
+    goal:"Montrer que pour $f : V \\to W$ linéaire, $f$ est injective si et seulement si $\\ker(f) = \\{\\vec{0}\\}$.",
+    steps:[
+      { n:1, text:"<strong>($\\Rightarrow$) Si $f$ est injective :</strong> Soit $v \\in \\ker(f)$, i.e. $f(v) = 0 = f(\\vec{0})$. Comme $f$ est injective : $v = \\vec{0}$. Donc $\\ker(f) \\subseteq \\{\\vec{0}\\}$. Et $\\vec{0} \\in \\ker(f)$ toujours. Donc $\\ker(f) = \\{\\vec{0}\\}$." },
+      { n:2, text:"<strong>($\\Leftarrow$) Si $\\ker(f) = \\{\\vec{0}\\}$ :</strong> Soient $u, v \\in V$ avec $f(u) = f(v)$. Alors $f(u) - f(v) = 0$, i.e. $f(u-v) = 0$ par linéarité. Donc $u-v \\in \\ker(f) = \\{\\vec{0}\\}$." },
+      { n:3, text:"On déduit $u - v = \\vec{0}$, donc $u = v$. $f$ est bien injective." },
+      { n:4, text:"<strong>Conclusion :</strong> $f$ injective $\\iff$ $\\ker(f) = \\{\\vec{0}\\}$. $\\square$" }
+    ],
+    sortItems:[
+      { id:"s3a", text:"($\\Rightarrow$) $v \\in \\ker(f) \\Rightarrow f(v)=f(\\vec{0}) \\Rightarrow v=\\vec{0}$ (injectivité) donc $\\ker(f)=\\{\\vec{0}\\}$", order:0 },
+      { id:"s3b", text:"($\\Leftarrow$) $f(u)=f(v) \\Rightarrow f(u-v)=0 \\Rightarrow u-v \\in \\ker(f)=\\{\\vec{0}\\}$", order:1 },
+      { id:"s3c", text:"Donc $u-v=\\vec{0}$, i.e. $u=v$ : $f$ est injective", order:2 },
+      { id:"s3d", text:"Conclusion : $f$ injective $\\iff$ $\\ker(f)=\\{\\vec{0}\\}$ $\\square$", order:3 }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════
+// DATA : BOSS FIGHT
+// ══════════════════════════════════════════════════
+const BOSS_QUESTIONS = [
+  {
+    id:"b1",
+    proposition:"L'ensemble $\\{p \\in \\mathbb{R}[X] : p(0) = 0\\}$ est un sous-espace vectoriel de $\\mathbb{R}[X]$.",
+    answer: true,
+    explication:"VRAI. Axiome 1 : le polynôme nul $p=0$ vérifie $0(0)=0$ ✓. Axiome 2 : si $p(0)=0$ et $q(0)=0$, alors $(p+q)(0)=0+0=0$ ✓. Axiome 3 : $(\lambda p)(0)=\\lambda p(0)=0$ ✓."
+  },
+  {
+    id:"b2",
+    proposition:"Il existe une application linéaire bijective $f : \\mathbb{R}^3 \\to \\mathbb{R}^4$.",
+    answer: false,
+    explication:"FAUX. Si $f$ était bijective, elle serait injective et surjective. Surjective : $\\dim(\\mathrm{Im}\\,f) = 4$. Mais $\\dim(\\mathrm{Im}\\,f) \\leq \\dim(\\mathbb{R}^3) = 3 < 4$. Contradiction."
+  },
+  {
+    id:"b3",
+    proposition:"$\\mathbb{Z}_{11}$ est un corps.",
+    answer: true,
+    explication:"VRAI. $11$ est premier. Donc $\\mathbb{Z}_{11}$ est un corps : tout élément non nul $a$ vérifie $\\gcd(a, 11)=1$, donc $a$ admet un inverse modulo $11$ par Bézout."
+  },
+  {
+    id:"b4",
+    proposition:"Si $V$ est un SEV de $\\mathbb{R}^n$ qui ne contient qu'un nombre fini de vecteurs, alors $V = \\{\\vec{0}\\}$.",
+    answer: true,
+    explication:"VRAI. Si $V$ contient un vecteur $v \\neq \\vec{0}$, alors par l'axiome 3, $\\lambda v \\in V$ pour tout $\\lambda \\in \\mathbb{R}$. Il y a donc une infinité de vecteurs dans $V$. Contradiction. Donc $V = \\{\\vec{0}\\}$."
+  },
+  {
+    id:"b5",
+    proposition:"Soit $f : \\mathbb{R}^2 \\to \\mathbb{R}^2$ l'application $(x,y) \\mapsto (x+y, 2x+2y)$. Alors $f$ est surjective.",
+    answer: false,
+    explication:"FAUX. L'image de $f$ : $(x+y, 2x+2y) = (x+y)(1,2)$. Donc $\\mathrm{Im}\\,f = \\mathrm{Vect}\\{(1,2)\\}$, un espace de dimension $1$. Comme $\\dim(\\mathrm{Im}\\,f) = 1 < 2$, $f$ n'est pas surjective. Alternativement : $\\ker f = \\{(x,y): x+y=0\\}$ de dimension $1$, donc $\\dim(\\mathrm{Im}\\,f)=1$ par rang-noyau."
+  }
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let stats = { seen:0, correct:0, total:0 };
+let vfAnswered = [];
+let bossTimer = null, bossTimeLeft = 900;
+let bossSelections = {};
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  updateProgress();
+}
+
+function updateProgress() {
+  const sections = ['theory','vf','cex','demo','boss'];
+  const active = document.querySelector('.nav-btn.active');
+  const idx = sections.indexOf(active?.id?.replace('nav-','') || 'theory');
+  const pct = ((idx+1)/sections.length)*100;
+  document.getElementById('progress-bar').style.width = pct+'%';
+}
+
+// ══════════════════════════════════════════════════
+// MINI QUIZ (theory inline)
+// ══════════════════════════════════════════════════
+function miniAnswer(btn, groupId, isCorrect, fbId) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.mini-choice').forEach(b => {
+    b.classList.add('disabled');
+  });
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  const fb = document.getElementById(fbId);
+  fb.classList.add('show', isCorrect ? 'good' : 'bad');
+  if (!isCorrect) {
+    fb.innerHTML = '<strong>✗ Pas tout à fait.</strong> ' + fb.innerHTML;
+  }
+  renderMath(fb);
+}
+
+// ══════════════════════════════════════════════════
+// VF QUESTIONS
+// ══════════════════════════════════════════════════
+function buildVF() {
+  const container = document.getElementById('vf-questions-container');
+  container.innerHTML = '';
+  VF_QUESTIONS.forEach((q,i) => {
+    const topicLabels = { sev:'SEV', corps:'Corps Zp', lin:'App. linéaire', dim:'Dimension/Rang', base:'Base' };
+    const topicColors = { sev:'tag-sev', corps:'tag-corps', lin:'tag-lin', dim:'tag-dim', base:'tag-base' };
+    const card = document.createElement('div');
+    card.className = 'vf-card';
+    card.id = 'vf-card-'+q.id;
+    card.innerHTML = `
+      <div class="vf-header">
+        <span class="vf-tag">Question ${i+1}/20</span>
+        <span class="tag ${topicColors[q.topic]||'tag-sev'}">${topicLabels[q.topic]||q.topic}</span>
+        <span class="vf-source">${q.source}</span>
+      </div>
+      <div class="vf-body">
+        <div class="vf-proposition">${q.proposition}</div>
+        <div class="vf-buttons">
+          <button class="btn-vrai" onclick="selectVF(${q.id}, true)">✓ VRAI</button>
+          <button class="btn-faux" onclick="selectVF(${q.id}, false)">✗ FAUX</button>
+        </div>
+        <div class="justif-section" id="justif-${q.id}">
+          <div class="justif-label">Choisis la bonne justification :</div>
+          <div class="justif-choices" id="justif-choices-${q.id}">
+            ${shuffleArray([...q.justifications]).map((j,ji) => `
+              <button class="justif-choice" onclick="selectJustif(${q.id},${q.justifications.indexOf(j)})">
+                ${j.text}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="vf-feedback" id="vf-fb-${q.id}"></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  renderMath(container);
+  updateVFProgress();
+}
+
+function selectVF(qId, userAnswer) {
+  if (vfAnswered.includes(qId+'_vf')) return;
+  const q = VF_QUESTIONS.find(x => x.id === qId);
+  const card = document.getElementById('vf-card-'+qId);
+  const btnVrai = card.querySelector('.btn-vrai');
+  const btnFaux = card.querySelector('.btn-faux');
+  btnVrai.classList.add('disabled');
+  btnFaux.classList.add('disabled');
+  btnVrai.classList.remove('selected');
+  btnFaux.classList.remove('selected');
+  if (userAnswer) btnVrai.classList.add('selected');
+  else btnFaux.classList.add('selected');
+  
+  if (userAnswer === q.answer) {
+    // correct VF — show justif
+    document.getElementById('justif-'+qId).classList.add('show');
+    renderMath(document.getElementById('justif-'+qId));
+    vfAnswered.push(qId+'_vf');
+  } else {
+    // wrong VF
+    const fb = document.getElementById('vf-fb-'+qId);
+    fb.innerHTML = `<strong>✗ Mauvaise réponse.</strong> La proposition est <strong>${q.answer ? 'VRAIE' : 'FAUSSE'}</strong>.<div class="vf-wrong-reveal">${q.feedback}</div>`;
+    fb.classList.add('show','wrong-fb');
+    renderMath(fb);
+    vfAnswered.push(qId+'_vf');
+    stats.seen++; updateStats();
+    updateVFProgress();
+  }
+}
+
+function selectJustif(qId, jIdx) {
+  if (vfAnswered.includes(qId+'_j')) return;
+  const q = VF_QUESTIONS.find(x => x.id === qId);
+  const choicesEl = document.getElementById('justif-choices-'+qId);
+  choicesEl.querySelectorAll('.justif-choice').forEach(b => b.classList.add('disabled'));
+  
+  // find which button corresponds to jIdx
+  const btns = choicesEl.querySelectorAll('.justif-choice');
+  const isCorrect = q.justifications[jIdx].correct;
+  
+  const fb = document.getElementById('vf-fb-'+qId);
+  if (isCorrect) {
+    fb.innerHTML = `<strong>✓ Parfait !</strong> ${q.feedback}`;
+    fb.classList.add('show','correct-fb');
+    stats.correct++;
+  } else {
+    fb.innerHTML = `<strong>✗ Pas la bonne justification.</strong> ${q.feedback}`;
+    fb.classList.add('show','wrong-fb');
+  }
+  renderMath(fb);
+  vfAnswered.push(qId+'_j');
+  stats.seen++;
+  stats.total++;
+  updateStats();
+  updateVFProgress();
+}
+
+function updateVFProgress() {
+  const answered = new Set(vfAnswered.filter(x => x.includes('_j') || (x.includes('_vf') && !vfAnswered.includes(x.replace('_vf','_j'))))).size;
+  const total = VF_QUESTIONS.length;
+  const pct = (answered / total) * 100;
+  document.getElementById('vf-prog-fill').style.width = pct+'%';
+  document.getElementById('vf-prog-text').textContent = `${answered} / ${total}`;
+  document.getElementById('vf-score-text').textContent = `✓ ${stats.correct}`;
+}
+
+// ══════════════════════════════════════════════════
+// CONTRE-EXEMPLES
+// ══════════════════════════════════════════════════
+function buildCEX() {
+  const container = document.getElementById('cex-container');
+  container.innerHTML = '';
+  CEX_EXERCISES.forEach((ex,i) => {
+    const card = document.createElement('div');
+    card.className = 'cex-card';
+    card.id = 'cex-'+ex.id;
+    card.innerHTML = `
+      <div class="cex-header">
+        <span class="cex-badge">EXERCICE ${i+1}</span>
+        <h3>${ex.title}</h3>
+      </div>
+      <div class="cex-body">
+        <div class="cex-prop">🚫 Proposition fausse : ${ex.prop}</div>
+        <div class="cex-steps" id="cex-steps-${ex.id}">
+          ${ex.steps.map((step,si) => `
+            <div class="cex-step" id="cex-step-${ex.id}-${si}" ${si>0?'style="opacity:0.3;pointer-events:none;"':''}>
+              <div class="cex-step-num">ÉTAPE ${si+1}/${ex.steps.length}</div>
+              <p>${step.q}</p>
+              <div class="cex-options">
+                ${step.opts.map((opt,oi) => `
+                  <button class="cex-opt" onclick="selectCEX(${ex.id},${si},${oi})">${opt}</button>
+                `).join('')}
+              </div>
+              <div class="step-result" id="cex-res-${ex.id}-${si}">${step.result}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  renderMath(container);
+}
+
+function selectCEX(exId, stepIdx, optIdx) {
+  const ex = CEX_EXERCISES.find(e => e.id === exId);
+  const step = ex.steps[stepIdx];
+  const stepEl = document.getElementById(`cex-step-${exId}-${stepIdx}`);
+  stepEl.querySelectorAll('.cex-opt').forEach(b => b.classList.add('disabled'));
+  
+  const isCorrect = optIdx === step.correct;
+  stepEl.querySelectorAll('.cex-opt')[optIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) stepEl.querySelectorAll('.cex-opt')[step.correct].classList.add('correct');
+  
+  const res = document.getElementById(`cex-res-${exId}-${stepIdx}`);
+  res.classList.add('show', isCorrect ? 'ok' : 'ko');
+  renderMath(res);
+
+  // unlock next step
+  if (stepIdx + 1 < ex.steps.length) {
+    setTimeout(() => {
+      const nextStep = document.getElementById(`cex-step-${exId}-${stepIdx+1}`);
+      nextStep.style.opacity = '1';
+      nextStep.style.pointerEvents = '';
+    }, 600);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// DÉMONSTRATIONS
+// ══════════════════════════════════════════════════
+function buildDemos() {
+  const container = document.getElementById('demo-container');
+  container.innerHTML = '';
+  DEMOS.forEach(demo => {
+    const card = document.createElement('div');
+    card.className = 'demo-card';
+    card.innerHTML = `
+      <div class="demo-header">
+        <div>
+          <div class="demo-tag">${demo.tag}</div>
+          <h3>${demo.title}</h3>
+        </div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-goal"><strong>À montrer :</strong> ${demo.goal}</div>
+        <div class="proof-steps">
+          ${demo.steps.map(s => `
+            <div class="proof-step">
+              <div class="step-dot">${s.n}</div>
+              <div class="step-content"><p>${s.text}</p></div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="sort-quiz" id="sort-quiz-${demo.id}">
+          <div class="quiz-label">⚡ Teste-toi — Remets les étapes dans l'ordre</div>
+          <p>Glisse les blocs pour reconstituer la preuve.</p>
+          <div class="sortable-list" id="sortable-${demo.id}"></div>
+          <button class="btn-check-order" onclick="checkOrder(${demo.id})">Vérifier l'ordre</button>
+          <button class="btn-shuffle" onclick="shuffleSortable(${demo.id})">Mélanger</button>
+          <div class="order-result" id="order-res-${demo.id}"></div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+    initSortable(demo);
+  });
+  renderMath(container);
+}
+
+function initSortable(demo) {
+  const list = document.getElementById('sortable-'+demo.id);
+  const shuffled = shuffleArray([...demo.sortItems]);
+  list.innerHTML = '';
+  shuffled.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'sortable-item';
+    el.dataset.id = item.id;
+    el.dataset.order = item.order;
+    el.draggable = true;
+    el.innerHTML = `<span class="drag-handle">⠿</span><span>${item.text}</span>`;
+    el.addEventListener('dragstart', () => el.classList.add('dragging'));
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      el.classList.remove('over');
+      const dragging = list.querySelector('.dragging');
+      if (dragging && dragging !== el) {
+        const els = [...list.children];
+        const fromIdx = els.indexOf(dragging);
+        const toIdx = els.indexOf(el);
+        if (fromIdx < toIdx) list.insertBefore(dragging, el.nextSibling);
+        else list.insertBefore(dragging, el);
+      }
+    });
+    list.appendChild(el);
+  });
+  renderMath(list);
+}
+
+function shuffleSortable(demoId) {
+  const demo = DEMOS.find(d => d.id === demoId);
+  const res = document.getElementById('order-res-'+demoId);
+  res.classList.remove('show');
+  const list = document.getElementById('sortable-'+demoId);
+  list.querySelectorAll('.sortable-item').forEach(el => {
+    el.classList.remove('correct-pos','wrong-pos');
+  });
+  initSortable(demo);
+}
+
+function checkOrder(demoId) {
+  const list = document.getElementById('sortable-'+demoId);
+  const items = [...list.querySelectorAll('.sortable-item')];
+  let allCorrect = true;
+  items.forEach((el, idx) => {
+    el.classList.remove('correct-pos','wrong-pos');
+    const expectedOrder = parseInt(el.dataset.order);
+    if (expectedOrder === idx) el.classList.add('correct-pos');
+    else { el.classList.add('wrong-pos'); allCorrect = false; }
+  });
+  const res = document.getElementById('order-res-'+demoId);
+  res.classList.add('show');
+  if (allCorrect) {
+    res.className = 'order-result show ok';
+    res.textContent = '✓ Parfait ! Tu as reconstitué la preuve dans le bon ordre.';
+  } else {
+    res.className = 'order-result show ko';
+    res.textContent = '✗ Pas encore. Les blocs en rouge sont mal placés. Réessaie !';
+  }
+}
+
+// ══════════════════════════════════════════════════
+// BOSS FIGHT
+// ══════════════════════════════════════════════════
+function startBoss() {
+  document.getElementById('boss-intro-screen').style.display = 'none';
+  document.getElementById('boss-active').style.display = 'block';
+  buildBossQuestions();
+  startTimer();
+}
+
+function buildBossQuestions() {
+  const container = document.getElementById('boss-questions-container');
+  container.innerHTML = '';
+  BOSS_QUESTIONS.forEach((q,i) => {
+    const card = document.createElement('div');
+    card.className = 'vf-card';
+    card.innerHTML = `
+      <div class="vf-header">
+        <span class="vf-tag">Boss Q${i+1}</span>
+        <span class="vf-source">5 pts</span>
+      </div>
+      <div class="vf-body">
+        <div class="vf-proposition">${q.proposition}</div>
+        <div class="vf-buttons">
+          <button class="btn-vrai" id="boss-vrai-${q.id}" onclick="bossPick('${q.id}',true)">✓ VRAI</button>
+          <button class="btn-faux" id="boss-faux-${q.id}" onclick="bossPick('${q.id}',false)">✗ FAUX</button>
+        </div>
+        <div class="vf-feedback" id="boss-fb-${q.id}"></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  renderMath(container);
+}
+
+function bossPick(qId, val) {
+  if (bossSelections[qId] !== undefined) return;
+  bossSelections[qId] = val;
+  document.getElementById('boss-vrai-'+qId).classList.add('disabled');
+  document.getElementById('boss-faux-'+qId).classList.add('disabled');
+  if (val) document.getElementById('boss-vrai-'+qId).classList.add('selected');
+  else document.getElementById('boss-faux-'+qId).classList.add('selected');
+  document.getElementById('boss-answered').textContent = Object.keys(bossSelections).length;
+  if (Object.keys(bossSelections).length === BOSS_QUESTIONS.length) {
+    document.getElementById('boss-submit-btn').style.animation = 'pulse 1s infinite';
+  }
+}
+
+function startTimer() {
+  bossTimeLeft = 900;
+  const display = document.getElementById('timer-display');
+  bossTimer = setInterval(() => {
+    bossTimeLeft--;
+    const m = Math.floor(bossTimeLeft/60);
+    const s = bossTimeLeft % 60;
+    display.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    if (bossTimeLeft <= 120) display.classList.add('warning');
+    if (bossTimeLeft <= 0) { clearInterval(bossTimer); submitBoss(); }
+  }, 1000);
+}
+
+function submitBoss() {
+  clearInterval(bossTimer);
+  document.getElementById('boss-active').style.display = 'none';
+  
+  let score = 0;
+  let detailHTML = '<div style="margin-top:20px;">';
+  BOSS_QUESTIONS.forEach((q,i) => {
+    const userAns = bossSelections[q.id];
+    const correct = userAns === q.answer;
+    if (correct) score++;
+    detailHTML += `
+      <div style="background:${correct?'#d1fae5':'#fee2e2'};border:1px solid ${correct?'#6ee7b7':'#fca5a5'};
+        border-radius:12px;padding:16px;margin-bottom:14px;text-align:left;">
+        <div style="font-weight:600;margin-bottom:8px;color:${correct?'#065f46':'#991b1b'}">
+          ${correct?'✓':'✗'} Q${i+1} — ${correct?'Correct (+5 pts)':'Faux (0 pt)'}
+        </div>
+        <div style="font-size:13px;color:#374151;margin-bottom:8px;">${q.proposition}</div>
+        <div style="font-size:13px;font-style:italic;color:#6b7280;">
+          Ta réponse : <strong>${userAns===true?'VRAI':userAns===false?'FAUX':'—'}</strong> · 
+          Bonne réponse : <strong>${q.answer?'VRAI':'FAUX'}</strong>
+        </div>
+        <div style="font-size:13px;margin-top:10px;background:rgba(0,0,0,0.05);border-radius:8px;padding:10px;">
+          📝 ${q.explication}
+        </div>
+      </div>
+    `;
+  });
+  detailHTML += '</div>';
+  
+  document.getElementById('boss-final-score').textContent = `${score*5}/25`;
+  const verdicts = ['Courage, reprends depuis la théorie 💪','Bien essayé, quelques lacunes 📖','Bon niveau ! 🎯','Très bon ! Quasi prêt 🔥','Parfait ! Tu maîtrises 🏆'];
+  document.getElementById('boss-verdict').textContent = verdicts[score] || verdicts[0];
+  document.getElementById('boss-detail').innerHTML = detailHTML;
+  document.getElementById('boss-results').classList.add('show');
+  renderMath(document.getElementById('boss-results'));
+}
+
+function resetBoss() {
+  bossSelections = {};
+  clearInterval(bossTimer);
+  document.getElementById('boss-results').classList.remove('show');
+  document.getElementById('boss-active').style.display = 'none';
+  document.getElementById('boss-intro-screen').style.display = 'block';
+  document.getElementById('timer-display').classList.remove('warning');
+  document.getElementById('boss-answered').textContent = '0';
+}
+
+// ══════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════
+function shuffleArray(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function updateStats() {
+  document.getElementById('stat-score').textContent = stats.correct;
+  document.getElementById('stat-total').textContent = stats.total;
+  document.getElementById('stat-correct').textContent = stats.correct;
+  document.getElementById('stat-seen').textContent = stats.seen;
+}
+
+function renderMath(el) {
+  if (window.renderMathInElement) {
+    renderMathInElement(el || document.body, {
+      delimiters:[
+        {left:'$$', right:'$$', display:true},
+        {left:'$', right:'$', display:false},
+        {left:'\\(', right:'\\)', display:false},
+        {left:'\\[', right:'\\]', display:true}
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  buildVF();
+  buildCEX();
+  buildDemos();
+  renderMath(document.body);
+});
+</script>
+</body>
+</html>

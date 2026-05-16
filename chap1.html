@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATHF114 — Équations Différentielles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+<style>
+:root {
+  --bg: #f7f6f3;
+  --bg2: #eeecea;
+  --surface: #ffffff;
+  --border: #ddd9d4;
+  --ink: #1a1814;
+  --ink2: #5a5650;
+  --ink3: #9a9590;
+  --accent: #1e3a5f;
+  --accent2: #2e5a9f;
+  --gold: #c8973a;
+  --green: #2d6a4f;
+  --green-bg: #eaf4ef;
+  --red: #9b2335;
+  --red-bg: #fdf0f2;
+  --blue-bg: #eef2f9;
+  --radius: 12px;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* ── HEADER ── */
+#site-header {
+  background: var(--accent);
+  color: white;
+  padding: 28px 40px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.18);
+}
+#site-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+#site-header .sub { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
+#progress-bar-wrap { width: 200px; }
+#progress-label { font-size: 0.72rem; opacity: 0.7; margin-bottom: 5px; text-align: right; letter-spacing: 0.06em; }
+#progress-bar { height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+#progress-fill { height: 100%; background: var(--gold); border-radius: 3px; transition: width 0.5s ease; width: 0%; }
+
+/* ── NAV ── */
+#nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.nav-btn {
+  padding: 14px 18px;
+  border: none; background: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink2);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.nav-btn:hover { color: var(--accent); }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── MAIN ── */
+main { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ── SECTION ── */
+.section { display: none; animation: fadeIn 0.3s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
+
+/* ── CHAPTER TITLE ── */
+.chapter-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.chapter-meta { font-size: 0.82rem; color: var(--ink3); margin-bottom: 32px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ── THEORY CARDS ── */
+.theory-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.theory-block .tb-header {
+  background: var(--accent);
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.theory-block .tb-header .tb-tag {
+  background: rgba(255,255,255,0.18);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  font-family: var(--mono);
+}
+.theory-block .tb-header h2 { font-size: 1rem; font-weight: 500; }
+.theory-block .tb-body { padding: 20px 24px; }
+
+.def-box {
+  background: var(--blue-bg);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+.def-box .def-label { font-size: 0.72rem; color: var(--accent2); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+
+.method-box {
+  background: #f0f7f4;
+  border-left: 3px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+.method-box .method-label { font-size: 0.72rem; color: var(--green); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.method-box ol { padding-left: 18px; }
+.method-box li { margin-bottom: 6px; }
+
+.warn-box {
+  background: #fef8ec;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 0.9rem;
+}
+
+/* ── EXAMPLE STEPPER ── */
+.example-block {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+.example-block .ex-title { font-size: 0.75rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; font-family: var(--mono); }
+.ex-problem { font-weight: 500; margin-bottom: 14px; font-size: 1rem; }
+.step-container { }
+.step {
+  display: none;
+  animation: stepIn 0.25s ease;
+}
+.step.shown { display: block; }
+@keyframes stepIn { from { opacity:0; transform: translateX(-6px); } to { opacity:1; transform: none; } }
+.step-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.step-num {
+  min-width: 24px; height: 24px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-content .step-label { font-size: 0.72rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.step-btns { display: flex; gap: 8px; margin-top: 12px; }
+.btn-next { padding: 9px 22px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; transition: background 0.2s; }
+.btn-next:hover { background: var(--accent2); }
+.btn-reset { padding: 9px 18px; background: none; color: var(--ink2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+.btn-reset:hover { background: var(--bg2); }
+
+/* ── EXERCISE BLOCKS ── */
+.exercise-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.ex-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.ex-card-header .ex-num { font-family: var(--mono); font-size: 0.78rem; color: var(--ink3); }
+.ex-card-header .ex-badge {
+  font-size: 0.72rem; padding: 3px 10px; border-radius: 20px;
+  background: var(--blue-bg); color: var(--accent2); font-weight: 500;
+}
+.ex-question { font-size: 1rem; font-weight: 500; margin-bottom: 18px; line-height: 1.5; }
+
+/* Input steps */
+.input-step { margin-bottom: 16px; }
+.input-step label { display: block; font-size: 0.8rem; color: var(--ink2); margin-bottom: 6px; }
+.input-row { display: flex; gap: 10px; align-items: center; }
+.math-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  background: var(--bg);
+  transition: border-color 0.2s;
+}
+.math-input:focus { outline: none; border-color: var(--accent2); }
+.math-input.correct { border-color: var(--green); background: var(--green-bg); }
+.math-input.wrong { border-color: var(--red); background: var(--red-bg); }
+.check-btn {
+  padding: 10px 18px;
+  background: var(--accent);
+  color: white; border: none;
+  border-radius: 8px; cursor: pointer;
+  font-size: 0.82rem; font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.check-btn:hover { background: var(--accent2); }
+.hint-btn {
+  padding: 10px 14px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px; cursor: pointer;
+  font-size: 0.82rem; color: var(--ink2);
+  transition: all 0.2s;
+}
+.hint-btn:hover { background: var(--bg2); }
+.feedback { margin-top: 8px; font-size: 0.85rem; padding: 8px 12px; border-radius: 6px; display: none; }
+.feedback.show { display: block; }
+.feedback.ok { background: var(--green-bg); color: var(--green); }
+.feedback.bad { background: var(--red-bg); color: var(--red); }
+.feedback.hint-show { background: #fef8ec; color: #7a5c0a; }
+
+/* ── QUIZ GAME (Identify the type) ── */
+.quiz-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+}
+.quiz-equation {
+  font-size: 1.4rem;
+  margin: 20px 0 24px;
+  padding: 20px;
+  background: var(--bg2);
+  border-radius: 10px;
+}
+.quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 580px; margin: 0 auto 20px; }
+.choice-btn {
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  line-height: 1.3;
+}
+.choice-btn:hover { border-color: var(--accent2); background: var(--blue-bg); }
+.choice-btn.correct-choice { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.choice-btn.wrong-choice { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+.quiz-score-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.score-display { font-family: var(--mono); font-size: 1.1rem; color: var(--accent); }
+#quiz-feedback { font-size: 0.92rem; min-height: 24px; margin: 10px 0; font-weight: 500; }
+#quiz-feedback.ok { color: var(--green); }
+#quiz-feedback.bad { color: var(--red); }
+
+/* ── BOSS FIGHT ── */
+.boss-card {
+  background: linear-gradient(135deg, var(--accent) 0%, #0d2340 100%);
+  border-radius: var(--radius);
+  padding: 32px;
+  color: white;
+}
+.boss-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px; }
+.boss-card .boss-sub { opacity: 0.7; font-size: 0.85rem; margin-bottom: 24px; }
+#boss-timer { font-family: var(--mono); font-size: 2.8rem; font-weight: 600; color: var(--gold); text-align: center; margin: 16px 0; }
+#boss-timer.urgent { color: #ff6b6b; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.boss-equation { font-size: 1.2rem; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center; }
+.boss-area { width: 100%; min-height: 160px; padding: 16px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; font-family: var(--mono); font-size: 0.9rem; resize: vertical; margin: 16px 0; }
+.boss-area::placeholder { color: rgba(255,255,255,0.4); }
+.boss-btn { padding: 12px 28px; background: var(--gold); color: var(--ink); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: opacity 0.2s; }
+.boss-btn:hover { opacity: 0.88; }
+.boss-correction { background: rgba(255,255,255,0.08); border-radius: 10px; padding: 20px; margin-top: 20px; display: none; }
+.boss-correction.show { display: block; }
+.correction-step { margin-bottom: 10px; padding: 10px 14px; background: rgba(255,255,255,0.06); border-radius: 6px; }
+
+/* ── EXAM EXERCISES ── */
+.exam-exercise {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.exam-ex-header {
+  background: var(--bg2);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.exam-ex-header h3 { font-size: 0.92rem; font-weight: 600; color: var(--accent); }
+.exam-ex-header .pts { font-family: var(--mono); font-size: 0.8rem; color: var(--ink3); }
+.exam-ex-body { padding: 24px; }
+.exam-step { margin-bottom: 20px; border-left: 2px solid var(--border); padding-left: 16px; }
+.exam-step-label { font-size: 0.75rem; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.reveal-btn { padding: 8px 16px; background: none; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+.reveal-btn:hover { background: var(--accent); color: white; }
+.revealed { display: none; animation: fadeIn 0.25s ease; }
+.revealed.show { display: block; }
+.solution-box { background: var(--green-bg); border: 1px solid #a8d5be; border-radius: 8px; padding: 14px 16px; margin-top: 8px; }
+
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+th { background: var(--accent); color: white; padding: 10px 14px; text-align: left; font-size: 0.82rem; font-weight: 500; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--bg2); }
+
+/* ── MISC ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+p { margin-bottom: 10px; color: var(--ink2); }
+strong { color: var(--ink); }
+.tag-strip { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; }
+.tag-sep { background: #dceeff; color: #1e4f8f; }
+.tag-lin { background: #dff0e8; color: #1c5e3a; }
+.tag-h1 { background: #fdf0e0; color: #7a4a00; }
+.tag-h2 { background: #f2e8fb; color: #5a1f8f; }
+.tag-sm { background: #fde8ec; color: #8a1529; }
+
+.score-big { font-family: var(--mono); font-size: 3rem; font-weight: 600; color: var(--accent); text-align: center; margin: 20px 0; }
+
+/* responsive */
+@media (max-width: 600px) {
+  #site-header { padding: 18px 20px; flex-direction: column; gap: 12px; align-items: flex-start; }
+  #nav { padding: 0 16px; }
+  main { padding: 24px 16px 60px; }
+  .quiz-choices { grid-template-columns: 1fr; }
+  #progress-bar-wrap { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <div>
+    <h1>Équations Différentielles</h1>
+    <div class="sub">MATHF114 · ULB · Q2 2025–26</div>
+  </div>
+  <div id="progress-bar-wrap">
+    <div id="progress-label">Progression : 0%</div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="nav-btn active" onclick="showSection('intro')">① Intro</button>
+  <button class="nav-btn" onclick="showSection('sep')">② Variables séparables</button>
+  <button class="nav-btn" onclick="showSection('lin1')">③ Linéaires O1</button>
+  <button class="nav-btn" onclick="showSection('hom2')">④ O2 Homogènes</button>
+  <button class="nav-btn" onclick="showSection('part')">⑤ O2 Avec 2nd membre</button>
+  <button class="nav-btn" onclick="showSection('recog')">⑥ Reconnaître le type</button>
+  <button class="nav-btn" onclick="showSection('exam')">⑦ Exercices exam</button>
+  <button class="nav-btn" onclick="showSection('boss')">⑧ Boss Fight</button>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 1 : INTRO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section active" id="s-intro">
+  <h1 class="chapter-title">Équations Différentielles</h1>
+  <p class="chapter-meta">Chapitre 1 · Méthodes calculatoires · Exam 2h</p>
+
+  <div class="theory-block">
+    <div class="tb-header">
+      <span class="tb-tag">FONDAMENTAUX</span>
+      <h2>Qu'est-ce qu'une EDO ?</h2>
+    </div>
+    <div class="tb-body">
+      <div class="def-box">
+        <div class="def-label">Définition</div>
+        <p>Une <strong>équation différentielle ordinaire (EDO)</strong> est une équation dont l'inconnue est une <em>fonction</em> $y(x)$ et qui contient ses dérivées $y', y'', \ldots$</p>
+        <p style="margin-top:8px">Ordre : ordre de la dérivée la plus élevée présente.</p>
+        $$F(x, y, y', \ldots, y^{(n)}) = 0$$
+      </div>
+
+      <div class="def-box" style="margin-top:12px">
+        <div class="def-label">Problème de Cauchy</div>
+        <p>Résoudre une EDO <strong>avec une condition initiale</strong> $y(x_0) = y_0$ (ou $y(x_0)=y_0$, $y'(x_0)=y'_0$ pour l'ordre 2).</p>
+        <p style="margin-top:6px">⇒ La condition initiale détermine la constante $C$ et donne <em>une seule</em> solution à la place d'une infinité.</p>
+      </div>
+
+      <h3 style="margin:18px 0 10px; font-size:0.95rem; color:var(--accent)">Les 4 types à maîtriser pour l'exam :</h3>
+      <div class="tag-strip">
+        <span class="tag tag-sep">Ordre 1 — Variables séparables</span>
+        <span class="tag tag-lin">Ordre 1 — Linéaire</span>
+        <span class="tag tag-h2">Ordre 2 — Homogène C.C.</span>
+        <span class="tag tag-sm">Ordre 2 — Avec 2nd membre</span>
+      </div>
+
+      <table>
+        <tr><th>Type</th><th>Forme</th><th>Méthode clé</th></tr>
+        <tr><td><span class="tag tag-sep">Sep.</span></td><td>$y' = g(x)\,h(y)$</td><td>Séparer, intégrer des 2 côtés</td></tr>
+        <tr><td><span class="tag tag-lin">Lin. O1</span></td><td>$y' + p(x)y = q(x)$</td><td>Facteur intégrant $\mu = e^{\int p\,dx}$</td></tr>
+        <tr><td><span class="tag tag-h2">O2 hom.</span></td><td>$ay''+by'+cy=0$</td><td>Équation caractéristique $a\lambda^2+b\lambda+c=0$</td></tr>
+        <tr><td><span class="tag tag-sm">O2 2nd m.</span></td><td>$ay''+by'+cy=f(x)$</td><td>$y = y_h + y_p$</td></tr>
+      </table>
+
+      <div class="warn-box">
+        ⚠️ <strong>Priorité exam :</strong> Ce chapitre est nouveau en 2025-26. Maîtriser les méthodes de calcul est suffisant — les démonstrations théoriques (Cauchy-Lipschitz, etc.) ne sont pas au programme calculatoire.
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:8px">
+    <button class="btn-next" onclick="showSection('sep')">Commencer — Variables séparables →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 2 : VARIABLES SÉPARABLES -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-sep">
+  <h1 class="chapter-title">Variables Séparables</h1>
+  <p class="chapter-meta">Type A · Ordre 1</p>
+
+  <div class="theory-block">
+    <div class="tb-header">
+      <span class="tb-tag">THÉORIE</span>
+      <h2>EDO à Variables Séparables</h2>
+    </div>
+    <div class="tb-body">
+      <div class="def-box">
+        <div class="def-label">Forme</div>
+        $$y' = g(x)\cdot h(y) \qquad \text{ou} \qquad f(y)\,dy = g(x)\,dx$$
+        <p style="margin-top:8px">Reconnaître : le membre de droite est un <strong>produit de fonctions séparées</strong> de $x$ et de $y$.</p>
+      </div>
+
+      <div class="method-box">
+        <div class="method-label">Méthode — 4 étapes</div>
+        <ol>
+          <li><strong>Séparer :</strong> $\displaystyle\frac{dy}{h(y)} = g(x)\,dx$</li>
+          <li><strong>Intégrer des 2 côtés :</strong> $\displaystyle\int \frac{1}{h(y)}\,dy = \int g(x)\,dx$</li>
+          <li><strong>Ajouter la constante $+C$</strong> (d'un seul côté)</li>
+          <li><strong>Isoler $y$</strong> si possible — sinon laisser implicite</li>
+        </ol>
+      </div>
+
+      <div class="warn-box">
+        ⚠️ <strong>Cas particuliers :</strong> Si $h(y_0)=0$, alors $y = y_0$ est aussi une solution (solution constante/singulière). Ne pas oublier de vérifier.
+      </div>
+
+      <!-- Exemple animé -->
+      <div class="example-block">
+        <div class="ex-title">Exemple résolu pas à pas</div>
+        <div class="ex-problem">Résoudre : $y'\sqrt{1-x^2} + xy = 0$</div>
+        <div class="step-container" id="sep-steps">
+          <div class="step shown" id="sep-s1">
+            <div class="step-row">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-label">Réécrire et séparer</div>
+                $\dfrac{dy}{dx}\sqrt{1-x^2} = -xy \;\Rightarrow\; \dfrac{dy}{y} = \dfrac{-x}{\sqrt{1-x^2}}\,dx$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="sep-s2">
+            <div class="step-row">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-label">Intégrer des 2 côtés</div>
+                $\int\dfrac{1}{y}\,dy = \int\dfrac{-x}{\sqrt{1-x^2}}\,dx$
+                <br>
+                $\ln|y| = \sqrt{1-x^2} + C$
+                <br>
+                <small style="color:var(--ink3)">Astuce : $\int \frac{-x}{\sqrt{1-x^2}}dx = \sqrt{1-x^2}$ (substitution $u=1-x^2$)</small>
+              </div>
+            </div>
+          </div>
+          <div class="step" id="sep-s3">
+            <div class="step-row">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-label">Isoler y</div>
+                $|y| = e^{\sqrt{1-x^2}+C} = e^C \cdot e^{\sqrt{1-x^2}}$
+                <br>
+                $\boxed{y = K\,e^{\sqrt{1-x^2}}}$ avec $K\in\mathbb{R}\setminus\{0\}$
+                <br>
+                <small style="color:var(--ink3)">(et $y=0$ est aussi solution singulière, incluse pour $K=0$)</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="sep-ex-btn" onclick="nextStep('sep',3)">Voir étape suivante →</button>
+          <button class="btn-reset" onclick="resetSteps('sep',3)">Recommencer</button>
+        </div>
+      </div>
+
+      <!-- Exemple 2 avec CI -->
+      <div class="example-block" style="margin-top:14px">
+        <div class="ex-title">Exemple avec condition initiale (Cauchy)</div>
+        <div class="ex-problem">Résoudre : $(1+y)\,dx - (1+x)\,dy = 0$, avec $y(1) = 2$</div>
+        <div class="step-container" id="sep2-steps">
+          <div class="step shown" id="sep2-s1">
+            <div class="step-row">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-label">Séparer</div>
+                $\dfrac{dy}{1+y} = \dfrac{dx}{1+x}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="sep2-s2">
+            <div class="step-row">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-label">Intégrer</div>
+                $\ln|1+y| = \ln|1+x| + C$
+                <br>
+                $|1+y| = e^C|1+x| \;\Rightarrow\; 1+y = K(1+x)$
+                <br>
+                $y = K(1+x) - 1$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="sep2-s3">
+            <div class="step-row">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-label">Appliquer la condition initiale $y(1)=2$</div>
+                $2 = K(1+1) - 1 \;\Rightarrow\; 2 = 2K-1 \;\Rightarrow\; K = \tfrac{3}{2}$
+                <br>
+                $\boxed{y = \dfrac{3}{2}(1+x) - 1}$
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="sep2-ex-btn" onclick="nextStep('sep2',3)">Voir étape suivante →</button>
+          <button class="btn-reset" onclick="resetSteps('sep2',3)">Recommencer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE INTERACTIF SEP -->
+  <div class="exercise-card">
+    <div class="ex-card-header">
+      <span class="ex-num">EX-SEP-1</span>
+      <span class="ex-badge">Variables séparables</span>
+    </div>
+    <div class="ex-question">
+      Résoudre : $(1-y^2)\,dy - y\,dx = 0$
+    </div>
+
+    <div class="input-step" id="sep-ex1-step1">
+      <label>Étape 1 : Après séparation, le membre gauche (en $y$) donne quel intégral ?<br>
+      <small style="color:var(--ink3)">Écrire sous forme : <code>∫[expression en y]dy</code> — répondre ici l'expression intégrée</small></label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep1-i1" placeholder="ex: ln|y| - y²/2">
+        <button class="check-btn" onclick="checkSep1(1)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('sep1-h1')">Indice</button>
+      </div>
+      <div class="feedback" id="sep1-f1"></div>
+      <div class="feedback hint-show" id="sep1-h1">
+        $\int\frac{1-y^2}{y}dy = \int(\frac{1}{y} - y)\,dy = \ln|y| - \frac{y^2}{2}$
+      </div>
+    </div>
+
+    <div class="input-step" id="sep-ex1-step2" style="display:none">
+      <label>Étape 2 : Le membre droit (en $x$) intégré donne ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep1-i2" placeholder="ex: x + C">
+        <button class="check-btn" onclick="checkSep1(2)">Vérifier</button>
+      </div>
+      <div class="feedback" id="sep1-f2"></div>
+    </div>
+
+    <div class="input-step" id="sep-ex1-step3" style="display:none">
+      <label>Étape 3 : La solution générale (implicite) est ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep1-i3" placeholder="ex: ln|y| - y²/2 = x + C">
+        <button class="check-btn" onclick="checkSep1(3)">Vérifier</button>
+      </div>
+      <div class="feedback" id="sep1-f3"></div>
+    </div>
+  </div>
+
+  <!-- EXERCICE 2 SEP avec CI -->
+  <div class="exercise-card">
+    <div class="ex-card-header">
+      <span class="ex-num">EX-SEP-2</span>
+      <span class="ex-badge">Séparable + Cauchy</span>
+    </div>
+    <div class="ex-question">
+      Résoudre avec $y(0) = 1$ : $y' = (1+y^2)x^2$
+    </div>
+
+    <div class="input-step" id="sep2-ex1-step1">
+      <label>Étape 1 : Séparer les variables. Quelle est la forme séparée ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep2-i1" placeholder="ex: dy/(1+y²) = x²dx">
+        <button class="check-btn" onclick="checkSep2(1)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('sep2-h1')">Indice</button>
+      </div>
+      <div class="feedback" id="sep2-f1"></div>
+      <div class="feedback hint-show" id="sep2-h1">
+        $y'=\frac{dy}{dx}$ donc $\frac{dy}{1+y^2} = x^2\,dx$
+      </div>
+    </div>
+
+    <div class="input-step" id="sep2-ex1-step2" style="display:none">
+      <label>Étape 2 : Intégrer des 2 côtés</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep2-i2" placeholder="arctan(y) = ...">
+        <button class="check-btn" onclick="checkSep2(2)">Vérifier</button>
+      </div>
+      <div class="feedback" id="sep2-f2"></div>
+    </div>
+
+    <div class="input-step" id="sep2-ex1-step3" style="display:none">
+      <label>Étape 3 : Appliquer $y(0)=1$ pour trouver $C$</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep2-i3" placeholder="C = ?">
+        <button class="check-btn" onclick="checkSep2(3)">Vérifier</button>
+      </div>
+      <div class="feedback" id="sep2-f3"></div>
+    </div>
+
+    <div class="input-step" id="sep2-ex1-step4" style="display:none">
+      <label>Étape 4 : Solution particulière finale ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="sep2-i4" placeholder="y = tan(x³/3 + π/4)">
+        <button class="check-btn" onclick="checkSep2(4)">Vérifier</button>
+      </div>
+      <div class="feedback" id="sep2-f4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 3 : LINÉAIRES ORDRE 1 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-lin1">
+  <h1 class="chapter-title">Équations Linéaires d'Ordre 1</h1>
+  <p class="chapter-meta">Type B · Ordre 1</p>
+
+  <div class="theory-block">
+    <div class="tb-header">
+      <span class="tb-tag">THÉORIE</span>
+      <h2>Méthode du Facteur Intégrant</h2>
+    </div>
+    <div class="tb-body">
+      <div class="def-box">
+        <div class="def-label">Forme standard</div>
+        $$y' + p(x)\,y = q(x)$$
+        <p style="margin-top:8px">Si $q(x)=0$ : équation homogène. Sinon : équation complète.</p>
+      </div>
+
+      <div class="method-box">
+        <div class="method-label">Méthode — Facteur intégrant</div>
+        <ol>
+          <li><strong>Calculer</strong> $\mu(x) = e^{\int p(x)\,dx}$</li>
+          <li><strong>Multiplier</strong> les deux membres par $\mu(x)$ :<br>$[\mu(x)\,y]' = \mu(x)\,q(x)$</li>
+          <li><strong>Intégrer</strong> des deux côtés :<br>$\mu(x)\,y = \int \mu(x)\,q(x)\,dx + C$</li>
+          <li><strong>Diviser</strong> par $\mu(x)$ pour isoler $y$</li>
+        </ol>
+      </div>
+
+      <div class="warn-box">
+        ⚠️ La prof utilise aussi la <strong>variation de la constante</strong> : trouver $y_h$ (sol. homogène), puis poser $y = v(x)\cdot y_h$ et trouver $v(x)$ par substitution. Les deux méthodes donnent le même résultat — choisir celle qu'on maîtrise le mieux.
+      </div>
+
+      <div class="example-block">
+        <div class="ex-title">Exemple résolu pas à pas</div>
+        <div class="ex-problem">Résoudre : $y' + 2xy = 4x$</div>
+        <div class="step-container" id="lin-steps">
+          <div class="step shown" id="lin-s1">
+            <div class="step-row">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-label">Identifier $p(x)$ et $q(x)$</div>
+                Forme standard : $y' + \underbrace{2x}_{p(x)}y = \underbrace{4x}_{q(x)}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="lin-s2">
+            <div class="step-row">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-label">Résoudre l'homogène $y' + 2xy = 0$</div>
+                $\dfrac{dy}{y} = -2x\,dx \;\Rightarrow\; \ln|y| = -x^2 \;\Rightarrow\; y_h = Ce^{-x^2}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="lin-s3">
+            <div class="step-row">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-label">Chercher solution particulière : poser $y_p = k$ (constante)</div>
+                $y_p' = 0$, donc $0 + 2x\cdot k = 4x \;\Rightarrow\; k=2$
+                <br>
+                $y_p = 2$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="lin-s4">
+            <div class="step-row">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-label">Solution générale</div>
+                $\boxed{y = Ce^{-x^2} + 2}$
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="lin-ex-btn" onclick="nextStep('lin',4)">Voir étape suivante →</button>
+          <button class="btn-reset" onclick="resetSteps('lin',4)">Recommencer</button>
+        </div>
+      </div>
+
+      <div class="example-block" style="margin-top:14px">
+        <div class="ex-title">Exemple avec CI — Facteur intégrant</div>
+        <div class="ex-problem">Résoudre : $y' + y\cot x = 5e^{\cos x}$, avec $y(\pi/2) = -4$</div>
+        <div class="step-container" id="lin2-steps">
+          <div class="step shown" id="lin2-s1">
+            <div class="step-row">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-label">Facteur intégrant</div>
+                $\mu = e^{\int \cot x\,dx} = e^{\ln|\sin x|} = \sin x$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="lin2-s2">
+            <div class="step-row">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-label">Multiplier par $\sin x$</div>
+                $(\sin x\cdot y)' = 5e^{\cos x}\sin x$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="lin2-s3">
+            <div class="step-row">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-label">Intégrer à droite</div>
+                $\int 5e^{\cos x}\sin x\,dx = -5e^{\cos x} + C$
+                <br>
+                <small style="color:var(--ink3)">(sub. $u=\cos x$, $du=-\sin x\,dx$)</small>
+                <br>
+                $\sin x\cdot y = -5e^{\cos x} + C \;\Rightarrow\; y = \dfrac{C - 5e^{\cos x}}{\sin x}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="lin2-s4">
+            <div class="step-row">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-label">Condition initiale $y(\pi/2) = -4$</div>
+                $-4 = \dfrac{C - 5e^0}{1} = C-5 \;\Rightarrow\; C=1$
+                <br>
+                $\boxed{y = \dfrac{1-5e^{\cos x}}{\sin x}}$
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="lin2-ex-btn" onclick="nextStep('lin2',4)">Voir étape suivante →</button>
+          <button class="btn-reset" onclick="resetSteps('lin2',4)">Recommencer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE INTERACTIF LIN -->
+  <div class="exercise-card">
+    <div class="ex-card-header">
+      <span class="ex-num">EX-LIN-1</span>
+      <span class="ex-badge">Linéaire O1</span>
+    </div>
+    <div class="ex-question">
+      Résoudre : $(x-2)y' = y + 2(x-2)^3$
+    </div>
+
+    <div class="input-step">
+      <label>Étape 1 : Mettre en forme standard $y' + p(x)y = q(x)$. Quel est $p(x)$ ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="lin1-i1" placeholder="p(x) = ?">
+        <button class="check-btn" onclick="checkLin1(1)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('lin1-h1')">Indice</button>
+      </div>
+      <div class="feedback" id="lin1-f1"></div>
+      <div class="feedback hint-show" id="lin1-h1">
+        Diviser par $(x-2)$ : $y' - \dfrac{1}{x-2}y = 2(x-2)^2$. Donc $p(x) = -\dfrac{1}{x-2}$
+      </div>
+    </div>
+
+    <div class="input-step" id="lin1-step2" style="display:none">
+      <label>Étape 2 : Solution homogène $y_h$ (résoudre $y'-\frac{1}{x-2}y=0$)</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="lin1-i2" placeholder="y_h = ?">
+        <button class="check-btn" onclick="checkLin1(2)">Vérifier</button>
+      </div>
+      <div class="feedback" id="lin1-f2"></div>
+    </div>
+
+    <div class="input-step" id="lin1-step3" style="display:none">
+      <label>Étape 3 : Forme de la solution particulière ?<br><small>Astuce : $q(x)=2(x-2)^2$, poser $y_p = A(x-2)^3$</small></label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="lin1-i3" placeholder="y_p = ?">
+        <button class="check-btn" onclick="checkLin1(3)">Vérifier</button>
+      </div>
+      <div class="feedback" id="lin1-f3"></div>
+    </div>
+
+    <div class="input-step" id="lin1-step4" style="display:none">
+      <label>Étape 4 : Solution générale</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="lin1-i4" placeholder="y = ?">
+        <button class="check-btn" onclick="checkLin1(4)">Vérifier</button>
+      </div>
+      <div class="feedback" id="lin1-f4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 4 : ORDRE 2 HOMOGÈNE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-hom2">
+  <h1 class="chapter-title">EDO Ordre 2 — Homogène C.C.</h1>
+  <p class="chapter-meta">Type C · Ordre 2 · Coefficients Constants</p>
+
+  <div class="theory-block">
+    <div class="tb-header">
+      <span class="tb-tag">THÉORIE</span>
+      <h2>Équation caractéristique</h2>
+    </div>
+    <div class="tb-body">
+      <div class="def-box">
+        <div class="def-label">Forme</div>
+        $$ay'' + by' + cy = 0 \qquad (a,b,c \in \mathbb{R},\; a\neq 0)$$
+      </div>
+
+      <div class="method-box">
+        <div class="method-label">Méthode</div>
+        <ol>
+          <li>Poser $y = e^{\lambda x}$ et substituer : obtenir $a\lambda^2 + b\lambda + c = 0$</li>
+          <li>Calculer $\Delta = b^2 - 4ac$</li>
+          <li>3 cas selon $\Delta$ :</li>
+        </ol>
+      </div>
+
+      <table>
+        <tr><th>Cas</th><th>Racines</th><th>Solution générale</th></tr>
+        <tr>
+          <td>$\Delta > 0$</td>
+          <td>$\lambda_1, \lambda_2$ réelles distinctes</td>
+          <td>$y = C_1 e^{\lambda_1 x} + C_2 e^{\lambda_2 x}$</td>
+        </tr>
+        <tr>
+          <td>$\Delta = 0$</td>
+          <td>$\lambda$ double $= -b/2a$</td>
+          <td>$y = (C_1 + C_2 x)e^{\lambda x}$</td>
+        </tr>
+        <tr>
+          <td>$\Delta < 0$</td>
+          <td>$\alpha \pm i\beta$ complexes</td>
+          <td>$y = e^{\alpha x}(C_1\cos\beta x + C_2\sin\beta x)$</td>
+        </tr>
+      </table>
+
+      <div class="warn-box">
+        ⚠️ Pour $\Delta &lt; 0$ : $\lambda = \alpha \pm i\beta$ avec $\alpha = -b/2a$ et $\beta = \sqrt{-\Delta}/2a$. Ne jamais écrire $Ce^{i\beta x}$ dans la solution finale — toujours développer en $\cos/\sin$.
+      </div>
+
+      <div class="example-block">
+        <div class="ex-title">Les 3 cas — Exemples</div>
+        <div class="step-container" id="hom-steps">
+          <div class="step shown" id="hom-s1">
+            <div class="step-row">
+              <div class="step-num">Δ>0</div>
+              <div class="step-content">
+                <div class="step-label">2 racines réelles — $y'' - 4y' + 3y = 0$</div>
+                $\lambda^2 - 4\lambda + 3 = 0 \;\Rightarrow\; (\lambda-1)(\lambda-3) = 0$
+                <br>
+                $\lambda_1 = 1,\; \lambda_2 = 3$
+                <br>
+                $\boxed{y = C_1 e^x + C_2 e^{3x}}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="hom-s2">
+            <div class="step-row">
+              <div class="step-num">Δ=0</div>
+              <div class="step-content">
+                <div class="step-label">Racine double — $y'' - 4y' + 4y = 0$</div>
+                $\lambda^2 - 4\lambda + 4 = 0 \;\Rightarrow\; (\lambda-2)^2 = 0$
+                <br>
+                $\lambda = 2$ (double), $\Delta = 16-16 = 0$
+                <br>
+                $\boxed{y = (C_1 + C_2 x)e^{2x}}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="hom-s3">
+            <div class="step-row">
+              <div class="step-num">Δ&lt;0</div>
+              <div class="step-content">
+                <div class="step-label">Racines complexes — $y'' + 4y' + 5y = 0$</div>
+                $\lambda^2 + 4\lambda + 5 = 0$, $\Delta = 16-20 = -4$
+                <br>
+                $\lambda = \dfrac{-4 \pm 2i}{2} = -2 \pm i$, donc $\alpha=-2,\;\beta=1$
+                <br>
+                $\boxed{y = e^{-2x}(C_1\cos x + C_2\sin x)}$
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="hom-ex-btn" onclick="nextStep('hom',3)">Cas suivant →</button>
+          <button class="btn-reset" onclick="resetSteps('hom',3)">Recommencer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE INTERACTIF HOm2 -->
+  <div class="exercise-card">
+    <div class="ex-card-header">
+      <span class="ex-num">EX-O2-1</span>
+      <span class="ex-badge">Ordre 2 homogène</span>
+    </div>
+    <div class="ex-question">
+      Résoudre : $y'' - 2y' - 3y = 0$
+    </div>
+
+    <div class="input-step">
+      <label>Étape 1 : Équation caractéristique ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom1-i1" placeholder="λ² - 2λ - 3 = 0">
+        <button class="check-btn" onclick="checkHom1(1)">Vérifier</button>
+      </div>
+      <div class="feedback" id="hom1-f1"></div>
+    </div>
+
+    <div class="input-step" id="hom1-step2" style="display:none">
+      <label>Étape 2 : Discriminant $\Delta$ ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom1-i2" placeholder="Δ = ?">
+        <button class="check-btn" onclick="checkHom1(2)">Vérifier</button>
+      </div>
+      <div class="feedback" id="hom1-f2"></div>
+    </div>
+
+    <div class="input-step" id="hom1-step3" style="display:none">
+      <label>Étape 3 : Racines $\lambda_1, \lambda_2$ ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom1-i3" placeholder="λ₁ = ?, λ₂ = ?">
+        <button class="check-btn" onclick="checkHom1(3)">Vérifier</button>
+      </div>
+      <div class="feedback" id="hom1-f3"></div>
+    </div>
+
+    <div class="input-step" id="hom1-step4" style="display:none">
+      <label>Étape 4 : Solution générale ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom1-i4" placeholder="y = ?">
+        <button class="check-btn" onclick="checkHom1(4)">Vérifier</button>
+      </div>
+      <div class="feedback" id="hom1-f4"></div>
+    </div>
+  </div>
+
+  <!-- EX Cauchy ordre 2 -->
+  <div class="exercise-card">
+    <div class="ex-card-header">
+      <span class="ex-num">EX-O2-2</span>
+      <span class="ex-badge">Ordre 2 + Cauchy</span>
+    </div>
+    <div class="ex-question">
+      Résoudre avec $y(0)=1, y'(0)=4$ : $y'' - 6y' + 10y = 0$
+    </div>
+
+    <div class="input-step">
+      <label>Étape 1 : Racines de $\lambda^2 - 6\lambda + 10 = 0$ ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom2-i1" placeholder="λ = 3 ± i">
+        <button class="check-btn" onclick="checkHom2(1)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('hom2-h1')">Indice</button>
+      </div>
+      <div class="feedback" id="hom2-f1"></div>
+      <div class="feedback hint-show" id="hom2-h1">$\Delta = 36-40 = -4$, donc $\lambda = \frac{6\pm 2i}{2} = 3\pm i$. Racines complexes : $\alpha=3, \beta=1$</div>
+    </div>
+
+    <div class="input-step" id="hom2-step2" style="display:none">
+      <label>Étape 2 : Solution générale ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom2-i2" placeholder="y = e^(3x)(C₁cos x + C₂sin x)">
+        <button class="check-btn" onclick="checkHom2(2)">Vérifier</button>
+      </div>
+      <div class="feedback" id="hom2-f2"></div>
+    </div>
+
+    <div class="input-step" id="hom2-step3" style="display:none">
+      <label>Étape 3 : Appliquer $y(0)=1$ → trouver $C_1$</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom2-i3" placeholder="C₁ = ?">
+        <button class="check-btn" onclick="checkHom2(3)">Vérifier</button>
+      </div>
+      <div class="feedback" id="hom2-f3"></div>
+    </div>
+
+    <div class="input-step" id="hom2-step4" style="display:none">
+      <label>Étape 4 : Calculer $y'$ puis appliquer $y'(0)=4$ → trouver $C_2$</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="hom2-i4" placeholder="C₂ = ?">
+        <button class="check-btn" onclick="checkHom2(4)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('hom2-h4')">Indice</button>
+      </div>
+      <div class="feedback" id="hom2-f4"></div>
+      <div class="feedback hint-show" id="hom2-h4">$y' = e^{3x}[(3C_1+C_2)\cos x + (3C_2-C_1)\sin x]$. En $x=0$ : $3C_1+C_2 = 4$. Avec $C_1=1$ : $C_2=1$</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 5 : ORDRE 2 AVEC SECOND MEMBRE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-part">
+  <h1 class="chapter-title">EDO Ordre 2 — Avec Second Membre</h1>
+  <p class="chapter-meta">Type D · Ordre 2 · Non homogène</p>
+
+  <div class="theory-block">
+    <div class="tb-header">
+      <span class="tb-tag">THÉORIE</span>
+      <h2>Solution Particulière — Méthode des coefficients indéterminés</h2>
+    </div>
+    <div class="tb-body">
+      <div class="def-box">
+        <div class="def-label">Forme</div>
+        $$ay'' + by' + cy = f(x)$$
+        <p style="margin-top:8px"><strong>Solution générale</strong> : $y = y_h + y_p$</p>
+        <p>où $y_h$ est la solution de l'équation homogène (méthode précédente) et $y_p$ est une solution particulière.</p>
+      </div>
+
+      <div class="method-box">
+        <div class="method-label">Méthode — 3 étapes</div>
+        <ol>
+          <li>Résoudre $ay_h'' + by_h' + cy_h = 0$ (section précédente)</li>
+          <li>Trouver $y_p$ selon la forme de $f(x)$ (tableau ci-dessous)</li>
+          <li>Substituer $y_p$ dans l'équation et identifier les coefficients</li>
+        </ol>
+      </div>
+
+      <h3 style="margin: 16px 0 8px; font-size:0.9rem; color:var(--accent)">Tableau des formes de $y_p$ selon $f(x)$ :</h3>
+      <table>
+        <tr><th>$f(x)$</th><th>Forme de $y_p$</th><th>Condition</th></tr>
+        <tr><td>Constante $k$</td><td>$A$</td><td>Si $c\neq 0$</td></tr>
+        <tr><td>Polynôme $P_n(x)$</td><td>Polynôme de degré $n$</td><td>Si $c\neq 0$</td></tr>
+        <tr><td>$e^{ax}$</td><td>$Ae^{ax}$</td><td>Si $a$ n'est pas racine de caract.</td></tr>
+        <tr><td>$e^{ax}$ ($a$ = racine simple)</td><td>$Axe^{ax}$</td><td>Multiplier par $x$</td></tr>
+        <tr><td>$e^{ax}$ ($a$ = racine double)</td><td>$Ax^2e^{ax}$</td><td>Multiplier par $x^2$</td></tr>
+        <tr><td>$\sin(bx)$ ou $\cos(bx)$</td><td>$A\cos(bx) + B\sin(bx)$</td><td>Toujours les deux</td></tr>
+      </table>
+
+      <div class="warn-box">
+        ⚠️ <strong>Règle de résonance :</strong> Si la forme "naturelle" de $y_p$ est déjà dans $y_h$, multiplier par $x$ (ou $x^2$ si racine double). C'est le cas classique au piège !
+      </div>
+
+      <div class="example-block">
+        <div class="ex-title">Exemple — Second membre polynomial</div>
+        <div class="ex-problem">Résoudre : $y'' - 2y' - 3y = 2x + 1$</div>
+        <div class="step-container" id="part-steps">
+          <div class="step shown" id="part-s1">
+            <div class="step-row">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-label">Solution homogène</div>
+                $\lambda^2-2\lambda-3=0 \;\Rightarrow\; \Delta=16 \;\Rightarrow\; \lambda_1=-1, \lambda_2=3$
+                <br>
+                $y_h = C_1e^{-x} + C_2e^{3x}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="part-s2">
+            <div class="step-row">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-label">Forme de $y_p$ : $f(x)=2x+1$ → polynôme deg 1</div>
+                Poser $y_p = ax + b$, donc $y_p' = a$, $y_p'' = 0$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="part-s3">
+            <div class="step-row">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-label">Substituer et identifier</div>
+                $0 - 2a - 3(ax+b) = 2x+1$
+                <br>
+                $-3ax + (-2a-3b) = 2x+1$
+                <br>
+                $-3a=2 \Rightarrow a=-\tfrac{2}{3}$ et $-2(-\tfrac{2}{3})-3b=1 \Rightarrow b=\tfrac{1}{9}$
+                <br>
+                $y_p = -\tfrac{2}{3}x + \tfrac{1}{9}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="part-s4">
+            <div class="step-row">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-label">Solution générale</div>
+                $\boxed{y = C_1e^{-x} + C_2e^{3x} - \tfrac{2}{3}x + \tfrac{1}{9}}$
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="part-ex-btn" onclick="nextStep('part',4)">Voir étape suivante →</button>
+          <button class="btn-reset" onclick="resetSteps('part',4)">Recommencer</button>
+        </div>
+      </div>
+
+      <div class="example-block" style="margin-top:14px">
+        <div class="ex-title">Exemple — Second membre exponentiel avec résonance</div>
+        <div class="ex-problem">Résoudre : $y'' - 4y' + 4y = e^{2x}$</div>
+        <div class="step-container" id="part2-steps">
+          <div class="step shown" id="part2-s1">
+            <div class="step-row">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-label">Homogène</div>
+                $\lambda^2-4\lambda+4=0 \Rightarrow (\lambda-2)^2=0 \Rightarrow \lambda=2$ (double)
+                <br>
+                $y_h = (C_1+C_2x)e^{2x}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="part2-s2">
+            <div class="step-row">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-label">Forme $y_p$ — RÉSONANCE !</div>
+                $f(x)=e^{2x}$ et $\lambda=2$ est racine <strong>double</strong>
+                <br>
+                Donc poser $y_p = Ax^2e^{2x}$ (multiplier par $x^2$)
+              </div>
+            </div>
+          </div>
+          <div class="step" id="part2-s3">
+            <div class="step-row">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-label">Calculer $y_p'$ et $y_p''$, substituer</div>
+                Après calcul et simplification : $2Ae^{2x} = e^{2x} \Rightarrow A = \tfrac{1}{2}$
+                <br>
+                $y_p = \tfrac{1}{2}x^2e^{2x}$
+              </div>
+            </div>
+          </div>
+          <div class="step" id="part2-s4">
+            <div class="step-row">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-label">Solution générale</div>
+                $\boxed{y = (C_1+C_2x)e^{2x} + \tfrac{1}{2}x^2e^{2x}}$
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-next" id="part2-ex-btn" onclick="nextStep('part2',4)">Voir étape suivante →</button>
+          <button class="btn-reset" onclick="resetSteps('part2',4)">Recommencer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCICE INTERACTIF PART -->
+  <div class="exercise-card">
+    <div class="ex-card-header">
+      <span class="ex-num">EX-PART-1</span>
+      <span class="ex-badge">O2 avec 2nd membre</span>
+    </div>
+    <div class="ex-question">
+      Résoudre : $y'' + 9y = 9e^{3x}$
+    </div>
+
+    <div class="input-step">
+      <label>Étape 1 : Racines de l'équation caractéristique ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="part1-i1" placeholder="λ₁ = ?, λ₂ = ?">
+        <button class="check-btn" onclick="checkPart1(1)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('part1-h1')">Indice</button>
+      </div>
+      <div class="feedback" id="part1-f1"></div>
+      <div class="feedback hint-show" id="part1-h1">$\lambda^2+9=0 \Rightarrow \lambda = \pm 3i$. Racines complexes : $\alpha=0$, $\beta=3$</div>
+    </div>
+
+    <div class="input-step" id="part1-step2" style="display:none">
+      <label>Étape 2 : Solution homogène ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="part1-i2" placeholder="y_h = ?">
+        <button class="check-btn" onclick="checkPart1(2)">Vérifier</button>
+      </div>
+      <div class="feedback" id="part1-f2"></div>
+    </div>
+
+    <div class="input-step" id="part1-step3" style="display:none">
+      <label>Étape 3 : Forme de $y_p$ pour $f(x)=9e^{3x}$ ? ($3$ est-il une racine ?)</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="part1-i3" placeholder="y_p = Ce^(3x)">
+        <button class="check-btn" onclick="checkPart1(3)">Vérifier</button>
+      </div>
+      <div class="feedback" id="part1-f3"></div>
+    </div>
+
+    <div class="input-step" id="part1-step4" style="display:none">
+      <label>Étape 4 : Substituer et trouver la valeur du coefficient</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="part1-i4" placeholder="C = ?">
+        <button class="check-btn" onclick="checkPart1(4)">Vérifier</button>
+        <button class="hint-btn" onclick="toggleHint('part1-h4')">Indice</button>
+      </div>
+      <div class="feedback" id="part1-f4"></div>
+      <div class="feedback hint-show" id="part1-h4">$y_p=Ce^{3x}$, $y_p''=9Ce^{3x}$. Substituer : $9Ce^{3x}+9Ce^{3x}=9e^{3x} \Rightarrow 18C=9 \Rightarrow C=1/2$</div>
+    </div>
+
+    <div class="input-step" id="part1-step5" style="display:none">
+      <label>Étape 5 : Solution générale complète ?</label>
+      <div class="input-row">
+        <input type="text" class="math-input" id="part1-i5" placeholder="y = ?">
+        <button class="check-btn" onclick="checkPart1(5)">Vérifier</button>
+      </div>
+      <div class="feedback" id="part1-f5"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 6 : RECONNAÎTRE LE TYPE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-recog">
+  <h1 class="chapter-title">Reconnaître le Type</h1>
+  <p class="chapter-meta">Mini-jeu · Compétence clé à l'examen</p>
+
+  <div class="quiz-card">
+    <div class="quiz-score-bar">
+      <div>Identifie le type d'EDO :</div>
+      <div class="score-display" id="quiz-score">Score : 0 / 0</div>
+    </div>
+
+    <div class="quiz-equation" id="quiz-eq">—</div>
+    <div id="quiz-feedback"></div>
+
+    <div class="quiz-choices">
+      <button class="choice-btn" onclick="quizAnswer(0)">Variables séparables<br><small>$y' = g(x)\cdot h(y)$</small></button>
+      <button class="choice-btn" onclick="quizAnswer(1)">Linéaire ordre 1<br><small>$y' + p(x)y = q(x)$</small></button>
+      <button class="choice-btn" onclick="quizAnswer(2)">Ordre 2 homogène C.C.<br><small>$ay''+by'+cy=0$</small></button>
+      <button class="choice-btn" onclick="quizAnswer(3)">Ordre 2 avec 2nd membre<br><small>$ay''+by'+cy=f(x)$</small></button>
+    </div>
+
+    <button class="btn-next" onclick="nextQuiz()" id="quiz-next-btn">Suivant →</button>
+    <div style="margin-top:16px; font-size:0.82rem; color:var(--ink3)" id="quiz-end-msg"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 7 : EXERCICES NIVEAU EXAM -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-exam">
+  <h1 class="chapter-title">Exercices Niveau Examen</h1>
+  <p class="chapter-meta">5 exercices · Niveau TP · Guidés avec correction</p>
+
+  <!-- EX 1 -->
+  <div class="exam-exercise">
+    <div class="exam-ex-header">
+      <h3>Exercice 1 — EDO séparable (Syllabus 1.8d)</h3>
+      <span class="pts">~25 pts</span>
+    </div>
+    <div class="exam-ex-body">
+      <p><strong>Résoudre avec $x_0=5, y_0=-1$ :</strong> $(x-4)xy' + y = 0$</p>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 1 — Mise en forme séparable</div>
+        <button class="reveal-btn" onclick="reveal('ex1-s1')">Voir correction</button>
+        <div class="revealed" id="ex1-s1">
+          <div class="solution-box">
+            $\dfrac{dy}{y} = -\dfrac{dx}{x(x-4)}$
+            <br>
+            On utilise les fractions partielles : $\dfrac{1}{x(x-4)} = \dfrac{A}{x} + \dfrac{B}{x-4}$
+            <br>
+            $1 = A(x-4)+Bx \;\Rightarrow\; A=-\tfrac{1}{4},\; B=\tfrac{1}{4}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 2 — Intégration</div>
+        <button class="reveal-btn" onclick="reveal('ex1-s2')">Voir correction</button>
+        <div class="revealed" id="ex1-s2">
+          <div class="solution-box">
+            $\ln|y| = \tfrac{1}{4}\ln|x| - \tfrac{1}{4}\ln|x-4| + C = \tfrac{1}{4}\ln\left|\dfrac{x}{x-4}\right| + C$
+            <br>
+            $y = K\left(\dfrac{x}{x-4}\right)^{1/4}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 3 — Condition initiale $y(5) = -1$</div>
+        <button class="reveal-btn" onclick="reveal('ex1-s3')">Voir correction</button>
+        <div class="revealed" id="ex1-s3">
+          <div class="solution-box">
+            $-1 = K\left(\dfrac{5}{1}\right)^{1/4} = K\cdot 5^{1/4}$
+            <br>
+            $K = -5^{-1/4}$
+            <br>
+            $\boxed{y = -\left(\dfrac{x}{5(x-4)}\right)^{1/4}}$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EX 2 -->
+  <div class="exam-exercise">
+    <div class="exam-ex-header">
+      <h3>Exercice 2 — EDO linéaire ordre 1 (Syllabus 1.14e)</h3>
+      <span class="pts">~25 pts</span>
+    </div>
+    <div class="exam-ex-body">
+      <p><strong>Résoudre :</strong> $\dfrac{dr}{d\theta} + 3r = 2$</p>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 1 — Identifier le type et résoudre l'homogène</div>
+        <button class="reveal-btn" onclick="reveal('ex2-s1')">Voir correction</button>
+        <div class="revealed" id="ex2-s1">
+          <div class="solution-box">
+            Forme standard avec $p(\theta)=3$, $q(\theta)=2$.
+            <br>
+            Homogène : $\dfrac{dr}{r} = -3\,d\theta \Rightarrow r_h = Ce^{-3\theta}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 2 — Solution particulière (variation de la constante)</div>
+        <button class="reveal-btn" onclick="reveal('ex2-s2')">Voir correction</button>
+        <div class="revealed" id="ex2-s2">
+          <div class="solution-box">
+            Poser $r = C(\theta)e^{-3\theta}$, dériver et substituer :
+            <br>
+            $C'e^{-3\theta} - 3Ce^{-3\theta} + 3Ce^{-3\theta} = 2$
+            <br>
+            $C'e^{-3\theta} = 2 \;\Rightarrow\; C' = 2e^{3\theta} \;\Rightarrow\; C = \tfrac{2}{3}e^{3\theta}$
+            <br>
+            $r_p = \tfrac{2}{3}e^{3\theta}\cdot e^{-3\theta} = \tfrac{2}{3}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 3 — Solution générale</div>
+        <button class="reveal-btn" onclick="reveal('ex2-s3')">Voir correction</button>
+        <div class="revealed" id="ex2-s3">
+          <div class="solution-box">
+            $\boxed{r(\theta) = Ce^{-3\theta} + \dfrac{2}{3}}$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EX 3 -->
+  <div class="exam-exercise">
+    <div class="exam-ex-header">
+      <h3>Exercice 3 — Ordre 2 homogène + Cauchy (Syllabus 1.27b)</h3>
+      <span class="pts">~25 pts</span>
+    </div>
+    <div class="exam-ex-body">
+      <p><strong>Résoudre avec $y(0)=1, y'(0)=4$ :</strong> $y'' - 6y' + 10y = 0$</p>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 1 — Équation caractéristique</div>
+        <button class="reveal-btn" onclick="reveal('ex3-s1')">Voir correction</button>
+        <div class="revealed" id="ex3-s1">
+          <div class="solution-box">
+            $\lambda^2 - 6\lambda + 10 = 0$, $\Delta = 36-40 = -4$
+            <br>
+            $\lambda = \dfrac{6 \pm 2i}{2} = 3 \pm i$ → racines complexes : $\alpha=3, \beta=1$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 2 — Solution générale et application des CI</div>
+        <button class="reveal-btn" onclick="reveal('ex3-s2')">Voir correction</button>
+        <div class="revealed" id="ex3-s2">
+          <div class="solution-box">
+            $y = e^{3x}(C_1\cos x + C_2\sin x)$
+            <br>
+            $y(0)=C_1=1$
+            <br>
+            $y' = e^{3x}[(3C_1+C_2)\cos x + (3C_2-C_1)\sin x]$
+            <br>
+            $y'(0) = 3\cdot 1 + C_2 = 4 \;\Rightarrow\; C_2 = 1$
+            <br>
+            $\boxed{y = e^{3x}(\cos x + \sin x)}$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EX 4 -->
+  <div class="exam-exercise">
+    <div class="exam-ex-header">
+      <h3>Exercice 4 — Ordre 2 avec 2nd membre trig (Syllabus 1.28j)</h3>
+      <span class="pts">~25 pts</span>
+    </div>
+    <div class="exam-ex-body">
+      <p><strong>Résoudre :</strong> $y'' - 5y' + 6y = -3\sin x$</p>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 1 — Solution homogène</div>
+        <button class="reveal-btn" onclick="reveal('ex4-s1')">Voir correction</button>
+        <div class="revealed" id="ex4-s1">
+          <div class="solution-box">
+            $\lambda^2-5\lambda+6=0 \Rightarrow (\lambda-2)(\lambda-3)=0$
+            <br>
+            $\lambda_1=2, \lambda_2=3$, $y_h = C_1e^{2x}+C_2e^{3x}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 2 — Solution particulière</div>
+        <button class="reveal-btn" onclick="reveal('ex4-s2')">Voir correction</button>
+        <div class="revealed" id="ex4-s2">
+          <div class="solution-box">
+            $f(x)=-3\sin x$ → poser $y_p = A\cos x + B\sin x$
+            <br>
+            $y_p' = -A\sin x + B\cos x$, $y_p'' = -A\cos x - B\sin x$
+            <br>
+            Substituer : $(-A-B\cdot(-5)+6A)\cos x + (-B+A\cdot(-5)+6B)\sin x = -3\sin x$
+            <br>
+            — Coeff $\cos x$ : $5A-5B = 0 \Rightarrow A=B$
+            <br>
+            — Coeff $\sin x$ : $5A+5B = -3 \Rightarrow 10A=-3 \Rightarrow A=-\tfrac{3}{10}$
+            <br>
+            $y_p = -\tfrac{3}{10}(\cos x + \sin x)$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 3 — Solution générale</div>
+        <button class="reveal-btn" onclick="reveal('ex4-s3')">Voir correction</button>
+        <div class="revealed" id="ex4-s3">
+          <div class="solution-box">
+            $\boxed{y = C_1e^{2x}+C_2e^{3x} - \dfrac{3}{10}(\cos x + \sin x)}$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EX 5 -->
+  <div class="exam-exercise">
+    <div class="exam-ex-header">
+      <h3>Exercice 5 — Ordre 2 Cauchy complet (Syllabus 1.29b)</h3>
+      <span class="pts">~25 pts</span>
+    </div>
+    <div class="exam-ex-body">
+      <p><strong>Résoudre avec $y(0)=0, y'(0)=0$ :</strong> $y'' - 4y' + 4y = e^{2x} + x^2$</p>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 1 — Homogène</div>
+        <button class="reveal-btn" onclick="reveal('ex5-s1')">Voir correction</button>
+        <div class="revealed" id="ex5-s1">
+          <div class="solution-box">
+            $(\lambda-2)^2=0 \Rightarrow \lambda=2$ double
+            <br>
+            $y_h = (C_1+C_2x)e^{2x}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 2 — $y_p$ pour $e^{2x}$ (résonance!)</div>
+        <button class="reveal-btn" onclick="reveal('ex5-s2')">Voir correction</button>
+        <div class="revealed" id="ex5-s2">
+          <div class="solution-box">
+            $\lambda=2$ est racine double → poser $y_{p1} = ax^2e^{2x}$
+            <br>
+            Après calcul : $2a = 1 \Rightarrow a = \tfrac{1}{2}$, donc $y_{p1} = \tfrac{1}{2}x^2e^{2x}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 3 — $y_p$ pour $x^2$</div>
+        <button class="reveal-btn" onclick="reveal('ex5-s3')">Voir correction</button>
+        <div class="revealed" id="ex5-s3">
+          <div class="solution-box">
+            Poser $y_{p2} = bx^2+cx+d$
+            <br>
+            $y_{p2}'' - 4y_{p2}' + 4y_{p2} = x^2$
+            <br>
+            $2b - 4(2bx+c) + 4(bx^2+cx+d) = x^2$
+            <br>
+            $4bx^2 + (-8b+4c)x + (2b-4c+4d) = x^2$
+            <br>
+            $b=\tfrac{1}{4}$, $c=\tfrac{1}{2}$, $d=\tfrac{3}{8}$
+            <br>
+            $y_{p2} = \tfrac{1}{4}x^2 + \tfrac{1}{2}x + \tfrac{3}{8}$
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-step">
+        <div class="exam-step-label">Étape 4 — Solution générale + CI</div>
+        <button class="reveal-btn" onclick="reveal('ex5-s4')">Voir correction</button>
+        <div class="revealed" id="ex5-s4">
+          <div class="solution-box">
+            $y_g = (C_1+C_2x)e^{2x} + \tfrac{1}{2}x^2e^{2x} + \tfrac{1}{4}x^2 + \tfrac{1}{2}x + \tfrac{3}{8}$
+            <br>
+            $y(0)=0$: $C_1 + \tfrac{3}{8} = 0 \Rightarrow C_1 = -\tfrac{3}{8}$
+            <br>
+            $y'(0)=0$: $2C_1+C_2+\tfrac{1}{2} = 0 \Rightarrow C_2 = -\tfrac{1}{2}+\tfrac{3}{4} = \tfrac{1}{4}$
+            <br>
+            $\boxed{y = (-\tfrac{3}{8}+\tfrac{1}{4}x)e^{2x} + \tfrac{1}{2}x^2e^{2x} + \tfrac{1}{4}x^2 + \tfrac{1}{2}x + \tfrac{3}{8}}$
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 8 : BOSS FIGHT -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s-boss">
+  <div class="boss-card">
+    <h2>⚡ Boss Fight</h2>
+    <div class="boss-sub">1 exercice complet · Non guidé · Chrono 20 min</div>
+
+    <div id="boss-intro">
+      <p style="opacity:0.85; margin-bottom:20px">Résous l'exercice complet sans aide. Écris ta démarche dans la zone ci-dessous, puis soumets pour voir la correction complète.</p>
+      <button class="boss-btn" onclick="startBoss()">Lancer le chrono →</button>
+    </div>
+
+    <div id="boss-game" style="display:none">
+      <div id="boss-timer">20:00</div>
+      <div class="boss-equation" id="boss-eq">—</div>
+      <p style="opacity:0.75; font-size:0.85rem; margin-bottom:8px">Écris ta solution complète (étapes, calculs, réponse) :</p>
+      <textarea class="boss-area" id="boss-answer" placeholder="Étape 1 : ...&#10;Étape 2 : ...&#10;...&#10;Solution finale : y = ..."></textarea>
+      <div style="display:flex; gap:12px; flex-wrap:wrap">
+        <button class="boss-btn" onclick="submitBoss()">Soumettre et voir la correction</button>
+        <button style="padding:12px 20px; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); border-radius:8px; cursor:pointer; font-size:0.9rem" onclick="stopBoss()">Abandonner</button>
+      </div>
+
+      <div class="boss-correction" id="boss-correction">
+        <h3 style="margin-bottom:14px; color: var(--gold)">Correction complète</h3>
+        <div id="boss-correction-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ── NAVIGATION ──
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const map = {intro:0,sep:1,lin1:2,hom2:3,part:4,recog:5,exam:6,boss:7};
+  btns[map[id]].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateProgress(id);
+  if(id==='recog' && quizCurrent===0) nextQuiz();
+  if(typeof renderMathInElement !== 'undefined') {
+    setTimeout(()=>renderMathInElement(document.getElementById('s-'+id),{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),100);
+  }
+}
+
+const sectionOrder = ['intro','sep','lin1','hom2','part','recog','exam','boss'];
+function updateProgress(id){
+  const idx = sectionOrder.indexOf(id);
+  const pct = Math.round((idx/7)*100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-label').textContent = 'Progression : '+pct+'%';
+}
+
+// ── STEP ANIMATION ──
+const stepState = {};
+function nextStep(prefix, total){
+  if(!stepState[prefix]) stepState[prefix]=1;
+  stepState[prefix]++;
+  if(stepState[prefix]<=total){
+    document.getElementById(prefix+'-s'+stepState[prefix]).classList.add('shown');
+  }
+  if(stepState[prefix]>=total){
+    document.getElementById(prefix+'-ex-btn').textContent = '✓ Terminé';
+    document.getElementById(prefix+'-ex-btn').disabled = true;
+    document.getElementById(prefix+'-ex-btn').style.opacity = '0.5';
+  }
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),50);
+}
+function resetSteps(prefix,total){
+  stepState[prefix]=1;
+  for(let i=2;i<=total;i++){
+    const el = document.getElementById(prefix+'-s'+i);
+    if(el) el.classList.remove('shown');
+  }
+  const btn = document.getElementById(prefix+'-ex-btn');
+  if(btn){btn.textContent='Voir étape suivante →';btn.disabled=false;btn.style.opacity='1';}
+}
+
+// ── HINT TOGGLE ──
+function toggleHint(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle('show');
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),50);
+}
+
+// ── FEEDBACK HELPERS ──
+function ok(id, msg){ const el=document.getElementById(id); el.className='feedback ok show'; el.innerHTML='✓ '+msg; renderMath(el); }
+function bad(id, msg){ const el=document.getElementById(id); el.className='feedback bad show'; el.innerHTML='✗ '+msg; renderMath(el); }
+function renderMath(el){ if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),50); }
+function showStep(id){ const el=document.getElementById(id); if(el){el.style.display='block'; setTimeout(()=>{ if(typeof renderMathInElement!=='undefined') renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}); },50);} }
+
+function normalize(s){ return s.toLowerCase().replace(/\s+/g,'').replace(/[×]/g,'*'); }
+function contains(s,...keywords){ const n=normalize(s); return keywords.some(k=>n.includes(normalize(k))); }
+
+// ── SEP EXERCISE 1 ──
+function checkSep1(step){
+  const v = document.getElementById('sep1-i'+step).value;
+  if(step===1){
+    if(contains(v,'ln|y|','lny','ln(y)') && contains(v,'y²/2','y^2/2','y2/2')){
+      ok('sep1-f1','Correct ! $\\ln|y| - \\dfrac{y^2}{2}$');
+      document.getElementById('sep1-i1').classList.add('correct');
+      showStep('sep-ex1-step2');
+    } else { bad('sep1-f1','Réessaie. Décompose $\\frac{1-y^2}{y} = \\frac{1}{y} - y$ puis intègre.'); document.getElementById('sep1-i1').classList.add('wrong'); setTimeout(()=>document.getElementById('sep1-i1').classList.remove('wrong'),1500); }
+  } else if(step===2){
+    if(contains(v,'x','x+c','x+C')){
+      ok('sep1-f2','Correct ! $\\int 1\\,dx = x$');
+      document.getElementById('sep1-i2').classList.add('correct');
+      showStep('sep-ex1-step3');
+    } else { bad('sep1-f2','$\\int dx = x + C$'); }
+  } else if(step===3){
+    if(contains(v,'ln|y|','lny') && contains(v,'y²/2','y^2/2') && contains(v,'x')){
+      ok('sep1-f3','✓ Solution correcte ! $\\ln|y| - \\dfrac{y^2}{2} = x + C$');
+      document.getElementById('sep1-i3').classList.add('correct');
+    } else { bad('sep1-f3','Combine les deux côtés.'); }
+  }
+}
+
+// ── SEP EXERCISE 2 ──
+function checkSep2(step){
+  const v = document.getElementById('sep2-i'+step).value;
+  if(step===1){
+    if(contains(v,'dy/(1+y²)','dy/(1+y^2)','1/(1+y²)') || contains(v,'arctan','dy/(1+y')){
+      ok('sep2-f1','Correct !'); document.getElementById('sep2-i1').classList.add('correct'); showStep('sep2-ex1-step2');
+    } else { bad('sep2-f1','Diviser par $(1+y^2)$ et mettre $x^2dx$ à droite.'); }
+  } else if(step===2){
+    if(contains(v,'arctan','x³/3','x^3/3')){
+      ok('sep2-f2','✓ $\\arctan(y) = \\dfrac{x^3}{3} + C$'); document.getElementById('sep2-i2').classList.add('correct'); showStep('sep2-ex1-step3');
+    } else { bad('sep2-f2','$\\int \\frac{dy}{1+y^2} = \\arctan(y)$ et $\\int x^2\\,dx = \\frac{x^3}{3}$'); }
+  } else if(step===3){
+    if(contains(v,'π/4','pi/4','1.57') || contains(v,'arctan(1)','π4')){
+      ok('sep2-f3','✓ $C = \\arctan(1) = \\dfrac{\\pi}{4}$'); document.getElementById('sep2-i3').classList.add('correct'); showStep('sep2-ex1-step4');
+    } else { bad('sep2-f3','$\\arctan(1) = \\frac{\\pi}{4}$. Substituer $x=0, y=1$.'); }
+  } else if(step===4){
+    if(contains(v,'tan','x³/3','x^3/3','π/4','pi/4')){
+      ok('sep2-f4','✓ Parfait ! $y = \\tan\\!\\left(\\dfrac{x^3}{3}+\\dfrac{\\pi}{4}\\right)$'); document.getElementById('sep2-i4').classList.add('correct');
+    } else { bad('sep2-f4','Isoler $y = \\tan(\\frac{x^3}{3}+\\frac{\\pi}{4})$'); }
+  }
+}
+
+// ── LIN EXERCISE 1 ──
+function checkLin1(step){
+  const v = document.getElementById('lin1-i'+step).value;
+  if(step===1){
+    if(contains(v,'-1/(x-2)','-1/x-2','−1/(x−2)')){
+      ok('lin1-f1','✓ $p(x) = -\\dfrac{1}{x-2}$'); document.getElementById('lin1-i1').classList.add('correct'); showStep('lin1-step2');
+    } else { bad('lin1-f1','Diviser par $(x-2)$ : $y\' - \\frac{1}{x-2}y = 2(x-2)^2$. Donc $p(x) = -\\frac{1}{x-2}$'); }
+  } else if(step===2){
+    if(contains(v,'x-2','(x-2)')){
+      ok('lin1-f2','✓ $y_h = C(x-2)$'); document.getElementById('lin1-i2').classList.add('correct'); showStep('lin1-step3');
+    } else { bad('lin1-f2','$\\frac{dy}{y}=\\frac{dx}{x-2} \\Rightarrow \\ln|y|=\\ln|x-2| \\Rightarrow y_h=C(x-2)$'); }
+  } else if(step===3){
+    if(contains(v,'(x-2)³','(x-2)^3','(x-2)3')){
+      ok('lin1-f3','✓ $y_p = A(x-2)^3$'); document.getElementById('lin1-i3').classList.add('correct'); showStep('lin1-step4');
+    } else { bad('lin1-f3','Poser $y_p = A(x-2)^3$, dériver et substituer.'); }
+  } else if(step===4){
+    if(contains(v,'c(x-2)','(x-2)','(x-2)³','(x-2)^3')){
+      ok('lin1-f4','✓ $y = C(x-2) + (x-2)^3$ (avec $A=1$)'); document.getElementById('lin1-i4').classList.add('correct');
+    } else { bad('lin1-f4','$y_g = y_h + y_p = C(x-2)+(x-2)^3$'); }
+  }
+}
+
+// ── HOM EXERCISE 1 ──
+function checkHom1(step){
+  const v = document.getElementById('hom1-i'+step).value;
+  if(step===1){
+    if(contains(v,'λ²-2λ-3','λ2-2λ-3','l^2-2l-3','λ^2-2λ')){
+      ok('hom1-f1','✓ $\\lambda^2 - 2\\lambda - 3 = 0$'); document.getElementById('hom1-i1').classList.add('correct'); showStep('hom1-step2');
+    } else { bad('hom1-f1','On remplace $y=e^{\\lambda x}$ : obtenir $\\lambda^2-2\\lambda-3=0$'); }
+  } else if(step===2){
+    if(contains(v,'16')){
+      ok('hom1-f2','✓ $\\Delta = 4+12 = 16$'); document.getElementById('hom1-i2').classList.add('correct'); showStep('hom1-step3');
+    } else { bad('hom1-f2','$\\Delta = (-2)^2 - 4(1)(-3) = 4+12 = 16$'); }
+  } else if(step===3){
+    if((contains(v,'-1') && contains(v,'3')) || contains(v,'λ1=-1') || contains(v,'λ₁=-1')){
+      ok('hom1-f3','✓ $\\lambda_1=-1, \\lambda_2=3$'); document.getElementById('hom1-i3').classList.add('correct'); showStep('hom1-step4');
+    } else { bad('hom1-f3','$\\lambda = \\frac{2\\pm4}{2}$ → $\\lambda_1=-1, \\lambda_2=3$'); }
+  } else if(step===4){
+    if(contains(v,'e^(-x)','e^-x') && contains(v,'e^(3x)','e^3x')){
+      ok('hom1-f4','✓ $y = C_1e^{-x} + C_2e^{3x}$'); document.getElementById('hom1-i4').classList.add('correct');
+    } else { bad('hom1-f4','$y = C_1e^{-x} + C_2e^{3x}$ (2 racines réelles distinctes)'); }
+  }
+}
+
+// ── HOM EXERCISE 2 ──
+function checkHom2(step){
+  const v = document.getElementById('hom2-i'+step).value;
+  if(step===1){
+    if(contains(v,'3+i','3-i','3±i','3 ± i')){
+      ok('hom2-f1','✓ $\\lambda = 3\\pm i$'); document.getElementById('hom2-i1').classList.add('correct'); showStep('hom2-step2');
+    } else { bad('hom2-f1','$\\Delta=-4$, $\\lambda = \\frac{6\\pm 2i}{2} = 3\\pm i$'); }
+  } else if(step===2){
+    if(contains(v,'e^(3x)','e^3x') && (contains(v,'cosx','cos(x)') && contains(v,'sinx','sin(x)'))){
+      ok('hom2-f2','✓ $y = e^{3x}(C_1\\cos x + C_2\\sin x)$'); document.getElementById('hom2-i2').classList.add('correct'); showStep('hom2-step3');
+    } else { bad('hom2-f2','$y = e^{\\alpha x}(C_1\\cos\\beta x + C_2\\sin\\beta x)$ avec $\\alpha=3, \\beta=1$'); }
+  } else if(step===3){
+    if(contains(v,'1') && v.trim().length < 5){
+      ok('hom2-f3','✓ $C_1 = 1$'); document.getElementById('hom2-i3').classList.add('correct'); showStep('hom2-step4');
+    } else { bad('hom2-f3','$y(0)=e^0(C_1\\cdot 1 + C_2\\cdot 0) = C_1 = 1$'); }
+  } else if(step===4){
+    if(contains(v,'1') && v.trim().length < 5){
+      ok('hom2-f4','✓ $C_2 = 1$. Solution : $y = e^{3x}(\\cos x + \\sin x)$'); document.getElementById('hom2-i4').classList.add('correct');
+    } else { bad('hom2-f4','$3C_1+C_2=4$, avec $C_1=1$ : $C_2=1$'); }
+  }
+}
+
+// ── PART EXERCISE 1 ──
+function checkPart1(step){
+  const v = document.getElementById('part1-i'+step).value;
+  if(step===1){
+    if(contains(v,'3i','+3i','-3i','±3i','3i,−3i')){
+      ok('part1-f1','✓ $\\lambda = \\pm 3i$ (complexes pures, $\\alpha=0, \\beta=3$)'); document.getElementById('part1-i1').classList.add('correct'); showStep('part1-step2');
+    } else { bad('part1-f1','$\\lambda^2+9=0 \\Rightarrow \\lambda^2=-9 \\Rightarrow \\lambda = \\pm 3i$'); }
+  } else if(step===2){
+    if(contains(v,'cos(3x)','cos3x') && contains(v,'sin(3x)','sin3x')){
+      ok('part1-f2','✓ $y_h = C_1\\cos(3x) + C_2\\sin(3x)$'); document.getElementById('part1-i2').classList.add('correct'); showStep('part1-step3');
+    } else { bad('part1-f2','$\\alpha=0, \\beta=3$ → $y_h = e^0(C_1\\cos 3x+C_2\\sin 3x)$'); }
+  } else if(step===3){
+    if(contains(v,'ce^(3x)','ce^3x','ae^(3x)','ae^3x') || (contains(v,'e^(3x)','e^3x') && !contains(v,'x²','x^2'))){
+      ok('part1-f3','✓ Correct : $3$ n\'est pas racine ($\\lambda=\\pm 3i$), donc $y_p = Ce^{3x}$'); document.getElementById('part1-i3').classList.add('correct'); showStep('part1-step4');
+    } else { bad('part1-f3','$3$ n\'est PAS une racine (les racines sont $\\pm 3i$). Poser $y_p = Ce^{3x}$'); }
+  } else if(step===4){
+    if(contains(v,'1/2','0.5','½')){
+      ok('part1-f4','✓ $C = \\dfrac{1}{2}$'); document.getElementById('part1-i4').classList.add('correct'); showStep('part1-step5');
+    } else { bad('part1-f4','$9Ce^{3x}+9Ce^{3x}=9e^{3x} \\Rightarrow 18C=9 \\Rightarrow C=\\frac{1}{2}$'); }
+  } else if(step===5){
+    if(contains(v,'cos(3x)','cos3x') && contains(v,'sin(3x)','sin3x') && (contains(v,'(1/2)e','0.5e','½e'))){
+      ok('part1-f5','✓ Parfait ! $y = C_1\\cos 3x + C_2\\sin 3x + \\dfrac{1}{2}e^{3x}$'); document.getElementById('part1-i5').classList.add('correct');
+    } else { bad('part1-f5','$y = y_h + y_p = C_1\\cos 3x + C_2\\sin 3x + \\frac{1}{2}e^{3x}$'); }
+  }
+}
+
+// ── REVEAL ──
+function reveal(id){
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),50);
+}
+
+// ── QUIZ ──
+const quizData = [
+  { eq: "$y'\\sqrt{1-x^2} + xy = 0$", type: 0, expl: "Le second membre est $-xy/\\sqrt{1-x^2}$ = produit de $g(x)$ et $h(y)$." },
+  { eq: "$y'' - 4y' + 3y = 0$", type: 2, expl: "Ordre 2, coefficients constants, second membre nul = homogène." },
+  { eq: "$y' + 2xy = 4x$", type: 1, expl: "Forme $y'+p(x)y=q(x)$ avec $p=2x$, $q=4x$." },
+  { eq: "$y'' + 9y = 9e^{3x}$", type: 3, expl: "Ordre 2 à coefficients constants avec second membre $\\neq 0$." },
+  { eq: "$(1-y^2)dy - ydx = 0$", type: 0, expl: "Se réécrit $\\frac{1-y^2}{y}dy = dx$ → variables séparables." },
+  { eq: "$y'' - 6y' + 10y = 0$", type: 2, expl: "Ordre 2, homogène, coefficients constants." },
+  { eq: "$\\frac{dr}{d\\theta} + 3r = 2$", type: 1, expl: "Même si les variables sont $r$ et $\\theta$, c'est bien une linéaire ordre 1." },
+  { eq: "$y'' - 2y' - 3y = 2x+1$", type: 3, expl: "Ordre 2 avec second membre polynomial $\\neq 0$." },
+  { eq: "$(1+y)dx - (1+x)dy = 0$", type: 0, expl: "Réécrit : $\\frac{dy}{1+y} = \\frac{dx}{1+x}$ → variables séparables." },
+  { eq: "$y' - \\frac{3y}{x} = \\frac{x+1}{x}$", type: 1, expl: "Forme $y'+p(x)y=q(x)$ avec $p=-3/x$." },
+  { eq: "$y''+4y=2\\cos 2x$", type: 3, expl: "Ordre 2 avec second membre $\\neq 0$." },
+  { eq: "$y''+2y'+y=0$", type: 2, expl: "Ordre 2 homogène (racine double $\\lambda=-1$)." },
+];
+
+let quizCurrent = 0, quizScore = 0, quizTotal = 0, quizAnswered = false;
+const quizOrder = [...Array(quizData.length).keys()].sort(()=>Math.random()-0.5);
+
+function nextQuiz(){
+  if(quizCurrent >= quizOrder.length){
+    document.getElementById('quiz-eq').innerHTML = '<span style="font-size:2rem">🎉</span>';
+    document.getElementById('quiz-feedback').textContent = '';
+    document.getElementById('quiz-end-msg').innerHTML = `Score final : <strong>${quizScore}/${quizTotal}</strong>`;
+    document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+    document.getElementById('quiz-next-btn').style.display='none';
+    return;
+  }
+  quizAnswered = false;
+  document.querySelectorAll('.choice-btn').forEach(b=>{b.disabled=false;b.className='choice-btn';});
+  document.getElementById('quiz-feedback').className='';
+  document.getElementById('quiz-feedback').textContent='';
+  document.getElementById('quiz-next-btn').textContent = 'Passer →';
+  const q = quizData[quizOrder[quizCurrent]];
+  document.getElementById('quiz-eq').innerHTML = q.eq;
+  document.getElementById('quiz-score').textContent = `Score : ${quizScore} / ${quizTotal}`;
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(document.getElementById('quiz-eq'),{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),80);
+}
+
+function quizAnswer(choice){
+  if(quizAnswered) return;
+  quizAnswered = true;
+  quizTotal++;
+  const q = quizData[quizOrder[quizCurrent]];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.type].classList.add('correct-choice');
+  const fb = document.getElementById('quiz-feedback');
+  if(choice === q.type){
+    quizScore++;
+    fb.className='ok'; fb.innerHTML='✓ Correct ! ' + q.expl;
+    document.getElementById('quiz-next-btn').textContent = 'Suivant →';
+  } else {
+    btns[choice].classList.add('wrong-choice');
+    fb.className='bad'; fb.innerHTML='✗ ' + q.expl;
+    document.getElementById('quiz-next-btn').textContent = 'Suivant →';
+  }
+  document.getElementById('quiz-score').textContent = `Score : ${quizScore} / ${quizTotal}`;
+  quizCurrent++;
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(fb,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),50);
+}
+
+// ── BOSS FIGHT ──
+const bossChallenges = [
+  {
+    eq: "Résoudre avec $y(0)=0,\\; y'(0)=\\tfrac{1}{2}$ :\\[y'' + 4y = 2\\cos 2x\\]",
+    steps: [
+      "Équation caractéristique : $\\lambda^2+4=0 \\Rightarrow \\lambda = \\pm 2i$. Homogène : $y_h = C_1\\cos 2x + C_2\\sin 2x$",
+      "2nd membre $2\\cos 2x$ et $\\lambda = \\pm 2i$ → résonance ! Poser $y_p = x(A\\cos 2x + B\\sin 2x)$",
+      "Calculer $y_p''$ et substituer : après simplification, $-4A\\sin 2x + 4B\\cos 2x = 2\\cos 2x$<br>→ $A=0$, $B=\\tfrac{1}{2}$. Donc $y_p = \\tfrac{x}{2}\\sin 2x$",
+      "Sol. générale : $y = C_1\\cos 2x + C_2\\sin 2x + \\tfrac{x}{2}\\sin 2x$",
+      "CI $y(0)=0$ : $C_1=0$. $y' = -2C_1\\sin 2x + 2C_2\\cos 2x + \\tfrac{1}{2}(\\sin 2x + 2x\\cos 2x)$<br>$y'(0) = 2C_2 = \\tfrac{1}{2} \\Rightarrow C_2 = \\tfrac{1}{4}$",
+      "$\\boxed{y = \\tfrac{1}{4}\\sin 2x + \\tfrac{x}{2}\\sin 2x}$"
+    ]
+  },
+  {
+    eq: "Résoudre avec $y(0)=\\tfrac{1}{3},\\; y'(0)=-\\tfrac{4}{9}$ :\\[y'' - 2y' - 3y = 2x+1\\]",
+    steps:[
+      "Équation caract. : $\\lambda^2-2\\lambda-3=0 \\Rightarrow \\lambda_1=-1, \\lambda_2=3$. Homogène : $y_h = C_1e^{-x}+C_2e^{3x}$",
+      "Second membre polynomial deg 1 → poser $y_p = ax+b$",
+      "Substituer : $0-2a-3(ax+b)=2x+1 \\Rightarrow -3a=2$ et $-2a-3b=1 \\Rightarrow a=-\\tfrac{2}{3}, b=\\tfrac{1}{9}$",
+      "Sol. générale : $y = C_1e^{-x}+C_2e^{3x} - \\tfrac{2}{3}x + \\tfrac{1}{9}$",
+      "CI $y(0)=\\tfrac{1}{3}$ : $C_1+C_2+\\tfrac{1}{9}=\\tfrac{1}{3} \\Rightarrow C_1+C_2=\\tfrac{2}{9}$",
+      "$y'=-C_1e^{-x}+3C_2e^{3x}-\\tfrac{2}{3}$. CI $y'(0)=-\\tfrac{4}{9}$ : $-C_1+3C_2=\\tfrac{2}{9}$<br>Système : $C_1+C_2=\\tfrac{2}{9}$ et $-C_1+3C_2=\\tfrac{2}{9}$ → $C_2=\\tfrac{1}{9}$, $C_1=\\tfrac{1}{9}$",
+      "$\\boxed{y = \\tfrac{1}{9}e^{-x}+\\tfrac{1}{9}e^{3x} - \\tfrac{2}{3}x + \\tfrac{1}{9}}$"
+    ]
+  }
+];
+
+let bossTimer = null, bossSeconds = 1200;
+function startBoss(){
+  const challenge = bossChallenges[Math.floor(Math.random()*bossChallenges.length)];
+  document.getElementById('boss-eq').innerHTML = challenge.eq;
+  document.getElementById('boss-intro').style.display='none';
+  document.getElementById('boss-game').style.display='block';
+  document.getElementById('boss-game').dataset.challenge = JSON.stringify(challenge);
+  bossSeconds = 1200;
+  updateBossTimer();
+  bossTimer = setInterval(()=>{
+    bossSeconds--;
+    updateBossTimer();
+    if(bossSeconds<=0){
+      clearInterval(bossTimer);
+      showBossCorrection(challenge);
+    }
+  },1000);
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(document.getElementById('boss-game'),{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),100);
+}
+function updateBossTimer(){
+  const m=Math.floor(bossSeconds/60), s=bossSeconds%60;
+  const el = document.getElementById('boss-timer');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(bossSeconds<=120) el.classList.add('urgent');
+}
+function submitBoss(){
+  clearInterval(bossTimer);
+  const challenge = JSON.parse(document.getElementById('boss-game').dataset.challenge||'null');
+  if(challenge) showBossCorrection(challenge);
+}
+function stopBoss(){
+  clearInterval(bossTimer);
+  document.getElementById('boss-intro').style.display='block';
+  document.getElementById('boss-game').style.display='none';
+  document.getElementById('boss-correction').classList.remove('show');
+  document.getElementById('boss-answer').value='';
+  document.getElementById('boss-timer').classList.remove('urgent');
+}
+function showBossCorrection(challenge){
+  const cc = document.getElementById('boss-correction-content');
+  cc.innerHTML = challenge.steps.map((s,i)=>`<div class="correction-step"><span style="color:var(--gold);font-weight:600;margin-right:8px">${i+1}.</span> ${s}</div>`).join('');
+  document.getElementById('boss-correction').classList.add('show');
+  if(typeof renderMathInElement!=='undefined') setTimeout(()=>renderMathInElement(document.getElementById('boss-correction'),{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),100);
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded',()=>{
+  showSection('intro');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applications Linéaires — MATHF114 ULB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {delimiters:[
+    {left:'$$',right:'$$',display:true},
+    {left:'$',right:'$',display:false}
+  ]});"></script>
+
+<style>
+:root {
+  --ink: #0f1117;
+  --ink-soft: #2d3142;
+  --mist: #f5f6f8;
+  --cloud: #eceef2;
+  --line: #d8dce6;
+  --navy: #1a2b5f;
+  --cobalt: #2952cc;
+  --cobalt-light: #4a6ee0;
+  --violet: #6c3fc5;
+  --emerald: #0f8c5a;
+  --amber: #c47a0a;
+  --rose: #c0303a;
+  --white: #ffffff;
+  --shadow: 0 2px 16px rgba(15,17,23,0.07);
+  --shadow-md: 0 4px 32px rgba(15,17,23,0.12);
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--mist);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--navy);
+  color: #c8d4f0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar-brand {
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 8px;
+}
+.sidebar-brand .course-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7b9ae0;
+  margin-bottom: 6px;
+}
+.sidebar-brand h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: white;
+  line-height: 1.3;
+}
+
+.progress-wrap {
+  margin: 0 20px 16px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 100px;
+  height: 4px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4a6ee0, #8b5cf6);
+  border-radius: 100px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+.progress-label {
+  font-size: 10px;
+  color: #7b9ae0;
+  margin: 0 20px 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-section-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4a6898;
+  padding: 12px 20px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+  font-size: 13px;
+  color: #8ba3d4;
+  text-decoration: none;
+  position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #c8d4f0; }
+.nav-item.active {
+  background: rgba(74,110,224,0.15);
+  border-left-color: #4a6ee0;
+  color: white;
+}
+.nav-item .nav-icon { font-size: 14px; flex-shrink: 0; }
+.nav-item .nav-check {
+  margin-left: auto;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #4a6898;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.nav-item.done .nav-check {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: white;
+}
+
+/* ── MAIN ── */
+.main {
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ── SECTIONS ── */
+.section {
+  display: none;
+  padding: 48px 56px;
+  max-width: 860px;
+  animation: fadeIn 0.3s ease;
+}
+.section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── TYPOGRAPHY ── */
+.section-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  color: var(--ink);
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+.section-subtitle {
+  color: #6b7280;
+  font-size: 15px;
+  margin-bottom: 40px;
+  font-weight: 300;
+}
+
+h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px;
+  color: var(--ink);
+  margin: 40px 0 16px;
+}
+h3 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--navy);
+  margin: 24px 0 10px;
+  text-transform: uppercase;
+}
+
+p { margin-bottom: 14px; color: var(--ink-soft); }
+
+/* ── CARDS ── */
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  border: 1px solid var(--line);
+}
+.card.blue { border-left: 4px solid var(--cobalt); }
+.card.green { border-left: 4px solid var(--emerald); }
+.card.amber { border-left: 4px solid var(--amber); }
+.card.violet { border-left: 4px solid var(--violet); }
+.card.rose { border-left: 4px solid var(--rose); }
+
+.definition-box {
+  background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+  border: 1.5px solid #c7d2fe;
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin: 16px 0;
+}
+.definition-box .def-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  margin-bottom: 8px;
+}
+
+.theorem-box {
+  background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+  border: 1.5px solid #fed7aa;
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin: 16px 0;
+}
+.theorem-box .thm-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.proof-box {
+  background: #f9fafb;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+.proof-box .proof-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.example-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin: 16px 0;
+}
+.example-box .ex-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--emerald);
+  margin-bottom: 8px;
+}
+
+.warning-box {
+  background: #fff1f2;
+  border: 1.5px solid #fda4af;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 12px 0;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.warning-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── FORMULA ── */
+.formula-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.formula-chip {
+  background: var(--navy);
+  color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+}
+
+/* ── PIPELINE ── */
+.pipeline {
+  display: flex;
+  gap: 0;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+.pipe-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 90px;
+}
+.pipe-dot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  background: var(--cobalt);
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+.pipe-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: calc(50% + 20px);
+  width: calc(100% - 40px);
+  height: 2px;
+  background: var(--line);
+}
+.pipe-step { position: relative; }
+.pipe-label {
+  font-size: 11px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-weight: 500;
+  max-width: 80px;
+}
+
+/* ── QUIZ ── */
+.quiz-block {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  margin: 28px 0;
+  box-shadow: var(--shadow);
+}
+.quiz-header {
+  background: var(--navy);
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.quiz-badge {
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.quiz-body { padding: 24px; }
+.quiz-question { font-size: 15px; margin-bottom: 20px; color: var(--ink); font-weight: 500; }
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  user-select: none;
+}
+.quiz-option:hover { border-color: var(--cobalt-light); background: #f5f8ff; }
+.quiz-option.selected { border-color: var(--cobalt); background: #eef2ff; }
+.quiz-option.correct { border-color: var(--emerald); background: #f0fdf4; color: var(--emerald); }
+.quiz-option.wrong { border-color: var(--rose); background: #fff1f2; color: var(--rose); }
+.quiz-option .opt-letter {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--cloud);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: var(--ink-soft);
+}
+.quiz-option.correct .opt-letter { background: var(--emerald); color: white; }
+.quiz-option.wrong .opt-letter { background: var(--rose); color: white; }
+
+.quiz-feedback {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  display: none;
+}
+.quiz-feedback.show { display: block; animation: fadeIn 0.2s ease; }
+.quiz-feedback.ok { background: #f0fdf4; color: #166534; border: 1px solid #a7f3d0; }
+.quiz-feedback.ko { background: #fff1f2; color: #9f1239; border: 1px solid #fda4af; }
+
+/* ── INPUTS ── */
+.math-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+.math-input label { font-size: 13px; color: var(--ink-soft); min-width: 80px; font-family: 'DM Mono', monospace; }
+input[type="number"], input[type="text"] {
+  padding: 9px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  width: 72px;
+  text-align: center;
+  transition: border-color 0.15s;
+  background: white;
+  color: var(--ink);
+}
+input:focus { outline: none; border-color: var(--cobalt); }
+input.correct { border-color: var(--emerald); background: #f0fdf4; }
+input.wrong { border-color: var(--rose); background: #fff1f2; }
+
+/* ── MATRIX GRID ── */
+.matrix-visual {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.matrix-bracket {
+  font-size: 52px;
+  color: var(--ink-soft);
+  font-weight: 200;
+  line-height: 1;
+}
+.matrix-grid {
+  display: grid;
+  gap: 6px;
+}
+.matrix-cell {
+  width: 52px; height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  text-align: center;
+  background: white;
+  transition: all 0.2s;
+  color: var(--ink);
+}
+.matrix-cell:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(41,82,204,0.12); }
+.matrix-cell.correct { border-color: var(--emerald); background: #f0fdf4; color: var(--emerald); font-weight: 700; }
+.matrix-cell.wrong { border-color: var(--rose); background: #fff1f2; color: var(--rose); }
+.matrix-cell.highlight { border-color: var(--cobalt); background: #eef2ff; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-primary {
+  background: var(--cobalt);
+  color: white;
+}
+.btn-primary:hover { background: var(--cobalt-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(41,82,204,0.3); }
+.btn-secondary {
+  background: var(--cloud);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+.btn-secondary:hover { background: white; border-color: var(--cobalt); color: var(--cobalt); }
+.btn-danger { background: var(--rose); color: white; }
+.btn-success { background: var(--emerald); color: white; }
+.btn-ghost { background: transparent; color: var(--cobalt); text-decoration: underline; padding: 6px 0; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; align-items: center; }
+
+/* ── HINT ── */
+.hint-toggle {
+  font-size: 13px;
+  color: var(--amber);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  user-select: none;
+  font-weight: 500;
+}
+.hint-content {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 12px;
+  font-size: 14px;
+  display: none;
+}
+.hint-content.show { display: block; animation: fadeIn 0.2s; }
+
+/* ── STEPS ── */
+.step-block {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--cloud);
+  border-bottom: 1px solid var(--line);
+}
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.step-num.done { background: var(--emerald); }
+.step-num.locked { background: #cbd5e1; }
+.step-title { font-weight: 600; font-size: 14px; color: var(--ink); }
+.step-body {
+  padding: 20px 24px;
+  background: white;
+}
+.step-body.locked { background: #fafafa; opacity: 0.5; pointer-events: none; }
+
+/* ── TIMER ── */
+.timer-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--line);
+}
+.timer-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: 2px;
+  min-width: 90px;
+}
+.timer-display.urgent { color: var(--rose); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.timer-track {
+  flex: 1;
+  height: 6px;
+  background: var(--cloud);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--emerald), var(--cobalt));
+  border-radius: 100px;
+  transition: width 1s linear, background 0.5s;
+}
+
+/* ── MINI-GAME ── */
+.minigame-card {
+  background: var(--navy);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  color: white;
+  text-align: center;
+  margin: 20px 0;
+}
+.mg-question {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+.mg-data {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 28px;
+}
+.mg-datum {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.mg-datum .val {
+  font-family: 'DM Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: #93c5fd;
+}
+.mg-datum .lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #7b9ae0;
+}
+.mg-choices {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mg-choice {
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mg-choice:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.5); }
+.mg-choice.correct { background: rgba(15,140,90,0.4); border-color: #4ade80; color: #4ade80; }
+.mg-choice.wrong { background: rgba(192,48,58,0.3); border-color: #f87171; color: #f87171; }
+.mg-timer-circle {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.15);
+  border-top-color: #93c5fd;
+  animation: spin 10s linear forwards;
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.mg-score {
+  font-size: 13px;
+  color: #7b9ae0;
+  margin-top: 16px;
+}
+.score-big {
+  font-family: 'DM Mono', monospace;
+  font-size: 48px;
+  font-weight: 700;
+  color: #93c5fd;
+}
+
+/* ── DEMO STEPS ── */
+.demo-step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+.demo-step.revealed { opacity: 1; }
+.demo-step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--violet);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.demo-step-content { flex: 1; }
+
+/* ── DRAG ── */
+.sortable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 40px;
+}
+.sort-item {
+  padding: 12px 16px;
+  background: white;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  cursor: grab;
+  user-select: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: box-shadow 0.15s;
+}
+.sort-item:hover { box-shadow: var(--shadow); }
+.sort-item.dragging { opacity: 0.4; }
+.sort-handle { color: #9ca3af; font-size: 16px; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--cloud);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+  text-align: center;
+}
+.tab-btn.active {
+  background: white;
+  color: var(--cobalt);
+  box-shadow: var(--shadow);
+}
+
+/* ── CORRECTION ── */
+.correction-block {
+  background: #1a2b5f;
+  color: #c8d4f0;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-top: 24px;
+  display: none;
+}
+.correction-block.show { display: block; animation: fadeIn 0.3s; }
+.correction-block h4 {
+  color: #7b9ae0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.correction-block p, .correction-block li { color: #c8d4f0; margin-bottom: 10px; }
+
+/* ── SCORE ── */
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+}
+.score-pill.good { background: #f0fdf4; color: var(--emerald); border: 1px solid #a7f3d0; }
+.score-pill.bad { background: #fff1f2; color: var(--rose); border: 1px solid #fda4af; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; max-height: 200px; }
+  .section { padding: 28px 20px; }
+}
+
+/* ── UTILS ── */
+.mono { font-family: 'DM Mono', monospace; }
+.text-sm { font-size: 13px; }
+.text-muted { color: #6b7280; }
+.mb-0 { margin-bottom: 0; }
+.mt-16 { margin-top: 16px; }
+.flex { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+}
+.tag.exam { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.tag.pts { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+.divider { height: 1px; background: var(--line); margin: 32px 0; }
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="course-tag">MATHF114 · ULB · Q2</div>
+    <h1>Applications<br>Linéaires</h1>
+  </div>
+
+  <div class="progress-label">
+    <span>Progression</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="global-progress"></div>
+  </div>
+
+  <div class="nav-section-title">Théorie</div>
+  <a class="nav-item active" onclick="goTo('s-def')">
+    <span class="nav-icon">📐</span> Définition & vérification
+    <span class="nav-check" id="chk-s-def"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-mat')">
+    <span class="nav-icon">🗃️</span> Matrice d'une AL
+    <span class="nav-check" id="chk-s-mat"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-ker')">
+    <span class="nav-icon">🔍</span> Noyau & Image
+    <span class="nav-check" id="chk-s-ker"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-rng')">
+    <span class="nav-icon">📏</span> Théorème rang-noyau
+    <span class="nav-check" id="chk-s-rng"></span>
+  </a>
+
+  <div class="nav-section-title">Exercices</div>
+  <a class="nav-item" onclick="goTo('s-build')">
+    <span class="nav-icon">🏗️</span> Construire la matrice
+    <span class="nav-check" id="chk-s-build"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-pipeline')">
+    <span class="nav-icon">🔗</span> Pipeline complet
+    <span class="nav-check" id="chk-s-pipeline"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-train')">
+    <span class="nav-icon">🎯</span> Entraînement examens
+    <span class="nav-check" id="chk-s-train"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-reflexe')">
+    <span class="nav-icon">⚡</span> Mini-jeu inj/surj
+    <span class="nav-check" id="chk-s-reflexe"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-demo')">
+    <span class="nav-icon">🧠</span> Démos mémorisables
+    <span class="nav-check" id="chk-s-demo"></span>
+  </a>
+  <a class="nav-item" onclick="goTo('s-boss')">
+    <span class="nav-icon">⚔️</span> Boss Fight
+    <span class="nav-check" id="chk-s-boss"></span>
+  </a>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main">
+
+<!-- ══════════════════════════════════════════════
+  SECTION 1 — DÉFINITION & VÉRIFICATION
+══════════════════════════════════════════════ -->
+<section class="section active" id="s-def">
+  <div class="section-eyebrow">Chapitre 8 · Théorie</div>
+  <div class="section-title">Définition &<br>Vérification</div>
+  <div class="section-subtitle">Reconnaître une AL en 10 secondes — critère et pièges classiques</div>
+
+  <div class="definition-box">
+    <div class="def-label">Définition officielle</div>
+    <p class="mb-0">$f : V \to W$ est une <strong>application linéaire</strong> si et seulement si elle satisfait les deux propriétés suivantes :</p>
+    <div style="margin:12px 0">
+      <p class="mb-0"><strong>AL1</strong> &nbsp; $f(u + v) = f(u) + f(v)$ &nbsp; pour tous $u, v \in V$ &nbsp;(additivité)</p>
+      <p class="mb-0 mt-16"><strong>AL2</strong> &nbsp; $f(\lambda v) = \lambda f(v)$ &nbsp; pour tout $v \in V, \lambda \in K$ &nbsp;(homogénéité)</p>
+    </div>
+    <p class="mb-0 text-sm text-muted">Les deux propriétés ensemble se condensent en : $f(\lambda u + \mu v) = \lambda f(u) + \mu f(v)$.</p>
+  </div>
+
+  <div class="warning-box">
+    <span class="warning-icon">⚠️</span>
+    <div>
+      <strong>Test rapide obligatoire :</strong> Si $f(0) \neq 0$, c'est <em>immédiatement</em> non-linéaire. Exemple : $f(x) = 2x - 1$ est non-linéaire car $f(0) = -1 \neq 0$.
+    </div>
+  </div>
+
+  <h2>Exemples classiques à l'exam</h2>
+
+  <div class="example-box">
+    <div class="ex-label">✓ Linéaire</div>
+    <p>$f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (3x+2y,\; 2x+2y+2z,\; 2y+z)$</p>
+    <p class="mb-0 text-sm text-muted">Chaque composante est une combinaison linéaire des variables — c'est la forme générale d'une AL entre $\mathbb{R}^n$.</p>
+  </div>
+
+  <div class="example-box">
+    <div class="ex-label">✓ Linéaire</div>
+    <p>$f : \mathbb{R}^4 \to \mathbb{R}^3 : (x,y,z,t) \mapsto (2x-z,\; x+y-z+t,\; 0)$</p>
+    <p class="mb-0 text-sm text-muted">Examen Septembre 2022 — formule de la matrice directe.</p>
+  </div>
+
+  <div class="warning-box">
+    <span class="warning-icon">✗</span>
+    <div><strong>Non-linéaire :</strong> $f(x,y) = xy$ &nbsp;(produit de variables), &nbsp;$f(x) = x^2$, &nbsp;$f(x) = |x|$, &nbsp;$f(x,y) = x + y - 3$.</div>
+  </div>
+
+  <h2>Méthode de vérification à l'exam</h2>
+  <div class="card blue">
+    <h3>Étapes systématiques</h3>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">1</div>
+      <div class="demo-step-content">
+        <p class="mb-0"><strong>Vérifier $f(0) = 0$</strong> — condition nécessaire, pas suffisante. Si $f(0) \neq 0$, STOP, c'est non-linéaire.</p>
+      </div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">2</div>
+      <div class="demo-step-content">
+        <p class="mb-0"><strong>Vérifier AL1 :</strong> Calculer $f(u+v)$ et $f(u)+f(v)$ et montrer l'égalité.</p>
+      </div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">3</div>
+      <div class="demo-step-content">
+        <p class="mb-0"><strong>Vérifier AL2 :</strong> Calculer $f(\lambda v)$ et $\lambda f(v)$ et montrer l'égalité.</p>
+      </div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">⚡</div>
+      <div class="demo-step-content">
+        <p class="mb-0"><strong>Raccourci à l'exam :</strong> Si $f$ est définie par des formules polynomiales homogènes de degré 1 (combinaisons linéaires sans constante), c'est une AL — la vérification est implicite.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ 1 -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🎯</span>
+      <span>Quiz Flash</span>
+      <span class="quiz-badge">Vrai/Faux</span>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">Laquelle de ces fonctions est une application linéaire ?</div>
+      <div class="quiz-options" id="q1-opts">
+        <div class="quiz-option" onclick="checkQ('q1',this,'A')">
+          <div class="opt-letter">A</div>
+          $f : \mathbb{R}^2 \to \mathbb{R} : (x,y) \mapsto x + y - 3$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q1',this,'B')">
+          <div class="opt-letter">B</div>
+          $f : \mathbb{R}^2 \to \mathbb{R} : (x,y) \mapsto 3x - 8y$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q1',this,'C')">
+          <div class="opt-letter">C</div>
+          $f : \mathbb{R} \to \mathbb{R} : x \mapsto x^2$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q1',this,'D')">
+          <div class="opt-letter">D</div>
+          $f : \mathbb{R}^2 \to \mathbb{R} : (x,y) \mapsto xy$
+        </div>
+      </div>
+      <div class="quiz-feedback" id="q1-fb"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ 2 -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🎯</span>
+      <span>Quiz Flash</span>
+      <span class="quiz-badge">Syllabus 7.1</span>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">$f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (x+y,\, 0,\, 0)$ — est-elle linéaire ?</div>
+      <div class="quiz-options" id="q2-opts">
+        <div class="quiz-option" onclick="checkQ('q2',this,'A')">
+          <div class="opt-letter">A</div>
+          Oui — c'est une combinaison linéaire
+        </div>
+        <div class="quiz-option" onclick="checkQ('q2',this,'B')">
+          <div class="opt-letter">B</div>
+          Non — la troisième composante est nulle
+        </div>
+        <div class="quiz-option" onclick="checkQ('q2',this,'C')">
+          <div class="opt-letter">C</div>
+          Non — $f(0,0,0) \neq (0,0,0)$
+        </div>
+      </div>
+      <div class="quiz-feedback" id="q2-fb"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="markDone('s-def'); goTo('s-mat')">Section suivante →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 2 — MATRICE D'UNE AL
+══════════════════════════════════════════════ -->
+<section class="section" id="s-mat">
+  <div class="section-eyebrow">Chapitre 8 · Théorie</div>
+  <div class="section-title">Matrice d'une<br>Application Linéaire</div>
+  <div class="section-subtitle">La règle des colonnes — ce qui tombe dans 100% des examens</div>
+
+  <div class="definition-box">
+    <div class="def-label">Règle d'or</div>
+    <p class="mb-0">La matrice de $f : \mathbb{R}^n \to \mathbb{R}^m$ dans les bases canoniques se construit <strong>colonne par colonne</strong> :</p>
+    <div style="margin-top:12px">
+      $$M = \Big[\; f(e_1) \;\Big|\; f(e_2) \;\Big|\; \cdots \;\Big|\; f(e_n) \;\Big]$$
+    </div>
+    <p class="mb-0 text-sm text-muted">La $i$-ème colonne = l'image du $i$-ème vecteur de la base canonique, <strong>écrite en colonne</strong>.</p>
+  </div>
+
+  <h2>Exemple guidé — Exam type</h2>
+  <div class="card">
+    <p><strong>Soit</strong> $f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (3x+2y,\; 2x+2y+2z,\; 2y+z)$</p>
+    <p><strong>Calculer les images des vecteurs de la base canonique :</strong></p>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin:16px 0">
+      <div class="proof-box">
+        <div class="proof-label">$e_1 = (1,0,0)$</div>
+        $$f(e_1) = \begin{pmatrix}3\\2\\0\end{pmatrix}$$
+      </div>
+      <div class="proof-box">
+        <div class="proof-label">$e_2 = (0,1,0)$</div>
+        $$f(e_2) = \begin{pmatrix}2\\2\\2\end{pmatrix}$$
+      </div>
+      <div class="proof-box">
+        <div class="proof-label">$e_3 = (0,0,1)$</div>
+        $$f(e_3) = \begin{pmatrix}0\\2\\1\end{pmatrix}$$
+      </div>
+    </div>
+    <p><strong>Assembler en colonnes :</strong></p>
+    $$M = \begin{pmatrix} 3 & 2 & 0 \\ 2 & 2 & 2 \\ 0 & 2 & 1 \end{pmatrix}$$
+    <p class="mb-0 text-sm text-muted">← Exam Juin 2022, Exercice 1(a)</p>
+  </div>
+
+  <div class="warning-box">
+    <span class="warning-icon">💡</span>
+    <div>
+      <strong>Raccourci mental :</strong> Remplace $(x,y,z)$ par $(1,0,0)$, $(0,1,0)$, $(0,0,1)$ successivement. Chaque résultat devient une colonne.
+    </div>
+  </div>
+
+  <h2>Base non canonique</h2>
+  <div class="card amber">
+    <p>Si la base d'arrivée $C = \{f_1, f_2, \ldots\}$ n'est pas canonique, il faut <strong>exprimer chaque $f(e_i)$ en coordonnées dans $C$</strong> avant de le mettre en colonne.</p>
+    <p class="mb-0 text-sm text-muted">Exam 8.2(b) du syllabus — rarement demandé à l'exam ULB, mais connaître le principe.</p>
+  </div>
+
+  <!-- QUIZ 3 -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🎯</span>
+      <span>Quiz Flash</span>
+      <span class="quiz-badge">Exam type</span>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">Soit $f : \mathbb{R}^2 \to \mathbb{R}^2 : (x,y) \mapsto (x+y,\; 2x-y)$. Quelle est sa matrice dans la base canonique ?</div>
+      <div class="quiz-options" id="q3-opts">
+        <div class="quiz-option" onclick="checkQ('q3',this,'A')">
+          <div class="opt-letter">A</div>
+          $\begin{pmatrix}1 & 1 \\ 2 & -1\end{pmatrix}$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q3',this,'B')">
+          <div class="opt-letter">B</div>
+          $\begin{pmatrix}1 & 2 \\ 1 & -1\end{pmatrix}$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q3',this,'C')">
+          <div class="opt-letter">C</div>
+          $\begin{pmatrix}2 & 1 \\ -1 & 1\end{pmatrix}$
+        </div>
+      </div>
+      <div class="quiz-feedback" id="q3-fb"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="markDone('s-mat'); goTo('s-ker')">Section suivante →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 3 — NOYAU & IMAGE
+══════════════════════════════════════════════ -->
+<section class="section" id="s-ker">
+  <div class="section-eyebrow">Chapitre 9 · Théorie</div>
+  <div class="section-title">Noyau &<br>Image</div>
+  <div class="section-subtitle">Calculer $\ker(f)$ et $\text{Im}(f)$ — la méthode pas à pas</div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+    <div class="definition-box">
+      <div class="def-label">Noyau</div>
+      $$\ker(f) = \{x \in V \mid f(x) = 0_W\}$$
+      <p class="mb-0 text-sm">L'ensemble de tous les vecteurs envoyés sur le vecteur nul.</p>
+    </div>
+    <div class="definition-box">
+      <div class="def-label">Image</div>
+      $$\text{Im}(f) = \{f(x) \mid x \in V\} \subseteq W$$
+      <p class="mb-0 text-sm">L'ensemble de tous les vecteurs atteints par $f$.</p>
+    </div>
+  </div>
+
+  <h2>Calculer le Noyau — méthode Gauss</h2>
+  <div class="card blue">
+    <h3>Procédure</h3>
+    <p>Résoudre le système homogène $f(x) = 0$, c'est-à-dire $Mx = 0$ :</p>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">1</div>
+      <div class="demo-step-content"><p class="mb-0">Écrire la matrice $M$ et l'augmenter avec une colonne de zéros : $[M | 0]$</p></div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">2</div>
+      <div class="demo-step-content"><p class="mb-0">Appliquer Gauss pour échelonner</p></div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">3</div>
+      <div class="demo-step-content"><p class="mb-0">Identifier les variables libres (colonnes sans pivot)</p></div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">4</div>
+      <div class="demo-step-content"><p class="mb-0">Exprimer les solutions et en donner une <strong>base</strong></p></div>
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="ex-label">Exemple — Exam Août 2024</div>
+    <p>$f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (2y-z,\; 3x-2y,\; 2x+2y+z)$</p>
+    $$M = \begin{pmatrix}0 & 2 & -1 \\ 3 & -2 & 0 \\ 2 & 2 & 1\end{pmatrix}$$
+    <p>$\ker(f)$ = solutions de $Mx = 0$. Après Gauss : $\det(M) \neq 0$ donc $\ker(f) = \{(0,0,0)\}$.</p>
+    <p class="mb-0 text-sm text-muted">→ $f$ est injective.</p>
+  </div>
+
+  <h2>Calculer l'Image — colonnes pivots</h2>
+  <div class="card green">
+    <h3>Procédure</h3>
+    <p>$\text{Im}(f)$ = espace engendré par les colonnes de $M$.</p>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">1</div>
+      <div class="demo-step-content"><p class="mb-0">Écrire les colonnes de $M$ comme vecteurs de $W$</p></div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">2</div>
+      <div class="demo-step-content"><p class="mb-0">Échelonner $M^T$ (ou échelonner les colonnes) pour éliminer les dépendances</p></div>
+    </div>
+    <div class="demo-step revealed">
+      <div class="demo-step-num">3</div>
+      <div class="demo-step-content"><p class="mb-0">Les colonnes pivots forment une base de $\text{Im}(f)$</p></div>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <span class="warning-icon">💡</span>
+    <div>
+      <strong>Raccourci :</strong> $\dim(\text{Im}(f)) = \text{rang}(M)$. Si le rang = dim de l'espace d'arrivée → surjectif. Si $\ker = \{0\}$ → injectif.
+    </div>
+  </div>
+
+  <!-- QUIZ 4 -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🎯</span>
+      <span>Quiz Noyau</span>
+      <span class="quiz-badge">Fondamental</span>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">Soit $f : \mathbb{R}^2 \to \mathbb{R}^2 : (x,y) \mapsto (y, x)$. Quel est $\ker(f)$ ?</div>
+      <div class="quiz-options" id="q4-opts">
+        <div class="quiz-option" onclick="checkQ('q4',this,'A')">
+          <div class="opt-letter">A</div>
+          $\ker(f) = \mathbb{R}^2$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q4',this,'B')">
+          <div class="opt-letter">B</div>
+          $\ker(f) = \{(0,0)\}$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q4',this,'C')">
+          <div class="opt-letter">C</div>
+          $\ker(f) = \{(x,x) \mid x \in \mathbb{R}\}$
+        </div>
+      </div>
+      <div class="quiz-feedback" id="q4-fb"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ 5 -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🎯</span>
+      <span>Quiz Image</span>
+      <span class="quiz-badge">Vrai/Faux exam</span>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">$f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (x,y,0)$. Quelle est la dimension de $\text{Im}(f)$ ?</div>
+      <div class="quiz-options" id="q5-opts">
+        <div class="quiz-option" onclick="checkQ('q5',this,'A')">
+          <div class="opt-letter">A</div>
+          1
+        </div>
+        <div class="quiz-option" onclick="checkQ('q5',this,'B')">
+          <div class="opt-letter">B</div>
+          2
+        </div>
+        <div class="quiz-option" onclick="checkQ('q5',this,'C')">
+          <div class="opt-letter">C</div>
+          3
+        </div>
+      </div>
+      <div class="quiz-feedback" id="q5-fb"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="markDone('s-ker'); goTo('s-rng')">Section suivante →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 4 — THÉORÈME RANG-NOYAU
+══════════════════════════════════════════════ -->
+<section class="section" id="s-rng">
+  <div class="section-eyebrow">Chapitre 9 · Théorème fondamental</div>
+  <div class="section-title">Théorème<br>Rang-Noyau</div>
+  <div class="section-subtitle">L'outil qui permet de conclure sans calcul</div>
+
+  <div class="theorem-box">
+    <div class="thm-label">📐 Théorème rang-noyau (rank-nullity theorem)</div>
+    <p>Soit $f : V \to W$ une application linéaire entre espaces de dimension finie. Alors :</p>
+    $$\boxed{\dim(\ker(f)) + \dim(\text{Im}(f)) = \dim(V)}$$
+    <p class="mb-0 text-sm text-muted">Autrement dit : $\text{nullité}(f) + \text{rang}(f) = \dim(\text{départ})$</p>
+  </div>
+
+  <h2>Comment l'utiliser à l'exam</h2>
+  <div class="card">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px">
+      <div>
+        <h3>🔍 Injectivité</h3>
+        <p>$f$ injective $\iff \ker(f) = \{0\} \iff \dim(\ker(f)) = 0$</p>
+        <p class="mb-0">D'après le théorème : $\dim(\text{Im}(f)) = \dim(V)$</p>
+      </div>
+      <div>
+        <h3>↠ Surjectivité</h3>
+        <p>$f$ surjective $\iff \text{Im}(f) = W \iff \dim(\text{Im}(f)) = \dim(W)$</p>
+        <p class="mb-0">D'après le théorème : $\dim(\ker(f)) = \dim(V) - \dim(W)$</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="ex-label">Raisonnement type à l'exam</div>
+    <p>$f : \mathbb{R}^3 \to \mathbb{R}^3$, $\dim(\ker(f)) = 1$.</p>
+    <p>Par le théorème : $\dim(\text{Im}(f)) = 3 - 1 = 2$.</p>
+    <p>Comme $\dim(\text{Im}(f)) = 2 < 3 = \dim(\mathbb{R}^3)$, $f$ n'est <strong>pas surjective</strong>.</p>
+    <p class="mb-0">Comme $\ker(f) \neq \{0\}$, $f$ n'est <strong>pas injective</strong> (et donc pas bijective).</p>
+  </div>
+
+  <div class="theorem-box">
+    <div class="thm-label">Corollaire crucial pour opérateur</div>
+    <p>Si $f : V \to V$ est un <strong>opérateur linéaire</strong> (même espace de départ et d'arrivée, de dimension finie) :</p>
+    $$f \text{ injective} \iff f \text{ surjective} \iff f \text{ bijective}$$
+    <p class="mb-0 text-sm text-muted">Il suffit de vérifier l'une des trois propriétés pour avoir les trois !</p>
+  </div>
+
+  <h2>Tableau récapitulatif</h2>
+  <div class="card">
+    <table style="width:100%; border-collapse:collapse; font-size:13px">
+      <thead>
+        <tr style="background:var(--navy); color:white">
+          <th style="padding:10px 14px; text-align:left">$\dim(\ker)$</th>
+          <th style="padding:10px 14px; text-align:left">$\dim(\text{Im})$</th>
+          <th style="padding:10px 14px; text-align:left">Injective</th>
+          <th style="padding:10px 14px; text-align:left">Surjective ($\dim W = m$)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--line)">
+          <td style="padding:10px 14px; font-family:monospace">0</td>
+          <td style="padding:10px 14px; font-family:monospace">n</td>
+          <td style="padding:10px 14px">✅ Oui</td>
+          <td style="padding:10px 14px">✅ si $n = m$</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--line); background:#fafafa">
+          <td style="padding:10px 14px; font-family:monospace">k &gt; 0</td>
+          <td style="padding:10px 14px; font-family:monospace">n - k</td>
+          <td style="padding:10px 14px">❌ Non</td>
+          <td style="padding:10px 14px">✅ si $n - k = m$</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px; font-family:monospace">n</td>
+          <td style="padding:10px 14px; font-family:monospace">0</td>
+          <td style="padding:10px 14px">❌ Non</td>
+          <td style="padding:10px 14px">❌ Non (sauf $m=0$)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- QUIZ 6 -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🎯</span>
+      <span>Quiz Théorème</span>
+      <span class="quiz-badge">Exam Août 2025</span>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">$f : \mathbb{R}^3 \to \mathbb{R}^2$ linéaire avec $\ker(f)$ non trivial. Peut-on conclure que $f$ est surjective ?</div>
+      <div class="quiz-options" id="q6-opts">
+        <div class="quiz-option" onclick="checkQ('q6',this,'A')">
+          <div class="opt-letter">A</div>
+          Oui, toujours — si $\ker \neq \{0\}$ alors $f$ est surjective
+        </div>
+        <div class="quiz-option" onclick="checkQ('q6',this,'B')">
+          <div class="opt-letter">B</div>
+          Pas nécessairement — ça dépend de $\dim(\ker(f))$
+        </div>
+        <div class="quiz-option" onclick="checkQ('q6',this,'C')">
+          <div class="opt-letter">C</div>
+          Non, jamais — si $\ker \neq \{0\}$ alors $f$ n'est pas surjective
+        </div>
+      </div>
+      <div class="quiz-feedback" id="q6-fb"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="markDone('s-rng'); goTo('s-build')">Passer aux exercices →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 5 — CONSTRUIRE LA MATRICE (interactif)
+══════════════════════════════════════════════ -->
+<section class="section" id="s-build">
+  <div class="section-eyebrow">Exercice Interactif</div>
+  <div class="section-title">Construire<br>la Matrice</div>
+  <div class="section-subtitle">Remplis la matrice colonne par colonne — feedback immédiat</div>
+
+  <div id="build-ex"></div>
+
+  <div class="btn-row" id="build-btn-row">
+    <button class="btn btn-primary" onclick="checkMatrix()">✓ Vérifier ma matrice</button>
+    <button class="btn btn-secondary" onclick="showBuildHint()">💡 Aide</button>
+    <button class="btn btn-secondary" onclick="nextBuildEx()">Exercice suivant →</button>
+  </div>
+  <div class="hint-content" id="build-hint"></div>
+  <div class="quiz-feedback" id="build-fb" style="margin-top:16px"></div>
+  <div class="correction-block" id="build-corr"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 6 — PIPELINE COMPLET
+══════════════════════════════════════════════ -->
+<section class="section" id="s-pipeline">
+  <div class="section-eyebrow">Exercice Guidé</div>
+  <div class="section-title">Pipeline Complet<br>Pas à Pas</div>
+  <div class="section-subtitle">Inspiré des examens Juin &amp; Août 2025 — fais chaque étape toi-même</div>
+
+  <div class="card" style="margin-bottom:24px">
+    <p><span class="tag exam">Exam type</span> <span class="tag pts">25 pts</span></p>
+    <p style="margin-top:10px"><strong>Soit l'application linéaire :</strong></p>
+    <p>$$f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (x+y+z,\; y,\; 2x+z)$$</p>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-block" id="pip-step1">
+    <div class="step-header">
+      <div class="step-num" id="pip-num1">1</div>
+      <div class="step-title">Donner la matrice $M$ de $f$ dans la base canonique</div>
+    </div>
+    <div class="step-body" id="pip-body1">
+      <p class="text-sm text-muted">Calcule $f(e_1)$, $f(e_2)$, $f(e_3)$ et place-les en colonnes.</p>
+      <div class="matrix-visual">
+        <span class="matrix-bracket">(</span>
+        <div class="matrix-grid" id="pip-mat" style="grid-template-columns: repeat(3,52px)"></div>
+        <span class="matrix-bracket">)</span>
+      </div>
+      <div class="hint-toggle" onclick="toggleHint('pip-h1')">💡 Aide étape 1</div>
+      <div class="hint-content" id="pip-h1">$f(1,0,0) = (1,0,2)$ → colonne 1 = $\begin{pmatrix}1\\0\\2\end{pmatrix}$. Continue avec $e_2$ et $e_3$.</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkPipeline(1)">Valider →</button>
+      </div>
+      <div class="quiz-feedback" id="pip-fb1"></div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-block" id="pip-step2">
+    <div class="step-header">
+      <div class="step-num locked" id="pip-num2">2</div>
+      <div class="step-title">Calculer $\ker(f)$</div>
+    </div>
+    <div class="step-body locked" id="pip-body2">
+      <p class="text-sm text-muted">Résous $Mx = 0$ par Gauss. Quelle est la dimension du noyau ?</p>
+      <div style="display:flex; gap:12px; align-items:center; margin:16px 0">
+        <p class="mb-0">$\dim(\ker(f)) = $</p>
+        <input type="number" id="pip-ker-dim" min="0" max="3" style="width:60px">
+        <p class="mb-0">, base du noyau : </p>
+        <select id="pip-ker-base" style="padding:8px 12px; border:1.5px solid var(--line); border-radius:8px; font-family:monospace; font-size:13px">
+          <option value="">— choisir —</option>
+          <option value="trivial">{(0,0,0)} (trivial)</option>
+          <option value="v1">{(1, -2, 1)}</option>
+          <option value="v2">{(1, 0, -1)}</option>
+          <option value="v3">{(-1, 1, 0)}</option>
+        </select>
+      </div>
+      <div class="hint-toggle" onclick="toggleHint('pip-h2')">💡 Aide étape 2</div>
+      <div class="hint-content" id="pip-h2">
+        Résous $\begin{pmatrix}1&1&1\\0&1&0\\2&0&1\end{pmatrix}\begin{pmatrix}x\\y\\z\end{pmatrix}=\begin{pmatrix}0\\0\\0\end{pmatrix}$. Après Gauss : $L_3 \leftarrow L_3 - 2L_1$ puis résoudre.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkPipeline(2)">Valider →</button>
+      </div>
+      <div class="quiz-feedback" id="pip-fb2"></div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-block" id="pip-step3">
+    <div class="step-header">
+      <div class="step-num locked" id="pip-num3">3</div>
+      <div class="step-title">Calculer $\text{Im}(f)$ et son rang</div>
+    </div>
+    <div class="step-body locked" id="pip-body3">
+      <p class="text-sm text-muted">Utilise le théorème rang-noyau pour conclure sur $\dim(\text{Im}(f))$.</p>
+      <div style="display:flex; gap:12px; align-items:center; margin:16px 0">
+        <p class="mb-0">$\text{rang}(f) = \dim(\text{Im}(f)) = $</p>
+        <input type="number" id="pip-rang" min="0" max="3" style="width:60px">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkPipeline(3)">Valider →</button>
+      </div>
+      <div class="quiz-feedback" id="pip-fb3"></div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-block" id="pip-step4">
+    <div class="step-header">
+      <div class="step-num locked" id="pip-num4">4</div>
+      <div class="step-title">Conclusion : injective, surjective, bijective ?</div>
+    </div>
+    <div class="step-body locked" id="pip-body4">
+      <div style="display:flex; flex-direction:column; gap:10px; margin:16px 0">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer">
+          <input type="checkbox" id="pip-inj" style="width:18px;height:18px"> $f$ est injective
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer">
+          <input type="checkbox" id="pip-surj" style="width:18px;height:18px"> $f$ est surjective
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer">
+          <input type="checkbox" id="pip-bij" style="width:18px;height:18px"> $f$ est bijective
+        </label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkPipeline(4)">Valider →</button>
+      </div>
+      <div class="quiz-feedback" id="pip-fb4"></div>
+    </div>
+  </div>
+
+  <div class="correction-block" id="pip-corr"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 7 — ENTRAÎNEMENT EXAMENS
+══════════════════════════════════════════════ -->
+<section class="section" id="s-train">
+  <div class="section-eyebrow">Entraînement</div>
+  <div class="section-title">Examens Passés</div>
+  <div class="section-subtitle">4 exercices complets tirés des vraies copies — étapes validées une par une</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTrainEx(0,this)">Juin 2022</button>
+    <button class="tab-btn" onclick="showTrainEx(1,this)">Sept 2022</button>
+    <button class="tab-btn" onclick="showTrainEx(2,this)">Août 2023</button>
+    <button class="tab-btn" onclick="showTrainEx(3,this)">Août 2024</button>
+  </div>
+
+  <div id="train-content"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 8 — MINI-JEU RÉFLEXE
+══════════════════════════════════════════════ -->
+<section class="section" id="s-reflexe">
+  <div class="section-eyebrow">Mini-Jeu ⚡</div>
+  <div class="section-title">Réflexe<br>Inj / Surj</div>
+  <div class="section-subtitle">On te donne $\dim(V)$, $\dim(W)$, $\dim(\ker)$ — tu as 10 secondes pour conclure</div>
+
+  <div id="reflexe-game"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 9 — DÉMONSTRATIONS
+══════════════════════════════════════════════ -->
+<section class="section" id="s-demo">
+  <div class="section-eyebrow">Démonstrations</div>
+  <div class="section-title">3 Démos<br>Mémorisables</div>
+  <div class="section-subtitle">Les preuves officiellement au programme — présentées visuellement avec quiz</div>
+
+  <!-- DÉMO 1 -->
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Démo 1 — $\ker(f)$ est un sous-espace vectoriel</h2>
+    <div class="definition-box">
+      <div class="def-label">Énoncé</div>
+      <p class="mb-0">Soit $f : V \to W$ linéaire. Alors $\ker(f)$ est un sous-espace vectoriel de $V$.</p>
+    </div>
+    <div id="demo1-steps">
+      <button class="btn btn-secondary" onclick="revealDemoSteps('demo1')">▶ Révéler la preuve</button>
+    </div>
+    <div id="demo1-content" style="display:none">
+      <div class="demo-step revealed">
+        <div class="demo-step-num">1</div>
+        <div class="demo-step-content"><strong>$0_V \in \ker(f)$</strong> : Car $f$ est linéaire donc $f(0_V) = 0_W$. ✓</div>
+      </div>
+      <div class="demo-step revealed">
+        <div class="demo-step-num">2</div>
+        <div class="demo-step-content"><strong>Stabilité par $+$</strong> : Si $u,v \in \ker(f)$ alors $f(u+v) = f(u)+f(v) = 0+0 = 0$. ✓</div>
+      </div>
+      <div class="demo-step revealed">
+        <div class="demo-step-num">3</div>
+        <div class="demo-step-content"><strong>Stabilité par scalaire</strong> : Si $u \in \ker(f)$ et $\lambda \in K$ alors $f(\lambda u) = \lambda f(u) = \lambda \cdot 0 = 0$. ✓</div>
+      </div>
+      <p class="text-sm text-muted">Les 3 axiomes d'un sous-espace sont vérifiés. $\square$</p>
+    </div>
+  </div>
+
+  <!-- DÉMO 2 -->
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Démo 2 — $f$ injective $\iff \ker(f) = \{0\}$</h2>
+    <div class="definition-box">
+      <div class="def-label">Énoncé</div>
+      <p class="mb-0">$f : V \to W$ linéaire est injective si et seulement si $\ker(f) = \{0_V\}$.</p>
+    </div>
+    <div id="demo2-steps">
+      <button class="btn btn-secondary" onclick="revealDemoSteps('demo2')">▶ Révéler la preuve</button>
+    </div>
+    <div id="demo2-content" style="display:none">
+      <p><strong>($\Rightarrow$) Supposons $f$ injective :</strong></p>
+      <div class="demo-step revealed">
+        <div class="demo-step-num">→</div>
+        <div class="demo-step-content">Si $x \in \ker(f)$ alors $f(x) = 0_W = f(0_V)$. Comme $f$ injective : $x = 0_V$. Donc $\ker(f) = \{0_V\}$. ✓</div>
+      </div>
+      <p style="margin-top:16px"><strong>($\Leftarrow$) Supposons $\ker(f) = \{0_V\}$ :</strong></p>
+      <div class="demo-step revealed">
+        <div class="demo-step-num">←</div>
+        <div class="demo-step-content">Si $f(x) = f(y)$, alors $f(x-y) = f(x)-f(y) = 0$, donc $x-y \in \ker(f) = \{0\}$, donc $x = y$. ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÉMO 3 -->
+  <div class="card" style="margin-bottom:24px">
+    <h2 style="margin-top:0">Démo 3 — Théorème rang-noyau (idée)</h2>
+    <div class="theorem-box">
+      <div class="thm-label">Énoncé</div>
+      <p class="mb-0">$\dim(\ker(f)) + \dim(\text{Im}(f)) = \dim(V)$</p>
+    </div>
+    <div id="demo3-steps">
+      <button class="btn btn-secondary" onclick="revealDemoSteps('demo3')">▶ Révéler l'idée de preuve</button>
+    </div>
+    <div id="demo3-content" style="display:none">
+      <div class="demo-step revealed">
+        <div class="demo-step-num">1</div>
+        <div class="demo-step-content">Soit $\{w_1,\ldots,w_k\}$ une base de $\text{Im}(f)$ et $v_i$ tels que $f(v_i) = w_i$.</div>
+      </div>
+      <div class="demo-step revealed">
+        <div class="demo-step-num">2</div>
+        <div class="demo-step-content">Soit $\{u_1,\ldots,u_l\}$ une base de $\ker(f)$.</div>
+      </div>
+      <div class="demo-step revealed">
+        <div class="demo-step-num">3</div>
+        <div class="demo-step-content">On montre que $B = \{v_1,\ldots,v_k,u_1,\ldots,u_l\}$ est une base de $V$. Donc $\dim(V) = k + l$. $\square$</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz remettres les étapes dans l'ordre -->
+  <div class="quiz-block">
+    <div class="quiz-header">
+      <span>🧩</span>
+      <span>Quiz — Preuve de $\ker(f)$ est SEV</span>
+      <span class="quiz-badge">Remets dans l'ordre</span>
+    </div>
+    <div class="quiz-body">
+      <p class="text-sm text-muted" style="margin-bottom:16px">Clique sur les étapes dans le bon ordre de preuve :</p>
+      <div id="proof-order-quiz" class="sortable-list"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkProofOrder()">Vérifier l'ordre</button>
+        <button class="btn btn-secondary" onclick="resetProofOrder()">Réinitialiser</button>
+      </div>
+      <div class="quiz-feedback" id="proof-order-fb"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="markDone('s-demo'); goTo('s-boss')">Boss Fight →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+  SECTION 10 — BOSS FIGHT
+══════════════════════════════════════════════ -->
+<section class="section" id="s-boss">
+  <div class="section-eyebrow">⚔️ Boss Fight</div>
+  <div class="section-title">Exercice<br>Complet</div>
+  <div class="section-subtitle">Format exact exam — 25 minutes — correction après</div>
+
+  <div id="boss-start">
+    <div class="minigame-card">
+      <div class="mg-question">Prêt pour le Boss ?</div>
+      <p style="color:#7b9ae0; margin-bottom:28px">Exercice complet non guidé · Format exact de l'exam ULB · 25 minutes</p>
+      <button class="btn btn-primary" style="font-size:16px; padding:16px 40px" onclick="startBoss()">⚔️ Commencer le chrono</button>
+    </div>
+  </div>
+
+  <div id="boss-game" style="display:none">
+    <div class="timer-bar">
+      <div>
+        <div class="text-sm text-muted">Temps restant</div>
+        <div class="timer-display" id="boss-timer">25:00</div>
+      </div>
+      <div class="timer-track">
+        <div class="timer-fill" id="boss-fill" style="width:100%"></div>
+      </div>
+      <button class="btn btn-secondary" onclick="stopBoss()">⏹ Arrêter</button>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <p><span class="tag exam">Exam ULB 2024 — Exercice complet</span> <span class="tag pts">25 pts</span></p>
+      <div style="margin-top:16px">
+        <p>Soit l'application linéaire :</p>
+        $$f : \mathbb{R}^4 \to \mathbb{R}^4 : (x,y,z,t) \mapsto (x, x-y, z, t+y)$$
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>(a) Matrice dans la base canonique <span class="tag pts">6 pts</span></h3>
+      <p class="text-sm text-muted">Remplis la matrice $4 \times 4$ de $f$ :</p>
+      <div class="matrix-visual">
+        <span class="matrix-bracket">(</span>
+        <div class="matrix-grid" id="boss-mat" style="grid-template-columns: repeat(4,52px)"></div>
+        <span class="matrix-bracket">)</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>(b) Noyau de $f$ <span class="tag pts">8 pts</span></h3>
+      <p class="text-sm text-muted">Résous $f(x,y,z,t) = 0$. Donne $\dim(\ker(f))$ et une base.</p>
+      <div style="display:flex; gap:12px; align-items:center; margin:16px 0; flex-wrap:wrap">
+        <span>$\dim(\ker) = $</span>
+        <input type="number" id="boss-ker-dim" min="0" max="4" style="width:60px">
+        <span>Base : </span>
+        <select id="boss-ker-base" style="padding:8px 12px; border:1.5px solid var(--line); border-radius:8px; font-family:monospace; font-size:12px">
+          <option value="">— choisir —</option>
+          <option value="0">{0} trivial</option>
+          <option value="1">{(0,0,1,0)}</option>
+          <option value="2">{(0,0,1,0), (0,0,0,1)}</option>
+          <option value="v3">{(1,1,0,0)}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>(c) Rang et conclusion <span class="tag pts">6 pts</span></h3>
+      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin:16px 0">
+        <span>$\text{rang}(f) = $</span>
+        <input type="number" id="boss-rang" min="0" max="4" style="width:60px">
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" id="boss-inj"> Injective
+        </label>
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" id="boss-surj"> Surjective
+        </label>
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" id="boss-bij"> Bijective
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>(d) $f$ est-elle une isométrie ? <span class="tag pts">5 pts</span></h3>
+      <div class="quiz-options" id="boss-iso-opts" style="margin-top:12px">
+        <div class="quiz-option" onclick="selectBossIso(this,'A')">
+          <div class="opt-letter">A</div>
+          Oui — $f$ est une permutation linéaire donc isométrie
+        </div>
+        <div class="quiz-option" onclick="selectBossIso(this,'B')">
+          <div class="opt-letter">B</div>
+          Non — $f$ n'est pas bijective donc pas isométrie centrée
+        </div>
+        <div class="quiz-option" onclick="selectBossIso(this,'C')">
+          <div class="opt-letter">C</div>
+          Oui mais uniquement si $f$ est orthogonale
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:24px">
+      <button class="btn btn-danger" onclick="submitBoss()" style="font-size:15px; padding:14px 32px">📝 Soumettre & Voir la correction</button>
+    </div>
+  </div>
+
+  <div class="correction-block" id="boss-corr"></div>
+</section>
+
+</main>
+</div>
+
+<!-- ══════════════════════════════════════════════
+  JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+// ── NAVIGATION ──
+const sections = ['s-def','s-mat','s-ker','s-rng','s-build','s-pipeline','s-train','s-reflexe','s-demo','s-boss'];
+const done = new Set();
+
+function goTo(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick')?.includes(id)) n.classList.add('active');
+  });
+  window.scrollTo(0,0);
+  // Trigger renders for dynamic sections
+  if(id==='s-build' && !buildInitialized) initBuild();
+  if(id==='s-train' && !trainInitialized) initTrain();
+  if(id==='s-reflexe' && !reflexeInitialized) initReflexe();
+  if(id==='s-demo' && !demoInitialized) initDemo();
+  if(id==='s-boss') initBossMatrix();
+  // Re-render KaTeX
+  setTimeout(()=>renderMathInElement(document.body,{delimiters:[
+    {left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}
+  ]}), 50);
+}
+
+function markDone(id) {
+  done.add(id);
+  const chk = document.getElementById('chk-'+id);
+  if(chk) { chk.textContent='✓'; chk.style.background='var(--emerald)'; chk.style.border='none'; chk.style.color='white'; }
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick')?.includes(id)) n.classList.add('done');
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((done.size / sections.length)*100);
+  document.getElementById('global-progress').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+// ── QUIZ SYSTEM ──
+const quizAnswers = {
+  q1: {correct:'B', feedback:{B:'✓ Correct ! $3x-8y$ est une combinaison linéaire — ça vérifie AL1 et AL2 automatiquement.', A:'✗ $f(0,0) = -3 \\neq 0$ → non-linéaire immédiatement.', C:'✗ $f(\\lambda x) = \\lambda^2 x^2 \\neq \\lambda x^2$ → non-homogène.', D:'✗ $f(u+v) \\neq f(u)+f(v)$ (le produit n\'est pas distribué).'}},
+  q2: {correct:'A', feedback:{A:'✓ Correct ! Le fait que la 3ème composante soit 0 n\'empêche pas la linéarité — c\'est une combinaison linéaire de $(x,y,z)$.', B:'✗ Faux — avoir des composantes nulles ne brise pas la linéarité.', C:'✗ Faux — $f(0,0,0) = (0,0,0)$. ✓'}},
+  q3: {correct:'A', feedback:{A:'✓ $f(1,0)=(1,2)$ → colonne 1 = $(1,2)^T$. $f(0,1)=(1,-1)$ → colonne 2 = $(1,-1)^T$.', B:'✗ Tu as mis les images en lignes au lieu de colonnes.', C:'✗ Mauvais ordre des colonnes.'}},
+  q4: {correct:'B', feedback:{B:'✓ Correct ! $f(x,y)=(y,x)=0 \\Rightarrow y=0, x=0$. Donc $\\ker(f) = \\{(0,0)\\}$.', A:'✗ Faux — $f$ n\'envoie pas tous les vecteurs sur 0.', C:'✗ Faux — c\'est l\'image de la projection, pas le noyau de la permutation.'}},
+  q5: {correct:'B', feedback:{B:'✓ $f(e_1)=(1,0,0)$, $f(e_2)=(0,1,0)$, $f(e_3)=(0,0,0)$. Deux colonnes indépendantes → rang = 2.', A:'✗ Il y a deux colonnes linéairement indépendantes.', C:'✗ La 3ème colonne est nulle, donc rang < 3.'}},
+  q6: {correct:'B', feedback:{B:'✓ Correct ! Exemple : $\\dim(V)=3$, $\\dim(W)=2$, $\\dim(\\ker)=1$ → $\\dim(\\text{Im})=2=\\dim(W)$ → surjective. Mais si $\\dim(\\ker)=2$ → $\\dim(\\text{Im})=1<2$ → pas surjective.', A:'✗ Faux — un grand noyau peut laisser peu de place pour l\'image.', C:'✗ Faux — voir le contre-exemple dans B.'}}
+};
+
+function checkQ(qid, el, ans) {
+  const opts = document.getElementById(qid+'-opts');
+  if(opts.querySelector('.correct, .wrong')) return; // already answered
+  const qa = quizAnswers[qid];
+  const fb = document.getElementById(qid+'-fb');
+  const isCorrect = ans === qa.correct;
+
+  opts.querySelectorAll('.quiz-option').forEach((o,i) => {
+    const optAns = ['A','B','C','D'][i];
+    if(optAns === qa.correct) o.classList.add('correct');
+    else if(o === el && !isCorrect) o.classList.add('wrong');
+  });
+
+  fb.className = 'quiz-feedback show ' + (isCorrect?'ok':'ko');
+  const msg = qa.feedback[ans] || '—';
+  fb.innerHTML = msg;
+  if(isCorrect) markDone(qid);
+  setTimeout(()=>renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+}
+
+// ── BUILD SECTION ──
+let buildInitialized = false, buildIdx = 0;
+
+const buildExercises = [
+  {
+    label: 'Exam Juin 2022',
+    fn: 'f : \\mathbb{R}^3 \\to \\mathbb{R}^3 : (x,y,z) \\mapsto (3x+2y,\\; 2x+2y+2z,\\; 2y+z)',
+    rows:3, cols:3,
+    answer:[[3,2,0],[2,2,2],[0,2,1]],
+    hint:'$f(e_1) = (3,2,0)$, $f(e_2) = (2,2,2)$, $f(e_3) = (0,2,1)$. Place chacun en colonne.',
+    explanation:'Colonne 1 = $f(1,0,0)=(3,2,0)$, Colonne 2 = $f(0,1,0)=(2,2,2)$, Colonne 3 = $f(0,0,1)=(0,2,1)$.'
+  },
+  {
+    label: 'Exam Août 2023',
+    fn: 'f : \\mathbb{R}^3 \\to \\mathbb{R}^3 : (x,y,z) \\mapsto (x+y+z,\\; y,\\; 2x+z)',
+    rows:3, cols:3,
+    answer:[[1,1,1],[0,1,0],[2,0,1]],
+    hint:'$f(e_1)=(1,0,2)$, $f(e_2)=(1,1,0)$, $f(e_3)=(1,0,1)$.',
+    explanation:'Colonne 1 = $f(1,0,0)=(1,0,2)$, Colonne 2 = $f(0,1,0)=(1,1,0)$, Colonne 3 = $f(0,0,1)=(1,0,1)$.'
+  },
+  {
+    label: 'Exam Août 2024',
+    fn: 'f : \\mathbb{R}^3 \\to \\mathbb{R}^3 : (x,y,z) \\mapsto (2y-z,\\; 3x-2y,\\; 2x+2y+z)',
+    rows:3, cols:3,
+    answer:[[0,2,-1],[3,-2,0],[2,2,1]],
+    hint:'$f(e_1)=(0,3,2)$, $f(e_2)=(2,-2,2)$, $f(e_3)=(-1,0,1)$.',
+    explanation:'Colonne 1 = $(0,3,2)$, Colonne 2 = $(2,-2,2)$, Colonne 3 = $(-1,0,1)$.'
+  },
+  {
+    label: 'Exam Juin 2024',
+    fn: 'f : \\mathbb{R}^4 \\to \\mathbb{R}^4 : (x,y,z,t) \\mapsto (x,\\; x-y,\\; z,\\; t+y)',
+    rows:4, cols:4,
+    answer:[[1,0,0,0],[1,-1,0,0],[0,0,1,0],[0,1,0,1]],
+    hint:'$f(e_1)=(1,1,0,0)$, $f(e_2)=(0,-1,0,1)$, $f(e_3)=(0,0,1,0)$, $f(e_4)=(0,0,0,1)$.',
+    explanation:'Chaque vecteur de base mis en image donne une colonne de la matrice $4\\times 4$.'
+  }
+];
+
+function initBuild() {
+  buildInitialized = true;
+  renderBuildEx(buildIdx);
+}
+
+function renderBuildEx(idx) {
+  const ex = buildExercises[idx];
+  let html = `<div class="card" style="margin-bottom:20px">
+    <p><span class="tag exam">${ex.label}</span></p>
+    <p style="margin-top:10px"><strong>Construis la matrice de</strong> $${ex.fn}$ dans la base canonique.</p>
+    <div style="margin-top:20px">
+      <div class="matrix-visual">
+        <span class="matrix-bracket">(</span>
+        <div class="matrix-grid" id="build-grid" style="grid-template-columns: repeat(${ex.cols},52px)"></div>
+        <span class="matrix-bracket">)</span>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('build-ex').innerHTML = html;
+  const grid = document.getElementById('build-grid');
+  for(let r=0;r<ex.rows;r++){
+    for(let c=0;c<ex.cols;c++){
+      const inp = document.createElement('input');
+      inp.type='number'; inp.className='matrix-cell';
+      inp.dataset.row=r; inp.dataset.col=c;
+      grid.appendChild(inp);
+    }
+  }
+  document.getElementById('build-hint').textContent = '';
+  document.getElementById('build-hint').classList.remove('show');
+  document.getElementById('build-fb').className='quiz-feedback';
+  document.getElementById('build-corr').classList.remove('show');
+  setTimeout(()=>renderMathInElement(document.getElementById('build-ex'),{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+}
+
+function checkMatrix() {
+  const ex = buildExercises[buildIdx];
+  const cells = document.querySelectorAll('.matrix-cell');
+  let allCorrect = true;
+  cells.forEach(c => {
+    const r=parseInt(c.dataset.row), col=parseInt(c.dataset.col);
+    const val = parseInt(c.value);
+    const expected = ex.answer[r][col];
+    c.classList.remove('correct','wrong');
+    if(val === expected) c.classList.add('correct');
+    else { c.classList.add('wrong'); allCorrect=false; }
+  });
+  const fb = document.getElementById('build-fb');
+  if(allCorrect){
+    fb.className='quiz-feedback show ok';
+    fb.textContent='✓ Parfait ! Matrice correcte.';
+    markDone('s-build');
+  } else {
+    fb.className='quiz-feedback show ko';
+    fb.textContent='✗ Certaines cases sont incorrectes — vérifie tes calculs de $f(e_i)$.';
+  }
+}
+
+function showBuildHint() {
+  const ex = buildExercises[buildIdx];
+  const h = document.getElementById('build-hint');
+  h.textContent = ex.hint;
+  h.classList.toggle('show');
+  setTimeout(()=>renderMathInElement(h,{delimiters:[{left:'$',right:'$',display:false}]}),50);
+}
+
+function nextBuildEx() {
+  buildIdx = (buildIdx+1) % buildExercises.length;
+  renderBuildEx(buildIdx);
+}
+
+// ── PIPELINE SECTION ──
+const pipAnswers = {
+  1: {mat:[[1,1,1],[0,1,0],[2,0,1]]},
+  2: {kerDim:0, kerBase:'trivial'},
+  3: {rang:3},
+  4: {inj:true, surj:true, bij:true}
+};
+let pipStep = 1;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('pip-mat');
+  if(grid) {
+    grid.style.gridTemplateColumns = 'repeat(3,52px)';
+    for(let r=0;r<3;r++) for(let c=0;c<3;c++){
+      const inp = document.createElement('input');
+      inp.type='number'; inp.className='matrix-cell';
+      inp.dataset.row=r; inp.dataset.col=c;
+      grid.appendChild(inp);
+    }
+  }
+});
+
+function checkPipeline(step) {
+  if(step===1) {
+    const cells = document.querySelectorAll('#pip-mat .matrix-cell');
+    const ans = pipAnswers[1].mat;
+    let ok=true;
+    cells.forEach(c=>{
+      const r=parseInt(c.dataset.row),col=parseInt(c.dataset.col);
+      c.classList.remove('correct','wrong');
+      if(parseInt(c.value)===ans[r][col]) c.classList.add('correct');
+      else{c.classList.add('wrong'); ok=false;}
+    });
+    const fb=document.getElementById('pip-fb1');
+    if(ok){
+      fb.className='quiz-feedback show ok';
+      fb.innerHTML='✓ Matrice correcte ! $M = \\begin{pmatrix}1&1&1\\\\0&1&0\\\\2&0&1\\end{pmatrix}$';
+      unlockPipStep(2);
+      setTimeout(()=>renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+    } else {
+      fb.className='quiz-feedback show ko';
+      fb.textContent='✗ Vérifie : f(1,0,0)=(1,0,2), f(0,1,0)=(1,1,0), f(0,0,1)=(1,0,1).';
+    }
+  } else if(step===2) {
+    const dim=parseInt(document.getElementById('pip-ker-dim').value);
+    const base=document.getElementById('pip-ker-base').value;
+    const fb=document.getElementById('pip-fb2');
+    if(dim===0 && base==='trivial'){
+      fb.className='quiz-feedback show ok';
+      fb.innerHTML='✓ Exact ! $\\det(M) = 1(1\\cdot1-0) - 1(0-0) + 1(0-2) = 1-2 = -1 \\neq 0$, donc $\\ker(f)=\\{0\\}$.';
+      unlockPipStep(3);
+      setTimeout(()=>renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+    } else {
+      fb.className='quiz-feedback show ko';
+      fb.textContent='✗ Calcule det(M) par Gauss. La matrice est inversible → ker trivial.';
+    }
+  } else if(step===3) {
+    const rang=parseInt(document.getElementById('pip-rang').value);
+    const fb=document.getElementById('pip-fb3');
+    if(rang===3){
+      fb.className='quiz-feedback show ok';
+      fb.innerHTML='✓ Par le théorème rang-noyau : $\\dim(\\ker)=0$ donc $\\text{rang}=3-0=3$.';
+      unlockPipStep(4);
+      setTimeout(()=>renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+    } else {
+      fb.className='quiz-feedback show ko';
+      fb.innerHTML='✗ $\\dim(\\ker)=0$ → rang = $\\dim(V)-0 = 3$.';
+      setTimeout(()=>renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false}]}),50);
+    }
+  } else if(step===4) {
+    const inj=document.getElementById('pip-inj').checked;
+    const surj=document.getElementById('pip-surj').checked;
+    const bij=document.getElementById('pip-bij').checked;
+    const fb=document.getElementById('pip-fb4');
+    if(inj&&surj&&bij){
+      fb.className='quiz-feedback show ok';
+      fb.textContent='✓ Parfait ! ker trivial → injective; rang = dim(W) = 3 → surjective; donc bijective.';
+      markDone('s-pipeline');
+      showPipelineFull();
+    } else {
+      fb.className='quiz-feedback show ko';
+      fb.textContent='✗ ker={0} implique injective ET surjective (opérateur sur R³) → donc bijective.';
+    }
+  }
+}
+
+function unlockPipStep(n) {
+  const body = document.getElementById('pip-body'+n);
+  const num = document.getElementById('pip-num'+n);
+  if(body) { body.classList.remove('locked'); }
+  if(num) { num.classList.remove('locked'); }
+}
+
+function showPipelineFull() {
+  const corr = document.getElementById('pip-corr');
+  corr.className='correction-block show';
+  corr.innerHTML=`<h4>Correction Complète</h4>
+    <p><strong>Matrice :</strong> $M = \\begin{pmatrix}1&1&1\\\\0&1&0\\\\2&0&1\\end{pmatrix}$</p>
+    <p><strong>Noyau :</strong> $\\det(M) = -1 \\neq 0$, donc $M$ inversible, donc $\\ker(f) = \\{\\mathbf{0}\\}$, $\\dim(\\ker)=0$.</p>
+    <p><strong>Rang :</strong> Théorème rang-noyau → $\\text{rang}(f) = 3 - 0 = 3$.</p>
+    <p><strong>Conclusion :</strong> $\\ker = \\{0\\}$ → injective. Rang = dim(arrivée) = 3 → surjective. Donc $f$ est <strong>bijective</strong>.</p>`;
+  setTimeout(()=>renderMathInElement(corr,{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+}
+
+// ── TRAINING SECTION ──
+let trainInitialized = false;
+
+const trainExercises = [
+  {
+    title: 'Juin 2022 — Exercice 1',
+    fn: 'f : \\mathbb{R}^3 \\to \\mathbb{R}^3 : (x,y,z) \\mapsto (3x+2y,\\; 2x+2y+2z,\\; 2y+z)',
+    steps: [
+      {q:'Quelle est la matrice de $f$ dans la base canonique ?',
+       choices:['$\\begin{pmatrix}3&2&0\\\\2&2&2\\\\0&2&1\\end{pmatrix}$','$\\begin{pmatrix}3&0&2\\\\2&2&2\\\\2&0&1\\end{pmatrix}$','$\\begin{pmatrix}2&3&0\\\\2&2&0\\\\2&2&1\\end{pmatrix}$'],
+       correct:0, fb:'Colonnes = images de $e_1, e_2, e_3$. $f(1,0,0)=(3,2,0)$, $f(0,1,0)=(2,2,2)$, $f(0,0,1)=(0,2,1)$.'},
+      {q:'Quel est le déterminant de cette matrice ?',
+       choices:['$\\det(M) = 0$','$\\det(M) = -4$','$\\det(M) = 6$'],
+       correct:1, fb:'$\\det(M) = 3(2-4) - 2(2-0) + 0 = -6 - 4 = -10$. Attention : la correction officielle donne $\\det(M-\\lambda I)$ pour trouver les VP.'},
+      {q:'$f$ est-elle bijective ?',
+       choices:['Oui — $\\det(M) \\neq 0$','Non — $\\ker(f) \\neq \\{0\\}$','Impossible à dire sans calculer le noyau'],
+       correct:0, fb:'$\\det(M) \\neq 0 \\Rightarrow M$ inversible $\\Rightarrow \\ker(f)=\\{0\\}$ $\\Rightarrow f$ bijective.'}
+    ]
+  },
+  {
+    title: 'Septembre 2022 — Exercice 2',
+    fn: 'f : \\mathbb{R}^4 \\to \\mathbb{R}^4 \\text{ avec matrice } M = \\begin{pmatrix}2&0&0&0\\\\2&1&0&2\\\\3&0&1&2\\\\4&0&0&3\\end{pmatrix}',
+    steps: [
+      {q:'Pour calculer $\\text{Im}(f)$ et $\\ker(f)$, quelle est la première étape ?',
+       choices:['Calculer $\\det(M)$','Échelonner $[M|0]$ par Gauss pour le noyau','Transposer $M$'],
+       correct:1, fb:'Le noyau = solutions de $Mx=0$. On échelonne $[M|0]$.'},
+      {q:'Si $\\dim(\\ker(f))=1$, quel est $\\text{rang}(f)$ ?',
+       choices:['$\\text{rang} = 3$','$\\text{rang} = 4$','$\\text{rang} = 2$'],
+       correct:0, fb:'Théorème rang-noyau : $\\text{rang} + \\dim(\\ker) = \\dim(V) = 4$. Donc rang $= 4-1 = 3$.'},
+      {q:'$f$ est-elle une permutation linéaire (= bijection) ?',
+       choices:['Oui, si rang = 4','Non — rang = 3 < 4 donc pas surjective','Oui, car $f : \\mathbb{R}^4 \\to \\mathbb{R}^4$'],
+       correct:1, fb:'Une permutation linéaire = isomorphisme = bijectif. Rang = 3 < 4 = dim(arrivée) → pas surjective → pas bijective.'}
+    ]
+  },
+  {
+    title: 'Août 2023 — Exercice 3',
+    fn: 'f : \\mathbb{R}^3 \\to \\mathbb{R}^3 : (x,y,z) \\mapsto (x+y+z,\\; y,\\; 2x+z)',
+    steps: [
+      {q:'Quelle est la matrice de $f$ dans la base canonique ?',
+       choices:['$\\begin{pmatrix}1&1&1\\\\0&1&0\\\\2&0&1\\end{pmatrix}$','$\\begin{pmatrix}1&0&2\\\\1&1&0\\\\1&0&1\\end{pmatrix}$','$\\begin{pmatrix}0&1&1\\\\1&1&0\\\\1&2&0\\end{pmatrix}$'],
+       correct:0, fb:'$f(e_1)=(1,0,2)^T$, $f(e_2)=(1,1,0)^T$, $f(e_3)=(1,0,1)^T$.'},
+      {q:'$\\det(M) = ?$',
+       choices:['$0$','$-1$','$1$'],
+       correct:1, fb:'$\\det = 1(1-0) - 1(0-0) + 1(0-2) = 1 - 2 = -1$.'},
+      {q:'$f$ est injective, surjective, bijective ?',
+       choices:['Injective seulement','Surjective seulement','Les trois à la fois'],
+       correct:2, fb:'$\\det \\neq 0 \\Rightarrow M$ inversible $\\Rightarrow f$ bijective. Pour les opérateurs sur espaces de même dimension : inj $\\Leftrightarrow$ surj $\\Leftrightarrow$ bij.'}
+    ]
+  },
+  {
+    title: 'Août 2024 — Exercice 2',
+    fn: 'f : \\mathbb{R}^3 \\to \\mathbb{R}^3 : (x,y,z) \\mapsto (2y-z,\\; 3x-2y,\\; 2x+2y+z)',
+    steps: [
+      {q:'Quelle est la matrice $M$ de $f$ ?',
+       choices:['$\\begin{pmatrix}0&2&-1\\\\3&-2&0\\\\2&2&1\\end{pmatrix}$','$\\begin{pmatrix}2&-1&0\\\\3&0&-2\\\\2&1&2\\end{pmatrix}$','$\\begin{pmatrix}0&3&2\\\\2&-2&2\\\\-1&0&1\\end{pmatrix}$'],
+       correct:0, fb:'$f(e_1)=(0,3,2)$, $f(e_2)=(2,-2,2)$, $f(e_3)=(-1,0,1)$. Colonnes !'},
+      {q:'Quel est le spectre de $M$ (ses valeurs propres) ?',
+       choices:['$\\{1, 1, -1\\}$','$\\{1, 2, -1\\}$','Il faut calculer $\\det(M - \\lambda I) = 0$'],
+       correct:2, fb:'Pour les valeurs propres, on résout le polynôme caractéristique $\\det(M-\\lambda I)=0$. Ce calcul est demandé en (b) de l\'exam.'},
+      {q:'Si le spectre est $\\{1, 1, -1\\}$, $f$ est-elle diagonalisable ?',
+       choices:['Oui automatiquement — 3 valeurs propres distinctes non nulles','Pas forcément — il faut vérifier les sous-espaces propres','Non — valeurs propres répétées = pas diagonalisable'],
+       correct:1, fb:'$\\lambda=1$ est de multiplicité 2. Il faut vérifier si $\\dim(E_1) = 2$. Si oui, diagonalisable.'}
+    ]
+  }
+];
+
+let trainState = {};
+
+function initTrain() {
+  trainInitialized = true;
+  showTrainEx(0, document.querySelector('.tab-btn'));
+}
+
+function showTrainEx(idx, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const ex = trainExercises[idx];
+  if(!trainState[idx]) trainState[idx] = {step:0, score:0};
+  renderTrainEx(idx, ex);
+}
+
+function renderTrainEx(idx, ex) {
+  const s = trainState[idx];
+  let html = `<div class="card" style="margin-bottom:20px">
+    <p><span class="tag exam">${ex.title}</span></p>
+    <p style="margin-top:10px">$$${ex.fn}$$</p>
+  </div>`;
+
+  ex.steps.forEach((step, i) => {
+    const unlocked = i <= s.step;
+    const answered = i < s.step;
+    html += `<div class="step-block" style="margin-bottom:16px; ${!unlocked?'opacity:0.4;pointer-events:none':''}">
+      <div class="step-header">
+        <div class="step-num ${answered?'done':''}">
+          ${answered ? '✓' : (i+1)}
+        </div>
+        <div class="step-title">Étape ${i+1}</div>
+      </div>
+      <div class="step-body">
+        <div class="quiz-question">${step.q}</div>
+        <div class="quiz-options" id="train-${idx}-${i}">`;
+    step.choices.forEach((ch,ci) => {
+      const letter = ['A','B','C'][ci];
+      const isCorrect = answered && ci===step.correct;
+      html += `<div class="quiz-option${isCorrect?' correct':''}" onclick="answerTrain(${idx},${i},${ci},this)">
+        <div class="opt-letter${isCorrect?' style=background:var(--emerald);color:white':''}">${letter}</div>
+        ${ch}
+      </div>`;
+    });
+    html += `</div>`;
+    if(answered){
+      html += `<div class="quiz-feedback show ok">${step.fb}</div>`;
+    }
+    html += `</div></div>`;
+  });
+
+  if(s.step >= ex.steps.length){
+    html += `<div class="quiz-feedback show ok" style="display:block">🏆 Exercice complété ! Score: ${s.score}/${ex.steps.length}</div>`;
+  }
+
+  document.getElementById('train-content').innerHTML = html;
+  setTimeout(()=>renderMathInElement(document.getElementById('train-content'),{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+}
+
+function answerTrain(idx, step, choice, el) {
+  const ex = trainExercises[idx];
+  const opts = document.getElementById(`train-${idx}-${step}`);
+  if(opts.querySelector('.correct,.wrong')) return;
+  const s = trainState[idx];
+  const correct = choice === ex.steps[step].correct;
+  opts.querySelectorAll('.quiz-option').forEach((o,i)=>{
+    if(i===ex.steps[step].correct) o.classList.add('correct');
+    else if(o===el&&!correct) o.classList.add('wrong');
+  });
+  if(correct) s.score++;
+  s.step = Math.min(s.step+1, ex.steps.length);
+  setTimeout(()=>renderTrainEx(idx,ex),600);
+}
+
+// ── REFLEXE GAME ──
+let reflexeInitialized = false;
+let reflexeScore=0, reflexeTotal=0, reflexeTimer=null;
+
+const reflexeQuestions = [
+  {dimV:3,dimW:3,dimKer:0, inj:true, surj:true, bij:true},
+  {dimV:3,dimW:2,dimKer:1, inj:false, surj:true, bij:false},
+  {dimV:4,dimW:3,dimKer:2, inj:false, surj:false, bij:false},
+  {dimV:3,dimW:3,dimKer:2, inj:false, surj:false, bij:false},
+  {dimV:2,dimW:3,dimKer:0, inj:true, surj:false, bij:false},
+  {dimV:4,dimW:4,dimKer:0, inj:true, surj:true, bij:true},
+  {dimV:5,dimW:3,dimKer:2, inj:false, surj:true, bij:false},
+  {dimV:3,dimW:3,dimKer:1, inj:false, surj:false, bij:false},
+];
+
+let reflexeIdx=0, reflexeSeconds=0, reflexeCountdown=null;
+
+function initReflexe() {
+  reflexeInitialized=true;
+  reflexeScore=0; reflexeTotal=0; reflexeIdx=0;
+  renderReflexeGame();
+}
+
+function renderReflexeGame() {
+  const container = document.getElementById('reflexe-game');
+  if(reflexeIdx >= reflexeQuestions.length) {
+    const pct = Math.round(reflexeScore/reflexeQuestions.length*100);
+    container.innerHTML=`<div class="minigame-card">
+      <div class="mg-question">🏆 Résultat final</div>
+      <div class="score-big">${reflexeScore}/${reflexeQuestions.length}</div>
+      <p style="color:#7b9ae0; margin-top:12px">${pct>=80?'Excellent ! Réflexe automatisé.':pct>=60?'Bien — encore quelques révisions.':'Continue à pratiquer !'}</p>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="initReflexe()">🔄 Recommencer</button>
+    </div>`;
+    if(pct>=60) markDone('s-reflexe');
+    return;
+  }
+  const q = reflexeQuestions[reflexeIdx];
+  const dimIm = q.dimV - q.dimKer;
+  container.innerHTML=`
+    <div class="minigame-card">
+      <div class="mg-question">Quelle(s) propriété(s) possède $f$ ?</div>
+      <div class="mg-data">
+        <div class="mg-datum"><div class="val">${q.dimV}</div><div class="lbl">dim(V)</div></div>
+        <div class="mg-datum"><div class="val">${q.dimW}</div><div class="lbl">dim(W)</div></div>
+        <div class="mg-datum"><div class="val">${q.dimKer}</div><div class="lbl">dim(ker)</div></div>
+        <div class="mg-datum"><div class="val">${dimIm}</div><div class="lbl">rang = dim(Im)</div></div>
+      </div>
+      <div id="reflexe-countdown" style="font-family:monospace;font-size:22px;color:#7b9ae0;margin-bottom:16px">⏱ 10s</div>
+      <div class="mg-choices">
+        <div class="mg-choice" onclick="answerReflexe(this,'inj')">Injective</div>
+        <div class="mg-choice" onclick="answerReflexe(this,'surj')">Surjective</div>
+        <div class="mg-choice" onclick="answerReflexe(this,'bij')">Bijective</div>
+        <div class="mg-choice" onclick="answerReflexe(this,'none')">Aucune</div>
+      </div>
+      <div class="mg-score">Question ${reflexeIdx+1}/${reflexeQuestions.length} · Score: ${reflexeScore}</div>
+    </div>`;
+  setTimeout(()=>renderMathInElement(container,{delimiters:[{left:'$',right:'$',display:false}]}),50);
+  reflexeSeconds=10;
+  clearInterval(reflexeCountdown);
+  reflexeCountdown = setInterval(()=>{
+    reflexeSeconds--;
+    const el = document.getElementById('reflexe-countdown');
+    if(el) el.textContent = `⏱ ${reflexeSeconds}s`;
+    if(reflexeSeconds<=0){ clearInterval(reflexeCountdown); timeoutReflexe(); }
+  }, 1000);
+}
+
+function answerReflexe(el, ans) {
+  clearInterval(reflexeCountdown);
+  const q = reflexeQuestions[reflexeIdx];
+  reflexeTotal++;
+  let correct = false;
+  if(ans==='inj' && q.inj && !q.surj) correct=true;
+  else if(ans==='surj' && q.surj && !q.inj) correct=true;
+  else if(ans==='bij' && q.bij) correct=true;
+  else if(ans==='none' && !q.inj && !q.surj) correct=true;
+
+  el.classList.add(correct?'correct':'wrong');
+  if(correct) reflexeScore++;
+  reflexeIdx++;
+  setTimeout(()=>renderReflexeGame(), 1200);
+}
+
+function timeoutReflexe() {
+  reflexeTotal++;
+  reflexeIdx++;
+  setTimeout(()=>renderReflexeGame(), 300);
+}
+
+// ── DEMO SECTION ──
+let demoInitialized = false;
+
+function initDemo() {
+  demoInitialized = true;
+  initProofOrder();
+}
+
+function revealDemoSteps(id) {
+  document.getElementById(id+'-content').style.display='block';
+  const btn = document.getElementById(id+'-steps');
+  if(btn) btn.style.display='none';
+}
+
+const proofSteps = [
+  {id:'ps1', text:'Montrer que $0_V \\in \\ker(f)$ : car $f$ linéaire implique $f(0_V)=0_W$.'},
+  {id:'ps2', text:'Montrer stabilité par $+$ : si $u,v \\in \\ker(f)$, calculer $f(u+v)=f(u)+f(v)=0+0=0$.'},
+  {id:'ps3', text:'Montrer stabilité par scalaire : si $u \\in \\ker(f)$ et $\\lambda \\in K$, calculer $f(\\lambda u)=\\lambda f(u)=0$.'},
+  {id:'ps4', text:'Conclure : les 3 axiomes d\'un SEV sont vérifiés.'}
+];
+
+let proofOrder = [];
+
+function initProofOrder() {
+  proofOrder = [2,0,3,1]; // shuffled
+  renderProofOrder();
+}
+
+function renderProofOrder() {
+  const list = document.getElementById('proof-order-quiz');
+  if(!list) return;
+  list.innerHTML = '';
+  proofOrder.forEach((si, pos) => {
+    const step = proofSteps[si];
+    const div = document.createElement('div');
+    div.className = 'sort-item';
+    div.dataset.idx = si;
+    div.dataset.pos = pos;
+    div.innerHTML = `<span class="sort-handle">⠿</span> ${step.text}`;
+    div.draggable = true;
+    div.addEventListener('dragstart', dragStart);
+    div.addEventListener('dragover', dragOver);
+    div.addEventListener('drop', drop);
+    list.appendChild(div);
+  });
+  setTimeout(()=>renderMathInElement(list,{delimiters:[{left:'$',right:'$',display:false}]}),50);
+}
+
+let dragSrc = null;
+
+function dragStart(e) { dragSrc = this; this.classList.add('dragging'); }
+function dragOver(e) { e.preventDefault(); }
+function drop(e) {
+  e.preventDefault();
+  if(dragSrc === this) return;
+  const list = document.getElementById('proof-order-quiz');
+  const items = [...list.querySelectorAll('.sort-item')];
+  const srcIdx = items.indexOf(dragSrc);
+  const dstIdx = items.indexOf(this);
+  [proofOrder[srcIdx], proofOrder[dstIdx]] = [proofOrder[dstIdx], proofOrder[srcIdx]];
+  dragSrc.classList.remove('dragging');
+  renderProofOrder();
+}
+
+function checkProofOrder() {
+  const fb = document.getElementById('proof-order-fb');
+  const list = document.getElementById('proof-order-quiz');
+  const items = [...list.querySelectorAll('.sort-item')];
+  const order = items.map(i=>parseInt(i.dataset.idx));
+  const correct = JSON.stringify(order) === JSON.stringify([0,1,2,3]);
+  fb.className = 'quiz-feedback show ' + (correct?'ok':'ko');
+  fb.textContent = correct ? '✓ Parfait ! Ordre correct de la preuve.' : '✗ Pas tout à fait — le 0 vient en premier (vérifier que 0∈ker), puis les deux stabilités, puis la conclusion.';
+  if(correct) markDone('s-demo');
+}
+
+function resetProofOrder() {
+  proofOrder = [2,0,3,1];
+  renderProofOrder();
+  document.getElementById('proof-order-fb').className='quiz-feedback';
+}
+
+// ── BOSS SECTION ──
+let bossTimerInterval = null;
+let bossSeconds = 25*60;
+let bossIsoAns = null;
+
+function initBossMatrix() {
+  const grid = document.getElementById('boss-mat');
+  if(!grid || grid.children.length > 0) return;
+  grid.style.gridTemplateColumns = 'repeat(4,52px)';
+  for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+    const inp = document.createElement('input');
+    inp.type='number'; inp.className='matrix-cell';
+    inp.dataset.row=r; inp.dataset.col=c;
+    grid.appendChild(inp);
+  }
+}
+
+function startBoss() {
+  document.getElementById('boss-start').style.display='none';
+  document.getElementById('boss-game').style.display='block';
+  bossSeconds = 25*60;
+  updateBossTimer();
+  bossTimerInterval = setInterval(()=>{
+    bossSeconds--;
+    updateBossTimer();
+    if(bossSeconds<=0){ clearInterval(bossTimerInterval); submitBoss(); }
+  }, 1000);
+  initBossMatrix();
+  setTimeout(()=>renderMathInElement(document.getElementById('boss-game'),{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),100);
+}
+
+function updateBossTimer() {
+  const m = Math.floor(bossSeconds/60);
+  const s = bossSeconds%60;
+  const disp = document.getElementById('boss-timer');
+  const fill = document.getElementById('boss-fill');
+  if(!disp) return;
+  disp.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(bossSeconds < 300) disp.classList.add('urgent');
+  if(fill) fill.style.width = (bossSeconds/(25*60)*100)+'%';
+  if(bossSeconds < 300 && fill) fill.style.background = 'var(--rose)';
+}
+
+function stopBoss() {
+  clearInterval(bossTimerInterval);
+  submitBoss();
+}
+
+function selectBossIso(el, ans) {
+  document.querySelectorAll('#boss-iso-opts .quiz-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  bossIsoAns = ans;
+}
+
+function submitBoss() {
+  clearInterval(bossTimerInterval);
+  document.getElementById('boss-game').style.display='none';
+
+  // Correct answers for f(x,y,z,t) = (x, x-y, z, t+y)
+  // M = [[1,0,0,0],[1,-1,0,0],[0,0,1,0],[0,1,0,1]]
+  const correctMat = [[1,0,0,0],[1,-1,0,0],[0,0,1,0],[0,1,0,1]];
+  const cells = document.querySelectorAll('#boss-mat .matrix-cell');
+  let matScore = 0;
+  cells.forEach(c=>{
+    const r=parseInt(c.dataset.row),col=parseInt(c.dataset.col);
+    if(parseInt(c.value)===correctMat[r][col]) matScore++;
+  });
+
+  const kerDim = parseInt(document.getElementById('boss-ker-dim').value);
+  const kerBase = document.getElementById('boss-ker-base').value;
+  const rang = parseInt(document.getElementById('boss-rang').value);
+  const inj = document.getElementById('boss-inj').checked;
+  const surj = document.getElementById('boss-surj').checked;
+  const bij = document.getElementById('boss-bij').checked;
+
+  const kerOk = kerDim===0 && kerBase==='0';
+  const rangOk = rang===4;
+  const injSurjOk = inj && surj && bij;
+  const isoOk = bossIsoAns==='B';
+
+  const total = (matScore===16?6:Math.round(matScore/16*6)) + (kerOk?8:0) + (rangOk?3:0) + (injSurjOk?3:0) + (isoOk?5:0);
+
+  const corr = document.getElementById('boss-corr');
+  corr.className='correction-block show';
+  corr.innerHTML=`
+    <h4>Correction Complète — Exam Juin 2024 Ex.4</h4>
+    <p><strong>(a) Matrice</strong> <span class="score-pill ${matScore===16?'good':'bad'}">${matScore===16?'✓':''+matScore+'/16'}</span></p>
+    <p>$f(e_1)=(1,1,0,0)$, $f(e_2)=(0,-1,0,1)$, $f(e_3)=(0,0,1,0)$, $f(e_4)=(0,0,0,1)$</p>
+    $$M = \\begin{pmatrix}1&0&0&0\\\\1&-1&0&0\\\\0&0&1&0\\\\0&1&0&1\\end{pmatrix}$$
+    <p><strong>(b) Noyau</strong> <span class="score-pill ${kerOk?'good':'bad'}">${kerOk?'✓ 8/8':'0/8'}</span></p>
+    <p>Gauss sur $[M|0]$ : la matrice a 4 colonnes pivots. $\\ker(f) = \\{0\\}$, $\\dim(\\ker)=0$.</p>
+    <p><strong>(c) Rang &amp; conclusion</strong> <span class="score-pill ${rangOk&&injSurjOk?'good':'bad'}">${(rangOk?3:0)+(injSurjOk?3:0)}/6</span></p>
+    <p>$\\text{rang}(f) = 4 - 0 = 4$. $\\ker=\\{0\\}$ → injective. Rang = $\\dim(\\mathbb{R}^4)$ → surjective. Donc <strong>bijective</strong>.</p>
+    <p><strong>(d) Isométrie ?</strong> <span class="score-pill ${isoOk?'good':'bad'}">${isoOk?'✓ 5/5':'0/5'}</span></p>
+    <p>Une isométrie centrée préserve la norme. $f(1,0,0,0)=(1,1,0,0)$, $||(1,1,0,0)||=\\sqrt{2} \\neq 1 = ||(1,0,0,0)||$. Donc <strong>$f$ n'est pas une isométrie</strong>.</p>
+    <div style="margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1)">
+    <p><strong>Score estimé : ${total}/25</strong></p>
+    </div>`;
+  markDone('s-boss');
+  setTimeout(()=>renderMathInElement(corr,{delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]}),50);
+  document.getElementById('boss-corr').scrollIntoView({behavior:'smooth'});
+}
+
+// ── HINT TOGGLE ──
+function toggleHint(id) {
+  document.getElementById(id)?.classList.toggle('show');
+}
+
+// ── INIT ──
+window.addEventListener('load', () => {
+  // Init pipeline matrix
+  const grid = document.getElementById('pip-mat');
+  if(grid) {
+    for(let r=0;r<3;r++) for(let c=0;c<3;c++){
+      const inp = document.createElement('input');
+      inp.type='number'; inp.className='matrix-cell';
+      inp.dataset.row=r; inp.dataset.col=c;
+      grid.appendChild(inp);
+    }
+  }
+  setTimeout(()=>renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),200);
+});
+</script>
+</body>
+</html>

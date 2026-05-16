@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATH F114 · Ch.XI · Valeurs Propres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+:root {
+ --bg: #f5f4f1;
+ --bg2: #ffffff;
+ --bg3: #eeecea;
+ --border: #d8d5d0;
+ --accent: #4a3ff7;
+ --accent2: #d63070;
+ --accent3: #1a9e6e;
+ --accent4: #c47a00;
+ --text: #1a1a2e;
+ --muted: #7a7a8a;
+ --card: #ffffff;
+ --success: #166534;
+ --error: #991b1b;
+ --warn: #92400e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+ background: var(--bg);
+ color: var(--text);
+ font-family: 'DM Sans', sans-serif;
+ font-size: 15px;
+ line-height: 1.65;
+ min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+ background: var(--bg2);
+ border-bottom: 1px solid var(--border);
+ padding: 0 2rem;
+ display: flex;
+ align-items: center;
+ gap: 2rem;
+ position: sticky;
+ top: 0;
+ z-index: 100;
+}
+.logo {
+ font-family: 'Syne', sans-serif;
+ font-size: 1.1rem;
+ color: var(--accent);
+ white-space: nowrap;
+ padding: 1rem 0;
+}
+.logo span { color: var(--accent2); }
+.nav {
+ display: flex;
+ gap: 0.25rem;
+ flex-wrap: wrap;
+ flex: 1;
+}
+.nav-btn {
+ background: none;
+ border: none;
+ color: var(--muted);
+ font-family: 'DM Sans', sans-serif;
+ font-size: 0.8rem;
+ font-weight: 500;
+ padding: 0.5rem 0.9rem;
+ border-radius: 6px;
+ cursor: pointer;
+ transition: all 0.2s;
+ white-space: nowrap;
+}
+.nav-btn:hover { color: var(--text); background: var(--bg3); }
+.nav-btn.active { color: var(--accent); background: rgba(124,107,255,0.12); }
+
+.progress-bar {
+ height: 3px;
+ background: var(--border);
+ position: fixed;
+ top: 0; left: 0; right: 0;
+ z-index: 200;
+}
+.progress-fill {
+ height: 100%;
+ background: linear-gradient(90deg, var(--accent), var(--accent2));
+ transition: width 0.4s ease;
+}
+
+/* SECTIONS */
+.section { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* CARDS */
+.card {
+ background: var(--card);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 1.5rem;
+ margin-bottom: 1rem;
+}
+.card-accent { border-left: 3px solid var(--accent); }
+.card-accent2 { border-left: 3px solid var(--accent2); }
+.card-accent3 { border-left: 3px solid var(--accent3); }
+.card-accent4 { border-left: 3px solid var(--accent4); }
+
+.section-title {
+ font-family: 'Syne', sans-serif;
+ font-size: 1.8rem;
+ margin-bottom: 0.25rem;
+ background: linear-gradient(135deg, var(--accent), var(--accent2));
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ background-clip: text;
+}
+.section-sub {
+ color: var(--muted);
+ font-size: 0.85rem;
+ margin-bottom: 2rem;
+}
+
+/* TAGS */
+.tag {
+ display: inline-block;
+ padding: 0.2rem 0.6rem;
+ border-radius: 4px;
+ font-size: 0.72rem;
+ font-family: 'Space Mono', monospace;
+ font-weight: 700;
+ margin-bottom: 0.5rem;
+}
+.tag-def { background: rgba(74,63,247,0.1); color: var(--accent); }
+.tag-exam { background: rgba(214,48,112,0.1); color: var(--accent2); }
+.tag-key { background: rgba(26,158,110,0.12); color: var(--accent3); }
+.tag-warn { background: rgba(196,122,0,0.12); color: var(--accent4); }
+
+/* MATH */
+.math-block {
+ background: var(--bg3);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ padding: 1rem 1.5rem;
+ margin: 0.75rem 0;
+ overflow-x: auto;
+ font-size: 1.05rem;
+}
+.math-inline { display: inline; }
+
+/* BUTTONS */
+.btn {
+ display: inline-flex;
+ align-items: center;
+ gap: 0.5rem;
+ padding: 0.6rem 1.2rem;
+ border-radius: 8px;
+ font-family: 'DM Sans', sans-serif;
+ font-size: 0.85rem;
+ font-weight: 600;
+ cursor: pointer;
+ border: none;
+ transition: all 0.2s;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #6a5ae0; transform: translateY(-1px); }
+.btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-success { background: rgba(22,101,52,0.1); color: var(--success); border: 1px solid rgba(22,101,52,0.3); }
+.btn-danger { background: rgba(153,27,27,0.1); color: var(--error); border: 1px solid rgba(153,27,27,0.3); }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.78rem; }
+
+/* INPUT */
+.answer-input {
+ background: var(--bg3);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ color: var(--text);
+ font-family: 'Space Mono', monospace;
+ font-size: 0.9rem;
+ padding: 0.6rem 1rem;
+ width: 100%;
+ margin: 0.5rem 0;
+ transition: border-color 0.2s;
+}
+.answer-input:focus { outline: none; border-color: var(--accent); }
+.answer-input.correct { border-color: var(--success); background: rgba(74,222,128,0.05); }
+.answer-input.wrong { border-color: var(--error); background: rgba(248,113,113,0.05); }
+
+/* FEEDBACK */
+.feedback {
+ border-radius: 8px;
+ padding: 0.8rem 1rem;
+ margin-top: 0.75rem;
+ font-size: 0.88rem;
+ display: none;
+ animation: fadeIn 0.3s ease;
+}
+.feedback.show { display: block; }
+.feedback.correct { background: rgba(22,101,52,0.08); border: 1px solid rgba(22,101,52,0.25); color: var(--success); }
+.feedback.wrong { background: rgba(153,27,27,0.08); border: 1px solid rgba(153,27,27,0.25); color: var(--error); }
+.feedback.hint { background: rgba(196,122,0,0.08); border: 1px solid rgba(196,122,0,0.25); color: var(--accent4); }
+.feedback.info { background: rgba(74,63,247,0.08); border: 1px solid rgba(74,63,247,0.25); color: var(--accent); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+@keyframes glow { 0%,100% { box-shadow: 0 0 8px rgba(74,63,247,0.2); } 50% { box-shadow: 0 0 20px rgba(74,63,247,0.3); } }
+
+/* PIPELINE STEP */
+.step-container { position: relative; }
+.step-header {
+ display: flex;
+ align-items: center;
+ gap: 1rem;
+ margin-bottom: 1.5rem;
+}
+.step-num {
+ width: 40px;
+ height: 40px;
+ border-radius: 50%;
+ background: linear-gradient(135deg, var(--accent), var(--accent2));
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-family: 'Syne', sans-serif;
+ font-size: 1.1rem;
+ font-weight: 800;
+ flex-shrink: 0;
+}
+.step-num.done { background: linear-gradient(135deg, var(--accent3), #22c55e); }
+.step-num.locked { background: var(--bg3); color: var(--muted); }
+.step-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; }
+.step-subtitle { font-size: 0.78rem; color: var(--muted); }
+
+/* PROGRESS STEPS */
+.pipeline-progress {
+ display: flex;
+ gap: 0.5rem;
+ margin-bottom: 2rem;
+ flex-wrap: wrap;
+}
+.pip-step {
+ flex: 1;
+ min-width: 80px;
+ padding: 0.4rem 0.6rem;
+ border-radius: 6px;
+ font-size: 0.72rem;
+ text-align: center;
+ border: 1px solid var(--border);
+ color: var(--muted);
+ background: var(--bg3);
+ transition: all 0.3s;
+}
+.pip-step.active { border-color: var(--accent); color: var(--accent); background: rgba(74,63,247,0.08); }
+.pip-step.done { border-color: var(--accent3); color: var(--accent3); background: rgba(26,158,110,0.07); }
+
+/* QUIZ */
+.quiz-option {
+ display: block;
+ width: 100%;
+ padding: 0.8rem 1rem;
+ border-radius: 8px;
+ border: 1px solid var(--border);
+ background: var(--bg3);
+ color: var(--text);
+ font-family: 'DM Sans', sans-serif;
+ font-size: 0.88rem;
+ cursor: pointer;
+ text-align: left;
+ margin: 0.4rem 0;
+ transition: all 0.2s;
+}
+.quiz-option:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.quiz-option.correct { border-color: var(--success); background: rgba(22,101,52,0.08); color: var(--success); }
+.quiz-option.wrong { border-color: var(--error); background: rgba(153,27,27,0.08); color: var(--error); }
+.quiz-option:disabled { cursor: not-allowed; }
+
+/* SCORE */
+.score-display {
+ font-family: 'Syne', sans-serif;
+ font-size: 3rem;
+ text-align: center;
+ padding: 1.5rem;
+ background: var(--bg3);
+ border-radius: 12px;
+ border: 1px solid var(--border);
+}
+
+/* TIMER */
+.timer-display {
+ font-family: 'Space Mono', monospace;
+ font-size: 2rem;
+ text-align: center;
+ padding: 1rem;
+ border-radius: 8px;
+ margin-bottom: 1rem;
+ border: 1px solid var(--border);
+ background: var(--bg3);
+}
+.timer-display.urgent { color: var(--error); animation: pulse 1s infinite; }
+
+/* MATRIX */
+.matrix-display {
+ display: inline-block;
+ font-family: 'Space Mono', monospace;
+ font-size: 0.95rem;
+ line-height: 1.8;
+ padding: 0.5rem;
+}
+.matrix-wrapper {
+ display: inline-flex;
+ align-items: center;
+ gap: 0.5rem;
+ margin: 0.5rem 0;
+}
+.bracket {
+ font-size: 3rem;
+ color: var(--muted);
+ line-height: 1;
+ font-weight: 300;
+}
+
+/* REVEAL */
+.reveal-panel {
+ display: none;
+ margin-top: 1rem;
+ padding: 1rem;
+ background: var(--bg3);
+ border-radius: 8px;
+ border: 1px solid var(--border);
+ animation: fadeIn 0.3s ease;
+}
+.reveal-panel.show { display: block; }
+
+/* DEMO CARD */
+.demo-card {
+ background: linear-gradient(135deg, rgba(74,63,247,0.04), rgba(214,48,112,0.04));
+ border: 1px solid rgba(74,63,247,0.15);
+ border-radius: 12px;
+ padding: 1.5rem;
+ margin-bottom: 1rem;
+}
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* ENTRAÎNEMENT TABS */
+.ex-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.ex-tab {
+ padding: 0.5rem 1rem;
+ border-radius: 8px 8px 0 0;
+ border: 1px solid var(--border);
+ background: var(--bg3);
+ color: var(--muted);
+ cursor: pointer;
+ font-size: 0.82rem;
+ font-weight: 600;
+ border-bottom: none;
+ transition: all 0.2s;
+}
+.ex-tab.active { background: var(--card); color: var(--accent); border-color: var(--accent); border-bottom-color: var(--card); }
+.ex-content { display: none; }
+.ex-content.active { display: block; }
+
+/* ACCORDION */
+.accordion-btn {
+ width: 100%;
+ background: var(--bg3);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ padding: 0.8rem 1rem;
+ color: var(--text);
+ font-family: 'DM Sans', sans-serif;
+ font-size: 0.88rem;
+ font-weight: 600;
+ cursor: pointer;
+ text-align: left;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 0.5rem;
+ transition: all 0.2s;
+}
+.accordion-btn:hover { border-color: var(--accent2); }
+.accordion-btn .arrow { transition: transform 0.3s; }
+.accordion-btn.open .arrow { transform: rotate(90deg); }
+.accordion-content {
+ display: none;
+ padding: 1rem;
+ background: var(--bg3);
+ border: 1px solid var(--border);
+ border-top: none;
+ border-radius: 0 0 8px 8px;
+ margin-bottom: 0.5rem;
+ margin-top: -0.5rem;
+}
+.accordion-content.open { display: block; }
+
+/* BOSS FIGHT */
+.boss-arena {
+ border: 2px solid var(--accent2);
+ border-radius: 12px;
+ padding: 1.5rem;
+ background: linear-gradient(135deg, rgba(214,48,112,0.03), rgba(74,63,247,0.03));
+ animation: glow 3s infinite;
+}
+.boss-title {
+ font-family: 'Syne', sans-serif;
+ font-size: 1.4rem;
+ color: var(--accent2);
+ margin-bottom: 0.5rem;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #c0bdb8; border-radius: 3px; }
+
+/* MISC */
+.divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+.mono { font-family: 'Space Mono', monospace; }
+.muted { color: var(--muted); }
+.small { font-size: 0.82rem; }
+.bold { font-weight: 700; }
+.center { text-align: center; }
+.gap-sm { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.gap-sm > * { flex-shrink: 0; }
+
+.badge {
+ display: inline-flex;
+ align-items: center;
+ gap: 0.3rem;
+ padding: 0.25rem 0.6rem;
+ border-radius: 99px;
+ font-size: 0.72rem;
+ font-weight: 600;
+ background: rgba(124,107,255,0.15);
+ color: var(--accent);
+}
+.badge-green { background: rgba(22,101,52,0.1); color: var(--success); }
+.badge-red { background: rgba(153,27,27,0.1); color: var(--error); }
+
+.highlight { background: rgba(74,63,247,0.1); padding: 0.1rem 0.3rem; border-radius: 3px; color: var(--accent); }
+
+.step-locked-msg {
+ text-align: center;
+ padding: 2rem;
+ color: var(--muted);
+ font-style: italic;
+ display: none;
+}
+
+ul.checklist { list-style: none; padding: 0; }
+ul.checklist li { padding: 0.3rem 0; display: flex; align-items: flex-start; gap: 0.5rem; }
+ul.checklist li::before { content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:16%"></div></div>
+
+<header class="header">
+ <div class="logo">MATH<span>F114</span> · Ch.XI</div>
+ <nav class="nav">
+  <button class="nav-btn active" onclick="showSection('theory',this,1)">1. Théorie Flash</button>
+  <button class="nav-btn" onclick="showSection('pipeline',this,2)">2. Pipeline</button>
+  <button class="nav-btn" onclick="showSection('training',this,3)">3. Entraînement</button>
+  <button class="nav-btn" onclick="showSection('quiz',this,4)">4. Quiz V/F</button>
+  <button class="nav-btn" onclick="showSection('demos',this,5)">5. Démos</button>
+  <button class="nav-btn" onclick="showSection('boss',this,6)">6. Boss Fight</button>
+ </nav>
+</header>
+
+<!-- ══════════════════════════════════════════════════
+   SECTION 1 : THÉORIE FLASH
+══════════════════════════════════════════════════ -->
+<section class="section active" id="theory">
+ <div class="section-title">1. Théorie Flash</div>
+ <div class="section-sub">80/20 : que l'essentiel exam. 25 pts sur 100 à chaque session.</div>
+
+ <div class="card card-accent">
+  <span class="tag tag-def">DÉFINITION</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.75rem;">Valeur propre & Vecteur propre</div>
+  <p>Soit \(M \in \text{Mat}(n\times n, \mathbb{R})\). Un scalaire \(\lambda\) est une <strong>valeur propre</strong> de \(M\) s'il existe un vecteur <strong>non nul</strong> \(\vec{v}\) tel que :</p>
+  <div class="math-block">\[ M\vec{v} = \lambda\vec{v} \]</div>
+  <p>Le vecteur \(\vec{v}\) est alors un <strong>vecteur propre</strong> associé à \(\lambda\).</p>
+  <div class="feedback show hint" style="margin-top:0.75rem;">Le vecteur nul n'est JAMAIS un vecteur propre par définition.</div>
+ </div>
+
+ <div class="card card-accent2">
+  <span class="tag tag-exam">EXAM ★★★</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.75rem;">Polynôme caractéristique & Spectre</div>
+  <div class="math-block">\[ p_M(\lambda) = \det(M - \lambda I) \]</div>
+  <p>Les <strong>valeurs propres</strong> de \(M\) sont exactement les <strong>racines</strong> de \(p_M(\lambda)\).</p>
+  <p style="margin-top:0.5rem;">Le <strong>spectre</strong> de \(M\) = l'ensemble des valeurs propres : \(\text{Sp}(M) = \{\lambda_1, \lambda_2, \ldots\}\)</p>
+  <div class="feedback show hint" style="margin-top:0.75rem;">Pour une matrice 3×3, le polynôme est de degré 3. Toujours chercher une racine évidente (1, −1, 2, 3…) puis diviser.</div>
+ </div>
+
+ <div class="grid-2">
+  <div class="card card-accent3">
+   <span class="tag tag-key">SOUS-ESPACE PROPRE</span>
+   <div class="math-block" style="font-size:0.9rem;">\[ V_\lambda = \ker(M - \lambda I) \]</div>
+   <p class="small">C'est le sous-espace vectoriel des vecteurs propres associés à \(\lambda\) (+ le vecteur nul).</p>
+   <p class="small" style="margin-top:0.5rem;">Pour le calculer : résoudre \((M - \lambda I)\vec{v} = \vec{0}\) par Gauss.</p>
+  </div>
+  <div class="card card-accent4">
+   <span class="tag tag-warn">MULTIPLICITÉ</span>
+   <p class="small"><strong>Algébrique :</strong> multiplicité de \(\lambda\) comme racine de \(p_M\).</p>
+   <p class="small" style="margin-top:0.5rem;"><strong>Géométrique :</strong> \(\dim(V_\lambda) = \dim\ker(M-\lambda I)\)</p>
+   <p class="small" style="margin-top:0.5rem;">Toujours : \(\dim(V_\lambda) \leq \text{mult. algébrique}\)</p>
+  </div>
+ </div>
+
+ <div class="card card-accent">
+  <span class="tag tag-exam">EXAM ★★★ — LE PIPELINE COMPLET</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1.05rem;margin:0.75rem 0;">Diagonalisation</div>
+  <ul class="checklist">
+   <li>Calculer \(p_M(\lambda) = \det(M - \lambda I)\)</li>
+   <li>Trouver les racines → spectre \(\{\lambda_1, \lambda_2, \lambda_3\}\)</li>
+   <li>Pour chaque \(\lambda_i\) : résoudre \((M-\lambda_i I)\vec{v}=\vec{0}\), extraire une base de \(V_{\lambda_i}\)</li>
+   <li>Former \(B\) dont les colonnes sont les vecteurs propres trouvés</li>
+   <li>\(D = B^{-1}MB = \text{diag}(\lambda_1, \lambda_2, \lambda_3)\) est diagonale</li>
+   <li>Pour \(M^n\) : \(M^n = BD^nB^{-1}\) avec \(D^n = \text{diag}(\lambda_1^n, \lambda_2^n, \lambda_3^n)\)</li>
+  </ul>
+ </div>
+
+ <div class="grid-2">
+  <div class="card">
+   <span class="tag tag-key">CONDITION DE DIAGONALISABILITÉ</span>
+   <p class="small">Une matrice \(n\times n\) est diagonalisable si et seulement si :</p>
+   <div class="math-block" style="font-size:0.88rem;">\[\sum_i \dim(V_{\lambda_i}) = n\]</div>
+   <p class="small">Autrement dit : on peut former une base de vecteurs propres.</p>
+  </div>
+  <div class="card">
+   <span class="tag tag-key">MATRICES SEMBLABLES</span>
+   <p class="small">Si \(D = B^{-1}MB\), alors \(M\) et \(D\) sont <strong>semblables</strong>. Elles ont :</p>
+   <ul class="checklist" style="margin-top:0.5rem;">
+    <li class="small">Même polynôme caract.</li>
+    <li class="small">Même spectre</li>
+    <li class="small">Même déterminant</li>
+    <li class="small">Même trace</li>
+   </ul>
+  </div>
+ </div>
+
+ <div class="card card-accent2">
+  <span class="tag tag-exam">ASTUCE EXAM</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Calculer M³ (ou Mⁿ)</div>
+  <p>Comme \(M = BDB^{-1}\) :</p>
+  <div class="math-block">\[M^3 = (BDB^{-1})(BDB^{-1})(BDB^{-1}) = BD^3B^{-1}\]</div>
+  <div class="math-block">\[D^3 = \begin{pmatrix}\lambda_1^3 & 0 & 0\\ 0 & \lambda_2^3 & 0\\ 0 & 0 & \lambda_3^3\end{pmatrix}\]</div>
+  <div class="feedback show info">→ Exam Août 2025 : \(\lambda_1=1, \lambda_2=2, \lambda_3=3\) donc \(D^3 = \text{diag}(1,8,27)\)</div>
+ </div>
+
+ <div class="card">
+  <span class="tag tag-warn">ERREURS CLASSIQUES</span>
+  <ul class="checklist" style="margin-top:0.5rem;">
+   <li class="small">Oublier de vérifier que les vecteurs propres forment une base (sinon M n'est pas diagonalisable)</li>
+   <li class="small">Confondre \(B^{-1}MB\) avec \(BMB^{-1}\) — l'ordre compte !</li>
+   <li class="small">Ne pas normaliser : les vecteurs propres peuvent être quelconques (pas besoin d'orthonormaliser sauf si demandé)</li>
+   <li class="small">Calculer le déterminant par la règle de Sarrus pour les 3×3 (plus rapide)</li>
+  </ul>
+ </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+   SECTION 2 : PIPELINE PAS À PAS
+══════════════════════════════════════════════════ -->
+<section class="section" id="pipeline">
+ <div class="section-title">2. Le Pipeline</div>
+ <div class="section-sub">Exercice guidé interactif — basé sur l'Exam Août 2025, Ex. 1 (25 pts)</div>
+
+ <div class="pipeline-progress" id="pipelineProgress">
+  <div class="pip-step active" id="pstep-0">1. Matrice M</div>
+  <div class="pip-step" id="pstep-1">2. Poly. caract.</div>
+  <div class="pip-step" id="pstep-2">3. Spectre</div>
+  <div class="pip-step" id="pstep-3">4. Vect. propres</div>
+  <div class="pip-step" id="pstep-4">5. Matrice B & D</div>
+  <div class="pip-step" id="pstep-5">6. Calc. M³</div>
+ </div>
+
+ <!-- STEP 0 : présentation -->
+ <div id="pipe-step-0">
+  <div class="card card-accent">
+   <div class="step-header">
+    <div class="step-num">1</div>
+    <div>
+     <div class="step-title">Donner la matrice M</div>
+     <div class="step-subtitle">/4 points à l'exam</div>
+    </div>
+   </div>
+   <p>Considérer l'application linéaire :</p>
+   <div class="math-block">\[f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (-9x+6y+8z,\; -14x+10y+10z,\; -4x+2y+5z)\]</div>
+   <p style="margin-top:1rem;">La matrice de \(f\) dans la base canonique est la matrice dont les colonnes sont les images des vecteurs de la base. Pour une application \((x,y,z)\mapsto(ax+by+cz, \ldots)\), on lit directement les coefficients :</p>
+   <div class="math-block">\[M = \begin{pmatrix} a_{11} & a_{12} & a_{13} \\ a_{21} & a_{22} & a_{23} \\ a_{31} & a_{32} & a_{33} \end{pmatrix}\]</div>
+   <p style="margin-top:0.75rem;"><strong>Question :</strong> Quelle est la valeur de \(M_{22}\) (élément ligne 2, colonne 2) ?</p>
+   <input type="number" class="answer-input" id="p0-ans" placeholder="Entrer un nombre entier">
+   <div class="gap-sm">
+    <button class="btn btn-primary btn-sm" onclick="checkP0()">Vérifier →</button>
+    <button class="btn btn-secondary btn-sm" onclick="hintP0()">Indice</button>
+   </div>
+   <div class="feedback" id="p0-feedback"></div>
+  </div>
+ </div>
+
+ <!-- STEP 1 : poly caract -->
+ <div id="pipe-step-1" style="display:none">
+  <div class="card card-accent2">
+   <div class="step-header">
+    <div class="step-num" id="s1-num">2</div>
+    <div>
+     <div class="step-title">Polynôme caractéristique</div>
+     <div class="step-subtitle">/4 points à l'exam</div>
+    </div>
+   </div>
+   <p>La matrice est :</p>
+   <div class="math-block">\[M = \begin{pmatrix} -9 & 6 & 8 \\ -14 & 10 & 10 \\ -4 & 2 & 5 \end{pmatrix}\]</div>
+   <p style="margin-top:0.75rem;">On calcule \(p_M(\lambda) = \det(M - \lambda I)\).</p>
+   <div class="math-block">\[\det(M-\lambda I) = \det\begin{pmatrix} -9-\lambda & 6 & 8 \\ -14 & 10-\lambda & 10 \\ -4 & 2 & 5-\lambda \end{pmatrix}\]</div>
+   <p style="margin-top:0.75rem;"><strong>Question :</strong> Quel est le coefficient de \(\lambda^2\) dans \(p_M(\lambda)\) ? (ex: si \(p_M = -\lambda^3 + 6\lambda^2 - 11\lambda + 6\), répondre 6)</p>
+   <input type="number" class="answer-input" id="p1-ans" placeholder="Entrer le coefficient de λ²">
+   <div class="gap-sm">
+    <button class="btn btn-primary btn-sm" onclick="checkP1()">Vérifier →</button>
+    <button class="btn btn-secondary btn-sm" onclick="hintP1()">Indice</button>
+    <button class="btn btn-secondary btn-sm" onclick="showFullSolution('p1-sol')">Voir calcul complet</button>
+   </div>
+   <div class="feedback" id="p1-feedback"></div>
+   <div class="reveal-panel" id="p1-sol">
+    <p class="small muted">Développement par la 1ère ligne :</p>
+    <div class="math-block" style="font-size:0.85rem;">\[p_M(\lambda) = (-9-\lambda)[(10-\lambda)(5-\lambda)-20] - 6[(-14)(5-\lambda)+40] + 8[(-14)(2)-(-4)(10-\lambda)]\]</div>
+    <div class="math-block" style="font-size:0.9rem;">\[= -\lambda^3 + 6\lambda^2 - 11\lambda + 6\]</div>
+    <p class="small" style="color:var(--accent3);">✓ Racine évidente : \(\lambda = 1\) (vérifier : \(-1+6-11+6=0\) ✓)</p>
+   </div>
+  </div>
+ </div>
+
+ <!-- STEP 2 : spectre -->
+ <div id="pipe-step-2" style="display:none">
+  <div class="card card-accent3">
+   <div class="step-header">
+    <div class="step-num" id="s2-num">3</div>
+    <div>
+     <div class="step-title">Trouver le Spectre</div>
+     <div class="step-subtitle">Racines du polynôme caractéristique</div>
+    </div>
+   </div>
+   <p>On sait que \(p_M(\lambda) = -\lambda^3 + 6\lambda^2 - 11\lambda + 6\)</p>
+   <p style="margin-top:0.75rem;">Avec la racine évidente \(\lambda = 1\), on factorise :</p>
+   <div class="math-block">\[p_M(\lambda) = -(\lambda-1)(\lambda^2 - 5\lambda + 6) = -(\lambda-1)(\lambda-2)(\lambda-3)\]</div>
+   <p style="margin-top:0.75rem;"><strong>Question :</strong> La plus grande valeur propre est :</p>
+   <input type="number" class="answer-input" id="p2-ans" placeholder="Entrer la valeur propre maximale">
+   <div class="gap-sm">
+    <button class="btn btn-primary btn-sm" onclick="checkP2()">Vérifier →</button>
+   </div>
+   <div class="feedback" id="p2-feedback"></div>
+  </div>
+ </div>
+
+ <!-- STEP 3 : vecteurs propres -->
+ <div id="pipe-step-3" style="display:none">
+  <div class="card card-accent4">
+   <div class="step-header">
+    <div class="step-num" id="s3-num">4</div>
+    <div>
+     <div class="step-title">Sous-espaces propres</div>
+     <div class="step-subtitle">/10 points — le plus lourd à l'exam</div>
+    </div>
+   </div>
+   <p>Spectre : \(\text{Sp}(M) = \{1, 2, 3\}\). Pour chaque \(\lambda\), on résout \((M - \lambda I)\vec{v} = \vec{0}\) par Gauss.</p>
+   
+   <div style="margin-top:1rem;">
+    <button class="accordion-btn" onclick="toggleAccordion('acc-lam1')">
+     <span>Pour \(\lambda = 1\) → calculer \(V_1 = \ker(M - I)\)</span>
+     <span class="arrow">▶</span>
+    </button>
+    <div class="accordion-content" id="acc-lam1">
+     <div class="math-block" style="font-size:0.85rem;">\[M - I = \begin{pmatrix} -10 & 6 & 8 \\ -14 & 9 & 10 \\ -4 & 2 & 4 \end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix} 1 & 0 & -2 \\ 0 & 1 & -2 \\ 0 & 0 & 0 \end{pmatrix}\]</div>
+     <p class="small">Système : \(x = 2z\), \(y = 2z\) → solution : \((2z, 2z, z)\)</p>
+     <div class="math-block" style="font-size:0.9rem;">\[V_1 = \langle (2, 2, 1) \rangle\]</div>
+     <p class="small" style="color:var(--accent3);">✓ Vecteur propre : \(\vec{v}_1 = (2,2,1)\)</p>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-lam2')">
+     <span>Pour \(\lambda = 2\) → calculer \(V_2 = \ker(M - 2I)\)</span>
+     <span class="arrow">▶</span>
+    </button>
+    <div class="accordion-content" id="acc-lam2">
+     <div class="math-block" style="font-size:0.85rem;">\[M - 2I = \begin{pmatrix} -11 & 6 & 8 \\ -14 & 8 & 10 \\ -4 & 2 & 3 \end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix} 1 & 0 & -1 \\ 0 & 1 & -\frac{1}{2} \\ 0 & 0 & 0 \end{pmatrix}\]</div>
+     <p class="small">Solution : \(x = z\), \(y = \frac{z}{2}\) → \((z, z/2, z) = \frac{z}{2}(2,1,2)\)</p>
+     <div class="math-block" style="font-size:0.9rem;">\[V_2 = \langle (2, 1, 2) \rangle\]</div>
+     <p class="small" style="color:var(--accent3);">✓ Vecteur propre : \(\vec{v}_2 = (2,1,2)\)</p>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAccordion('acc-lam3')">
+     <span>Pour \(\lambda = 3\) → calculer \(V_3 = \ker(M - 3I)\)</span>
+     <span class="arrow">▶</span>
+    </button>
+    <div class="accordion-content" id="acc-lam3">
+     <div class="math-block" style="font-size:0.85rem;">\[M - 3I = \begin{pmatrix} -12 & 6 & 8 \\ -14 & 7 & 10 \\ -4 & 2 & 2 \end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix} 0 & 0 & 1 \\ 0 & 0 & 0 \\ 1 & -\frac{1}{2} & 0 \end{pmatrix}\]</div>
+     <p class="small">Solution : \(z = 0\), \(x = \frac{y}{2}\) → \((\frac{y}{2}, y, 0) = \frac{y}{2}(1,2,0)\)</p>
+     <div class="math-block" style="font-size:0.9rem;">\[V_3 = \langle (1, 2, 0) \rangle\]</div>
+     <p class="small" style="color:var(--accent3);">✓ Vecteur propre : \(\vec{v}_3 = (1,2,0)\)</p>
+    </div>
+   </div>
+
+   <p style="margin-top:1rem;"><strong>Question :</strong> Quelle est la première coordonnée du vecteur propre associé à \(\lambda = 2\) (forme simplifiée) ?</p>
+   <input type="number" class="answer-input" id="p3-ans" placeholder="Première coordonnée de v₂">
+   <div class="gap-sm">
+    <button class="btn btn-primary btn-sm" onclick="checkP3()">Vérifier →</button>
+   </div>
+   <div class="feedback" id="p3-feedback"></div>
+  </div>
+ </div>
+
+ <!-- STEP 4 : B et D -->
+ <div id="pipe-step-4" style="display:none">
+  <div class="card card-accent">
+   <div class="step-header">
+    <div class="step-num" id="s4-num">5</div>
+    <div>
+     <div class="step-title">Construire B et D</div>
+     <div class="step-subtitle">Colonnes de B = vecteurs propres dans l'ordre du spectre</div>
+    </div>
+   </div>
+   <p>Les vecteurs propres : \(\vec{v}_1 = (2,2,1)\), \(\vec{v}_2 = (2,1,2)\), \(\vec{v}_3 = (1,2,0)\)</p>
+   <div class="grid-2" style="margin-top:1rem;">
+    <div>
+     <p class="small muted" style="margin-bottom:0.5rem;">Matrice de passage B :</p>
+     <div class="math-block">\[B = \begin{pmatrix} 2 & 2 & 1 \\ 2 & 1 & 2 \\ 1 & 2 & 0 \end{pmatrix}\]</div>
+    </div>
+    <div>
+     <p class="small muted" style="margin-bottom:0.5rem;">Matrice diagonale D :</p>
+     <div class="math-block">\[D = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 3 \end{pmatrix}\]</div>
+    </div>
+   </div>
+   <div class="feedback show info" style="margin-top:0.75rem;">Les valeurs propres sur la diagonale de D doivent être dans le même ordre que les colonnes de B.</div>
+   <p style="margin-top:1rem;"><strong>Question :</strong> Quel est l'élément \(D_{33}\) (ligne 3, colonne 3) de la matrice diagonale ?</p>
+   <input type="number" class="answer-input" id="p4-ans" placeholder="Valeur de D₃₃">
+   <div class="gap-sm">
+    <button class="btn btn-primary btn-sm" onclick="checkP4()">Vérifier →</button>
+   </div>
+   <div class="feedback" id="p4-feedback"></div>
+  </div>
+ </div>
+
+ <!-- STEP 5 : M³ -->
+ <div id="pipe-step-5" style="display:none">
+  <div class="card card-accent2">
+   <div class="step-header">
+    <div class="step-num" id="s5-num">6</div>
+    <div>
+     <div class="step-title">Calculer M³</div>
+     <div class="step-subtitle">/7 points — utiliser M = BDB⁻¹</div>
+    </div>
+   </div>
+   <p>\(M^3 = BD^3B^{-1}\) avec \(D^3 = \text{diag}(1^3, 2^3, 3^3) = \text{diag}(1, 8, 27)\)</p>
+   <div style="margin-top:1rem;">
+    <button class="accordion-btn" onclick="toggleAccordion('acc-binv')">
+     <span>Calcul de B⁻¹ (Gauss-Jordan)</span>
+     <span class="arrow">▶</span>
+    </button>
+    <div class="accordion-content" id="acc-binv">
+     <p class="small">En appliquant Gauss-Jordan à \((B | I)\) :</p>
+     <div class="math-block" style="font-size:0.85rem;">\[B^{-1} = \begin{pmatrix} 4 & -2 & -3 \\ -2 & 1 & 2 \\ -3 & 2 & 2 \end{pmatrix}\]</div>
+    </div>
+   </div>
+   <div style="margin-top:0.5rem;">
+    <button class="accordion-btn" onclick="toggleAccordion('acc-m3')">
+     <span>Calcul final de M³ = BD³B⁻¹</span>
+     <span class="arrow">▶</span>
+    </button>
+    <div class="accordion-content" id="acc-m3">
+     <div class="math-block" style="font-size:0.85rem;">\[M^3 = \begin{pmatrix}2&2&1\\2&1&2\\1&2&0\end{pmatrix}\begin{pmatrix}1&0&0\\0&8&0\\0&0&27\end{pmatrix}\begin{pmatrix}4&-2&-3\\-2&1&2\\-3&2&2\end{pmatrix}\]</div>
+     <div class="math-block" style="font-size:0.9rem;">\[M^3 = \begin{pmatrix}-105 & 66 & 80 \\ -170 & 112 & 118 \\ -28 & 14 & 29\end{pmatrix}\]</div>
+    </div>
+   </div>
+   <p style="margin-top:1rem;"><strong>Question finale :</strong> Quelle est la valeur de \((M^3)_{11}\) (élément en haut à gauche) ?</p>
+   <input type="number" class="answer-input" id="p5-ans" placeholder="Valeur de (M³)₁₁">
+   <div class="gap-sm">
+    <button class="btn btn-primary btn-sm" onclick="checkP5()">Vérifier →</button>
+   </div>
+   <div class="feedback" id="p5-feedback"></div>
+  </div>
+ </div>
+
+ <!-- COMPLETION -->
+ <div id="pipe-complete" style="display:none">
+  <div class="card" style="text-align:center;padding:2rem;">
+   <div style="font-size:3rem;margin-bottom:1rem;">★</div>
+   <div class="section-title" style="text-align:center;margin-bottom:0.5rem;">Pipeline Maîtrisé !</div>
+   <p class="muted">Tu as complété les 6 étapes de l'exercice 1 de l'exam Août 2025.</p>
+   <div style="margin-top:1.5rem;">
+    <button class="btn btn-primary" onclick="resetPipeline()">Recommencer</button>
+    <button class="btn btn-secondary" style="margin-left:0.5rem;" onclick="showSection('training', document.querySelectorAll('.nav-btn')[2], 3)">→ Entraînement</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+   SECTION 3 : ENTRAÎNEMENT
+══════════════════════════════════════════════════ -->
+<section class="section" id="training">
+ <div class="section-title">3. Entraînement</div>
+ <div class="section-sub">3 exercices des examens passés — avec validation et correction complète</div>
+
+ <div class="ex-tabs">
+  <button class="ex-tab active" onclick="showEx(0)">Juin 2022</button>
+  <button class="ex-tab" onclick="showEx(1)">Juin 2025</button>
+  <button class="ex-tab" onclick="showEx(2)">Examen Libre</button>
+ </div>
+
+ <!-- EXERCICE JUIN 2022 -->
+ <div class="ex-content active" id="ex-0">
+  <div class="card card-accent">
+   <span class="tag tag-exam">EXAM JUIN 2022 — Exercice 1</span>
+   <p style="margin-top:0.75rem;">Considérer l'application linéaire :</p>
+   <div class="math-block">\[f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (3x+2y,\; 2(x+y+z),\; 2y+z)\]</div>
+
+   <div style="margin-top:1.5rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:1rem;">Q(a) — Matrice M de f</div>
+    <p>Donner la matrice \(M\) de \(f\) dans la base canonique :</p>
+    <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+     <span>M =</span>
+     <input type="text" class="answer-input" style="width:200px;" id="ex1-mat" placeholder="ex: 3,2,0;2,2,2;0,2,1">
+    </div>
+    <p class="small muted" style="margin-top:0.3rem;">Format : lignes séparées par ";" et valeurs par ","</p>
+    <div class="gap-sm" style="margin-top:0.5rem;">
+     <button class="btn btn-primary btn-sm" onclick="checkEx1Mat()">Vérifier</button>
+     <button class="btn btn-secondary btn-sm" onclick="showFullSolution('ex1-mat-sol')">Correction</button>
+    </div>
+    <div class="feedback" id="ex1-mat-feedback"></div>
+    <div class="reveal-panel" id="ex1-mat-sol">
+     <div class="math-block">\[M = \begin{pmatrix} 3 & 2 & 0 \\ 2 & 2 & 2 \\ 0 & 2 & 1 \end{pmatrix}\]</div>
+     <p class="small">Coefficients lus directement depuis l'expression de \(f\) : colonne \(i\) = image de \(e_i\).</p>
+    </div>
+   </div>
+
+   <div class="divider"></div>
+
+   <div>
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">Q(b) — Diagonalisabilité sans calcul</div>
+    <p>Pourquoi peut-on affirmer que \(f\) est diagonalisable sans faire de calculs ?</p>
+    <div style="margin-top:0.75rem;">
+     <button class="quiz-option" id="ex1b-a" onclick="checkEx1b('A')">A. Car toutes les matrices carrées sont diagonalisables.</button>
+     <button class="quiz-option" id="ex1b-b" onclick="checkEx1b('B')">B. Car \(M\) est une matrice symétrique réelle, donc ses valeurs propres sont réelles et elle est diagonalisable.</button>
+     <button class="quiz-option" id="ex1b-c" onclick="checkEx1b('C')">C. Car \(\det(M) \neq 0\), donc M est inversible.</button>
+     <button class="quiz-option" id="ex1b-d" onclick="checkEx1b('D')">D. Car \(M\) est triangulaire supérieure.</button>
+    </div>
+    <div class="feedback" id="ex1b-feedback"></div>
+   </div>
+
+   <div class="divider"></div>
+
+   <div>
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">Q(c) — Vecteurs propres (sachant que \(p_M(\lambda) = -\lambda^3+6\lambda^2-9\lambda+4\))</div>
+    <p>Le polynôme caractéristique est \(-\lambda^3+6\lambda^2-9\lambda+4 = -(\lambda-1)^2(\lambda-4)\).</p>
+    <p style="margin-top:0.5rem;">Le spectre est \(\{1, 4\}\) avec \(\lambda=1\) de multiplicité algébrique 2.</p>
+    
+    <div style="margin-top:1rem;">
+     <button class="accordion-btn" onclick="toggleAccordion('ex1c-v1')">
+      <span>Correction : \(V_1 = \ker(M - I)\)</span>
+      <span class="arrow">▶</span>
+     </button>
+     <div class="accordion-content" id="ex1c-v1">
+      <div class="math-block" style="font-size:0.85rem;">\[M - I = \begin{pmatrix}2&2&0\\2&1&2\\0&2&0\end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix}1&0&2\\0&1&0\\0&0&0\end{pmatrix}\]</div>
+      <p class="small">Solution : \(x = -2z\), \(y = 0\) → \(V_1 = \langle(-2, 0, 1)\rangle\)</p>
+      <div class="feedback show hint" style="margin-top:0.5rem;">dim(V₁) = 1 ≠ multiplicité algébrique 2. La matrice n'est PAS diagonalisable !</div>
+     </div>
+     <button class="accordion-btn" onclick="toggleAccordion('ex1c-v4')">
+      <span>Correction : \(V_4 = \ker(M - 4I)\)</span>
+      <span class="arrow">▶</span>
+     </button>
+     <div class="accordion-content" id="ex1c-v4">
+      <div class="math-block" style="font-size:0.85rem;">\[M - 4I = \begin{pmatrix}-1&2&0\\2&-2&2\\0&2&-3\end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix}1&0&-2\\0&1&-\frac{3}{2}\\0&0&0\end{pmatrix}\]</div>
+      <p class="small">Solution : \(V_4 = \langle(4,3,2)\rangle\)</p>
+     </div>
+    </div>
+
+    <div class="feedback show warn" style="margin-top:0.75rem;display:flex;align-items:flex-start;gap:0.5rem;">
+     <span>!</span>
+     <span>Attention : l'énoncé dit "sachant que" — c'est voulu. Ici dim(V₁)=1 ≠ 2 donc M <strong>n'est pas diagonalisable</strong>. L'exercice demande "BtMB diagonale" avec une matrice orthogonale B, ce qui utilise une autre technique (hors programme ici).</span>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <!-- EXERCICE JUIN 2025 -->
+ <div class="ex-content" id="ex-1">
+  <div class="card card-accent2">
+   <span class="tag tag-exam">EXAM JUIN 2025 — Question 3 (extrait)</span>
+   <p style="margin-top:0.75rem;">Soit l'opérateur linéaire de \(\mathbb{R}^3\) donné par :</p>
+   <div class="math-block">\[f(1,1,1) = (3,4,-1),\quad f(1,1,0) = (3,4,-3),\quad f(1,0,0) = (0,0,2)\]</div>
+
+   <div style="margin-top:1rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">Q(d) — Valeurs propres</div>
+    <p>La matrice de \(f\) est :</p>
+    <div class="math-block">\[M = \begin{pmatrix}0&3&0\\0&4&0\\2&-5&2\end{pmatrix}\]</div>
+    <p style="margin-top:0.5rem;">Le polynôme caractéristique est \(p_M(\lambda) = (2-\lambda)(-\lambda)(4-\lambda)\).</p>
+    <p style="margin-top:0.5rem;"><strong>Question :</strong> Les valeurs propres de M sont :</p>
+    <button class="quiz-option" id="e2a" onclick="checkE2('A')">A. {0, 2, 4}</button>
+    <button class="quiz-option" id="e2b" onclick="checkE2('B')">B. {-2, 0, 4}</button>
+    <button class="quiz-option" id="e2c" onclick="checkE2('C')">C. {0, 2, -4}</button>
+    <button class="quiz-option" id="e2d" onclick="checkE2('D')">D. {1, 2, 4}</button>
+    <div class="feedback" id="e2-feedback"></div>
+   </div>
+
+   <div class="divider"></div>
+
+   <div>
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">Q(e) — Matrice de passage P</div>
+    <p>Calculer les sous-espaces propres puis trouver la matrice P diagonalisante.</p>
+    <button class="btn btn-secondary btn-sm" onclick="showFullSolution('e2-diag-sol')">Voir correction complète</button>
+    <div class="reveal-panel" id="e2-diag-sol">
+     <p class="small"><strong>Pour \(\lambda = 0\) :</strong></p>
+     <div class="math-block" style="font-size:0.85rem;">\[V_0 = \ker(M) = \langle(1,0,-1)\rangle\]</div>
+     <p class="small"><strong>Pour \(\lambda = 2\) :</strong></p>
+     <div class="math-block" style="font-size:0.85rem;">\[V_2 = \ker(M-2I) = \langle(0,0,1)\rangle\]</div>
+     <p class="small"><strong>Pour \(\lambda = 4\) :</strong></p>
+     <div class="math-block" style="font-size:0.85rem;">\[V_4 = \ker(M-4I) = \langle(-3,-4,7)\rangle\]</div>
+     <p class="small"><strong>Matrice de passage :</strong></p>
+     <div class="math-block" style="font-size:0.9rem;">\[P = \begin{pmatrix}1&0&-3\\0&0&-4\\-1&1&7\end{pmatrix},\quad D = \text{diag}(0,2,4)\]</div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <!-- EXERCICE LIBRE -->
+ <div class="ex-content" id="ex-2">
+  <div class="card card-accent3">
+   <span class="tag tag-key">EXERCICE LIBRE — Pratique autonome</span>
+   <p style="margin-top:0.75rem;">Diagonaliser la matrice suivante :</p>
+   <div class="math-block">\[A = \begin{pmatrix}4&1&-2\\1&4&-2\\1&1&-1\end{pmatrix}\]</div>
+   
+   <div style="margin-top:1rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">Étape 1 — Polynôme caractéristique</div>
+    <input type="text" class="answer-input" id="el-poly" placeholder="ex: -λ³ + 7λ² - 14λ + 8 → écrire la forme factorisée">
+    <div class="gap-sm">
+     <button class="btn btn-secondary btn-sm" onclick="showFullSolution('el-sol1')">Voir p_A(λ)</button>
+    </div>
+    <div class="reveal-panel" id="el-sol1">
+     <div class="math-block">\[p_A(\lambda) = -(\lambda-1)(\lambda-2)(\lambda-5) \cdot \ldots\]</div>
+     <p class="small muted">Développement : \(\det(A-\lambda I)\). Racine évidente : essayer \(\lambda=1\) : \(\det = 0\) ✓</p>
+     <div class="math-block">\[p_A(\lambda) = -\lambda^3 + 7\lambda^2 - 14\lambda + 8 = -(\lambda-1)(\lambda-2)(\lambda-4)\]</div>
+     <p class="small" style="color:var(--accent3);">Spectre : {1, 2, 4} — 3 valeurs propres distinctes → A est diagonalisable !</p>
+    </div>
+   </div>
+
+   <div class="divider"></div>
+   <div>
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">Étape 2 — Vecteurs propres</div>
+    <button class="btn btn-secondary btn-sm" onclick="showFullSolution('el-sol2')">Voir les 3 sous-espaces propres</button>
+    <div class="reveal-panel" id="el-sol2">
+     <p class="small"><strong>\(\lambda = 1\) :</strong></p>
+     <div class="math-block" style="font-size:0.85rem;">\[A-I = \begin{pmatrix}3&1&-2\\1&3&-2\\1&1&-2\end{pmatrix} \to V_1 = \langle(1,1,1)\rangle\]</div>
+     <p class="small"><strong>\(\lambda = 2\) :</strong></p>
+     <div class="math-block" style="font-size:0.85rem;">\[A-2I \to V_2 = \langle(1,0,\frac{1}{2})\rangle = \langle(2,0,1)\rangle\]</div>
+     <p class="small"><strong>\(\lambda = 4\) :</strong></p>
+     <div class="math-block" style="font-size:0.85rem;">\[A-4I \to V_4 = \langle(-1,1,0)\rangle\]</div>
+     <div class="math-block" style="font-size:0.9rem;">\[B = \begin{pmatrix}1&2&-1\\1&0&1\\1&1&0\end{pmatrix},\quad D = \begin{pmatrix}1&0&0\\0&2&0\\0&0&4\end{pmatrix}\]</div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+   SECTION 4 : QUIZ VRAI/FAUX
+══════════════════════════════════════════════════ -->
+<section class="section" id="quiz">
+ <div class="section-title">4. Quiz Vrai/Faux</div>
+ <div class="section-sub">8 questions issues des examens passés — feedback immédiat</div>
+
+ <div class="score-display" id="quiz-score-display">
+  Score : <span id="qscore" style="color:var(--accent);">0</span> / <span id="qtotal">8</span>
+ </div>
+
+ <div id="quiz-questions" style="margin-top:1.5rem;"></div>
+
+ <div style="margin-top:1.5rem;text-align:center;">
+  <button class="btn btn-primary" onclick="resetQuiz()">Nouveau Quiz</button>
+ </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+   SECTION 5 : DÉMOS
+══════════════════════════════════════════════════ -->
+<section class="section" id="demos">
+ <div class="section-title">5. Démos à Connaître</div>
+ <div class="section-sub">Preuves et théorèmes clés — à mémoriser pour l'exam</div>
+
+ <div class="demo-card">
+  <span class="tag tag-exam">THÉORÈME — Matrices Semblables</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1.1rem;margin:0.75rem 0;">Si \(M\) et \(D\) sont semblables, elles ont le même polynôme caractéristique</div>
+  
+  <div class="card" style="background:var(--bg);margin-top:1rem;">
+   <p><strong>Énoncé :</strong> Si \(D = B^{-1}MB\), alors \(p_D(\lambda) = p_M(\lambda)\).</p>
+   
+   <div style="margin-top:1rem;">
+    <button class="accordion-btn" onclick="toggleAccordion('demo-sem')">
+     <span>Démonstration complète</span>
+     <span class="arrow"></span>
+    </button>
+    <div class="accordion-content" id="demo-sem">
+     <div class="math-block" style="font-size:0.88rem;">
+      \[\begin{align}
+      p_D(\lambda) &= \det(D - \lambda I)\\
+      &= \det(B^{-1}MB - \lambda I)\\
+      &= \det(B^{-1}MB - \lambda B^{-1}IB)\\
+      &= \det(B^{-1}(M - \lambda I)B)\\
+      &= \det(B^{-1})\det(M-\lambda I)\det(B)\\
+      &= \frac{1}{\det B}\det(M-\lambda I)\det(B)\\
+      &= \det(M - \lambda I) = p_M(\lambda)
+      \end{align}\]
+     </div>
+     <p class="small" style="color:var(--accent3);margin-top:0.5rem;">✓ On a utilisé : \(\det(ABC) = \det(A)\det(B)\det(C)\) et \(\det(B^{-1}) = \frac{1}{\det(B)}\)</p>
+    </div>
+   </div>
+
+   <div style="margin-top:1rem;">
+    <p class="small muted"><strong>Corollaires importants :</strong></p>
+    <ul class="checklist" style="margin-top:0.5rem;">
+     <li class="small">Même spectre → valeurs propres sont des invariants de similarité</li>
+     <li class="small">Même déterminant (\(= (-1)^n \cdot \text{terme constant du poly. caract.}\))</li>
+     <li class="small">Même trace (\(= \text{somme des valeurs propres} = \text{somme des diagonaux}\))</li>
+     <li class="small">Même rang</li>
+    </ul>
+   </div>
+  </div>
+ </div>
+
+ <div class="demo-card" style="margin-top:1rem;">
+  <span class="tag tag-key">THÉORÈME — Vecteurs propres indépendants</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1.1rem;margin:0.75rem 0;">Des vecteurs propres associés à des valeurs propres distinctes sont linéairement indépendants</div>
+  
+  <div class="card" style="background:var(--bg);">
+   <p><strong>Conséquence directe :</strong> Si \(M \in \text{Mat}(n\times n)\) a \(n\) valeurs propres distinctes, alors \(M\) est diagonalisable.</p>
+   
+   <div class="math-block">\[\text{Sp}(M) = \{\lambda_1 \neq \lambda_2 \neq \cdots \neq \lambda_n\} \implies M \text{ diagonalisable}\]</div>
+
+   <div style="margin-top:1rem;">
+    <button class="accordion-btn" onclick="toggleAccordion('demo-ind')">
+     <span>Idée de preuve (cas n=2)</span>
+     <span class="arrow"></span>
+    </button>
+    <div class="accordion-content" id="demo-ind">
+     <p class="small">Soient \(\vec{v}_1, \vec{v}_2\) vecteurs propres pour \(\lambda_1 \neq \lambda_2\). Supposons \(\alpha\vec{v}_1 + \beta\vec{v}_2 = \vec{0}\).</p>
+     <div class="math-block" style="font-size:0.85rem;">\[M(\alpha\vec{v}_1 + \beta\vec{v}_2) = \alpha\lambda_1\vec{v}_1 + \beta\lambda_2\vec{v}_2 = \vec{0}\]</div>
+     <div class="math-block" style="font-size:0.85rem;">\[\lambda_1(\alpha\vec{v}_1 + \beta\vec{v}_2) = \alpha\lambda_1\vec{v}_1 + \beta\lambda_1\vec{v}_2 = \vec{0}\]</div>
+     <p class="small">En soustrayant : \(\beta(\lambda_2 - \lambda_1)\vec{v}_2 = \vec{0}\). Puisque \(\lambda_2 \neq \lambda_1\) et \(\vec{v}_2 \neq \vec{0}\), on a \(\beta = 0\). Puis \(\alpha = 0\). ✓</p>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="demo-card" style="margin-top:1rem;">
+  <span class="tag tag-warn">FORMULE CLÉ — Puissance de matrice</span>
+  <div style="font-family:'Syne',sans-serif;font-size:1.1rem;margin:0.75rem 0;">Calculer \(M^k\) via la diagonalisation</div>
+  <div class="card" style="background:var(--bg);">
+   <div class="math-block">\[M = BDB^{-1} \implies M^k = BD^kB^{-1}\]</div>
+   <p><strong>Preuve :</strong></p>
+   <div class="math-block" style="font-size:0.88rem;">\[M^k = \underbrace{(BDB^{-1})(BDB^{-1})\cdots(BDB^{-1})}_{k\text{ fois}} = BD\underbrace{(B^{-1}B)}_{=I}D\cdots DB^{-1} = BD^kB^{-1}\]</div>
+   <div class="math-block">\[D^k = \begin{pmatrix}\lambda_1^k & & \\ & \ddots & \\ & & \lambda_n^k\end{pmatrix}\]</div>
+   <div class="feedback show hint">Exam : on ne diagonalise pas M "pour le plaisir" — c'est toujours pour calculer M^n ensuite !</div>
+  </div>
+ </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+   SECTION 6 : BOSS FIGHT
+══════════════════════════════════════════════════ -->
+<section class="section" id="boss">
+ <div class="section-title">6. Boss Fight</div>
+ <div class="section-sub">Examen Août 2025 — Exercice 1 — Conditions réelles — 20 minutes</div>
+
+ <div id="boss-start">
+  <div class="boss-arena" style="text-align:center;padding:3rem 1.5rem;">
+   <div style="font-size:3rem;margin-bottom:1rem;"></div>
+   <div class="boss-title">BOSS : Août 2025</div>
+   <p class="muted" style="margin-bottom:1.5rem;">25 points. Chrono 20 minutes. Correction complète après.</p>
+   <div style="margin-bottom:1.5rem;">
+    <div class="badge" style="margin:0.25rem;">25 pts = 25% de l'exam total</div>
+    <div class="badge" style="margin:0.25rem;">4 sous-questions</div>
+    <div class="badge" style="margin:0.25rem;">Diagonalisation complète</div>
+   </div>
+   <button class="btn btn-primary" style="font-size:1rem;padding:0.8rem 2rem;" onclick="startBoss()">Commencer</button>
+  </div>
+ </div>
+
+ <div id="boss-fight" style="display:none;">
+  <div class="timer-display" id="boss-timer">20:00</div>
+
+  <div class="boss-arena">
+   <div class="boss-title">Exercice 1 — Août 2025</div>
+   <p style="margin-top:0.75rem;">Considérer l'application linéaire :</p>
+   <div class="math-block">\[f : \mathbb{R}^3 \to \mathbb{R}^3 : (x,y,z) \mapsto (-9x+6y+8z,\; -14x+10y+10z,\; -4x+2y+5z)\]</div>
+
+   <div class="divider"></div>
+
+   <div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">(1) /4 pts — Matrice M de f dans la base canonique de \(\mathbb{R}^3\)</div>
+    <textarea class="answer-input" id="boss-q1" rows="4" placeholder="Écrire les 3 lignes de la matrice M...&#10;Ligne 1 : ...&#10;Ligne 2 : ...&#10;Ligne 3 : ..."></textarea>
+   </div>
+
+   <div class="divider"></div>
+
+   <div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">(2) /4 pts — Polynôme caractéristique et spectre de M</div>
+    <textarea class="answer-input" id="boss-q2" rows="5" placeholder="p_M(λ) = ...&#10;Racines : ...&#10;Spectre Sp(M) = { }"></textarea>
+   </div>
+
+   <div class="divider"></div>
+
+   <div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">(3) /10 pts — Matrices B et D telles que D = B⁻¹MB est diagonale</div>
+    <textarea class="answer-input" id="boss-q3" rows="8" placeholder="Pour λ = 1 : (M-I)v = 0, Gauss → V₁ = ...&#10;Pour λ = 2 : ...&#10;Pour λ = 3 : ...&#10;&#10;B = ...&#10;D = ..."></textarea>
+   </div>
+
+   <div class="divider"></div>
+
+   <div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">(4) /7 pts — Calculer M³ à l'aide des résultats précédents</div>
+    <textarea class="answer-input" id="boss-q4" rows="6" placeholder="M = BDB⁻¹, donc M³ = BD³B⁻¹&#10;D³ = diag(...)&#10;B⁻¹ = ...&#10;M³ = ..."></textarea>
+   </div>
+
+   <div style="text-align:center;margin-top:1rem;">
+    <button class="btn btn-primary" style="font-size:1rem;padding:0.8rem 2rem;" onclick="submitBoss()">Remettre ma copie</button>
+   </div>
+  </div>
+ </div>
+
+ <div id="boss-correction" style="display:none;">
+  <div class="card" style="border-color:var(--accent3);">
+   <div style="font-family:'Syne',sans-serif;font-size:1.3rem;color:var(--accent3);margin-bottom:0.5rem;">Correction Complète</div>
+   <p class="muted small">Compare avec ta copie. Sois honnête avec toi-même.</p>
+  </div>
+
+  <div class="card card-accent">
+   <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">(1) /4 — Matrice M</div>
+   <div class="math-block">\[M = \begin{pmatrix} -9 & 6 & 8 \\ -14 & 10 & 10 \\ -4 & 2 & 5 \end{pmatrix}\]</div>
+   <p class="small">Les lignes de M correspondent aux coefficients de chaque composante de \(f\).</p>
+  </div>
+
+  <div class="card card-accent2">
+   <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">(2) /4 — Polynôme caractéristique</div>
+   <div class="math-block">\[p_M(\lambda) = \det(M-\lambda I) = -\lambda^3 + 6\lambda^2 - 11\lambda + 6\]</div>
+   <div class="math-block">\[= -(\lambda-1)(\lambda-2)(\lambda-3)\]</div>
+   <p class="small">Racine évidente : \(\lambda=1\) (vérifier : \(-1+6-11+6=0\) ✓). Puis diviser par \((\lambda-1)\).</p>
+   <div class="math-block">\[\text{Sp}(M) = \{1,\; 2,\; 3\}\]</div>
+  </div>
+
+  <div class="card card-accent3">
+   <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">(3) /10 — Matrices B et D</div>
+   
+   <p><strong>\(\lambda = 1\) :</strong> Résoudre \((M-I)\vec{v}=\vec{0}\)</p>
+   <div class="math-block" style="font-size:0.85rem;">\[\begin{pmatrix}-10&6&8\\-14&9&10\\-4&2&4\end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix}1&0&-2\\0&1&-2\\0&0&0\end{pmatrix}\]</div>
+   <p class="small">→ \(x=2z, y=2z\) → \(\vec{v}_1 = (2,2,1)\)</p>
+   
+   <div class="divider"></div>
+   
+   <p><strong>\(\lambda = 2\) :</strong> Résoudre \((M-2I)\vec{v}=\vec{0}\)</p>
+   <div class="math-block" style="font-size:0.85rem;">\[\begin{pmatrix}-11&6&8\\-14&8&10\\-4&2&3\end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix}1&0&-1\\0&1&-\frac{1}{2}\\0&0&0\end{pmatrix}\]</div>
+   <p class="small">→ \(x=z, y=\frac{z}{2}\) → \(\vec{v}_2 = (2,1,2)\)</p>
+   
+   <div class="divider"></div>
+   
+   <p><strong>\(\lambda = 3\) :</strong> Résoudre \((M-3I)\vec{v}=\vec{0}\)</p>
+   <div class="math-block" style="font-size:0.85rem;">\[\begin{pmatrix}-12&6&8\\-14&7&10\\-4&2&2\end{pmatrix} \xrightarrow{\text{Gauss}} \begin{pmatrix}0&0&1\\1&-\frac{1}{2}&0\\0&0&0\end{pmatrix}\]</div>
+   <p class="small">→ \(z=0, x=\frac{y}{2}\) → \(\vec{v}_3 = (1,2,0)\)</p>
+   
+   <div class="divider"></div>
+   
+   <div class="grid-2">
+    <div>
+     <div class="math-block">\[B = \begin{pmatrix}2&2&1\\2&1&2\\1&2&0\end{pmatrix}\]</div>
+    </div>
+    <div>
+     <div class="math-block">\[D = \begin{pmatrix}1&0&0\\0&2&0\\0&0&3\end{pmatrix}\]</div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card card-accent4">
+   <div style="font-family:'Syne',sans-serif;margin-bottom:0.75rem;">(4) /7 — Calcul de M³</div>
+   <p>Comme \(D = B^{-1}MB\), on a \(M = BDB^{-1}\), donc \(M^3 = BD^3B^{-1}\).</p>
+   <div class="math-block">\[D^3 = \begin{pmatrix}1&0&0\\0&8&0\\0&0&27\end{pmatrix}\]</div>
+   <p style="margin-top:0.5rem;">Calcul de \(B^{-1}\) par Gauss-Jordan :</p>
+   <div class="math-block" style="font-size:0.88rem;">\[B^{-1} = \begin{pmatrix}4&-2&-3\\-2&1&2\\-3&2&2\end{pmatrix}\]</div>
+   <p style="margin-top:0.5rem;">Finalement :</p>
+   <div class="math-block">\[M^3 = \begin{pmatrix}2&2&1\\2&1&2\\1&2&0\end{pmatrix}\begin{pmatrix}1&0&0\\0&8&0\\0&0&27\end{pmatrix}\begin{pmatrix}4&-2&-3\\-2&1&2\\-3&2&2\end{pmatrix} = \begin{pmatrix}-105&66&80\\-170&112&118\\-28&14&29\end{pmatrix}\]</div>
+  </div>
+
+  <div style="text-align:center;margin-top:1.5rem;">
+   <button class="btn btn-secondary" onclick="resetBoss()">Recommencer le Boss</button>
+  </div>
+ </div>
+</section>
+
+<script>
+// ══════════════════════════════════
+// KaTeX render
+// ══════════════════════════════════
+document.addEventListener("DOMContentLoaded", function() {
+ renderMathInElement(document.body, {
+  delimiters: [
+   {left:"$$",right:"$$",display:true},
+   {left:"\\[",right:"\\]",display:true},
+   {left:"$",right:"$",display:false},
+   {left:"\\(",right:"\\)",display:false}
+  ],
+  throwOnError: false
+ });
+ initQuiz();
+});
+
+// ══════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════
+function showSection(id, btn, pct) {
+ document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+ document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ if (btn) btn.classList.add('active');
+ document.getElementById('progressFill').style.width = (pct * 16.6) + '%';
+ // Re-render KaTeX for newly shown section
+ setTimeout(() => {
+  renderMathInElement(document.getElementById(id), {
+   delimiters: [{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],
+   throwOnError: false
+  });
+ }, 50);
+}
+
+// ══════════════════════════════════
+// ACCORDION
+// ══════════════════════════════════
+function toggleAccordion(id) {
+ const content = document.getElementById(id);
+ const btn = content.previousElementSibling;
+ content.classList.toggle('open');
+ btn.classList.toggle('open');
+ if (content.classList.contains('open')) {
+  setTimeout(() => renderMathInElement(content, {
+   delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],throwOnError:false
+  }), 50);
+ }
+}
+
+// ══════════════════════════════════
+// REVEAL PANEL
+// ══════════════════════════════════
+function showFullSolution(id) {
+ const panel = document.getElementById(id);
+ panel.classList.toggle('show');
+ setTimeout(() => renderMathInElement(panel, {
+  delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],throwOnError:false
+ }), 50);
+}
+
+// ══════════════════════════════════
+// PIPELINE
+// ══════════════════════════════════
+let currentPipeStep = 0;
+
+function advancePipeline() {
+ const stepEls = document.querySelectorAll('[id^="pipe-step-"]');
+ document.getElementById('pstep-' + currentPipeStep).classList.remove('active');
+ document.getElementById('pstep-' + currentPipeStep).classList.add('done');
+ currentPipeStep++;
+ if (currentPipeStep < 6) {
+  document.getElementById('pipe-step-' + currentPipeStep).style.display = 'block';
+  document.getElementById('pstep-' + currentPipeStep).classList.add('active');
+  setTimeout(() => renderMathInElement(document.getElementById('pipe-step-' + currentPipeStep), {
+   delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],throwOnError:false
+  }), 100);
+  window.scrollTo({top: document.getElementById('pipe-step-' + currentPipeStep).offsetTop - 100, behavior:'smooth'});
+ } else {
+  document.getElementById('pstep-5').classList.remove('active');
+  document.getElementById('pstep-5').classList.add('done');
+  document.getElementById('pipe-complete').style.display = 'block';
+  window.scrollTo({top: document.getElementById('pipe-complete').offsetTop - 100, behavior:'smooth'});
+ }
+}
+
+function resetPipeline() {
+ currentPipeStep = 0;
+ for (let i = 0; i < 6; i++) {
+  const ps = document.getElementById('pstep-' + i);
+  ps.classList.remove('done','active');
+  if (i === 0) ps.classList.add('active');
+ }
+ for (let i = 1; i < 6; i++) {
+  document.getElementById('pipe-step-' + i).style.display = 'none';
+ }
+ document.getElementById('pipe-complete').style.display = 'none';
+ document.querySelectorAll('.feedback').forEach(f => { f.className = 'feedback'; f.textContent = ''; });
+ document.querySelectorAll('.answer-input').forEach(i => { i.value = ''; i.className = 'answer-input'; });
+}
+
+function showFeedback(id, type, msg) {
+ const el = document.getElementById(id);
+ el.className = 'feedback show ' + type;
+ el.innerHTML = msg;
+ setTimeout(() => renderMathInElement(el, {
+  delimiters:[{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}],throwOnError:false
+ }), 50);
+}
+
+function checkP0() {
+ const val = parseInt(document.getElementById('p0-ans').value);
+ if (val === 10) {
+  document.getElementById('p0-ans').classList.add('correct');
+  showFeedback('p0-feedback', 'correct', 'Correct ! M₂₂ = 10 (coefficient de y dans la 2ème composante). La matrice complète est \\(M = \\begin{pmatrix}-9&6&8\\\\-14&10&10\\\\-4&2&5\\end{pmatrix}\\)');
+  setTimeout(advancePipeline, 1500);
+ } else {
+  document.getElementById('p0-ans').classList.add('wrong');
+  showFeedback('p0-feedback', 'wrong', 'Incorrect. Regarde la 2ème composante : \\(-14x + 10y + 10z\\). Le coefficient de y est...');
+ }
+}
+function hintP0() {
+ showFeedback('p0-feedback', 'hint', 'La matrice M se lit directement : ligne i = coefficients de la i-ème composante de f. La 2ème composante est \\(-14x + 10y + 10z\\), donc M₂₁=-14, M₂₂=?, M₂₃=10.');
+}
+
+function checkP1() {
+ const val = parseInt(document.getElementById('p1-ans').value);
+ if (val === 6) {
+  document.getElementById('p1-ans').classList.add('correct');
+  showFeedback('p1-feedback', 'correct', 'Parfait ! Le coefficient de \\(\\lambda^2\\) est bien 6. Le polynôme est \\(p_M(\\lambda) = -\\lambda^3 + 6\\lambda^2 - 11\\lambda + 6\\)');
+  setTimeout(advancePipeline, 1500);
+ } else {
+  document.getElementById('p1-ans').classList.add('wrong');
+  showFeedback('p1-feedback', 'wrong', 'Non. Le polynôme est \\(-\\lambda^3 + 6\\lambda^2 - 11\\lambda + 6\\). Cherche le coefficient de \\(\\lambda^2\\).');
+ }
+}
+function hintP1() {
+ showFeedback('p1-feedback', 'hint', 'Pour calculer le déterminant, développe par rapport à la première ligne. La trace de M = -9+10+5 = 6 = somme des racines = coefficient de \\(\\lambda^2\\) (avec signe).');
+}
+
+function checkP2() {
+ const val = parseInt(document.getElementById('p2-ans').value);
+ if (val === 3) {
+  document.getElementById('p2-ans').classList.add('correct');
+  showFeedback('p2-feedback', 'correct', 'Exact ! La plus grande valeur propre est 3. Spectre : Sp(M) = {1, 2, 3}.');
+  setTimeout(advancePipeline, 1500);
+ } else {
+  document.getElementById('p2-ans').classList.add('wrong');
+  showFeedback('p2-feedback', 'wrong', 'Non. Les racines de \\(-\\lambda^3+6\\lambda^2-11\\lambda+6 = -(\\lambda-1)(\\lambda-2)(\\lambda-3)\\) sont 1, 2 et...');
+ }
+}
+
+function checkP3() {
+ const val = parseInt(document.getElementById('p3-ans').value);
+ if (val === 2) {
+  document.getElementById('p3-ans').classList.add('correct');
+  showFeedback('p3-feedback', 'correct', 'Correct ! \\(\\vec{v}_2 = (2,1,2)\\) pour \\(\\lambda=2\\). Première coordonnée = 2.');
+  setTimeout(advancePipeline, 1500);
+ } else {
+  document.getElementById('p3-ans').classList.add('wrong');
+  showFeedback('p3-feedback', 'wrong', 'Non. Pour \\(\\lambda=2\\), la solution est \\(x=z, y=z/2\\) → en prenant \\(z=2\\) : \\((2, 1, 2)\\). Première coordonnée = ?');
+ }
+}
+
+function checkP4() {
+ const val = parseInt(document.getElementById('p4-ans').value);
+ if (val === 3) {
+  document.getElementById('p4-ans').classList.add('correct');
+  showFeedback('p4-feedback', 'correct', 'Exact ! \\(D_{33} = \\lambda_3 = 3\\). La 3ème colonne de B est \\(\\vec{v}_3\\) associé à \\(\\lambda_3=3\\).');
+  setTimeout(advancePipeline, 1500);
+ } else {
+  document.getElementById('p4-ans').classList.add('wrong');
+  showFeedback('p4-feedback', 'wrong', 'Non. \\(D\\) est diagonale avec les valeurs propres dans l\'ordre des colonnes de \\(B\\) : \\(\\lambda_1, \\lambda_2, \\lambda_3 = 1, 2, ?\\)');
+ }
+}
+
+function checkP5() {
+ const val = parseInt(document.getElementById('p5-ans').value);
+ if (val === -105) {
+  document.getElementById('p5-ans').classList.add('correct');
+  showFeedback('p5-feedback', 'correct', 'PARFAIT ! \\((M^3)_{11} = -105\\). Tu as maîtrisé le pipeline complet !');
+  setTimeout(advancePipeline, 1500);
+ } else {
+  document.getElementById('p5-ans').classList.add('wrong');
+  showFeedback('p5-feedback', 'wrong', 'Non. Déplie le calcul de \\(M^3 = BD^3B^{-1}\\) ci-dessus. La valeur est négative.');
+ }
+}
+
+// ══════════════════════════════════
+// TRAINING
+// ══════════════════════════════════
+let ex1bDone = false, e2Done = false;
+const ex1bCorrect = 'B';
+const e2Correct = 'A';
+
+function showEx(n) {
+ document.querySelectorAll('.ex-tab').forEach((t,i) => t.classList.toggle('active', i===n));
+ document.querySelectorAll('.ex-content').forEach((c,i) => c.classList.toggle('active', i===n));
+}
+
+function checkEx1Mat() {
+ const val = document.getElementById('ex1-mat').value.trim();
+ const normalized = val.replace(/\s/g,'');
+ if (normalized === '3,2,0;2,2,2;0,2,1' || normalized === '3,2,0;2,2,2;0,2,1') {
+  document.getElementById('ex1-mat').classList.add('correct');
+  showFeedback('ex1-mat-feedback', 'correct', 'Correct ! M = ((3,2,0),(2,2,2),(0,2,1))');
+ } else {
+  document.getElementById('ex1-mat').classList.add('wrong');
+  showFeedback('ex1-mat-feedback', 'wrong', 'Pas exact. Format attendu : "3,2,0;2,2,2;0,2,1". Rappel : colonne i = image de e_i par f.');
+ }
+}
+
+function checkEx1b(choice) {
+ if (ex1bDone) return;
+ ex1bDone = true;
+ ['A','B','C','D'].forEach(c => {
+  const el = document.getElementById('ex1b-' + c.toLowerCase());
+  el.disabled = true;
+  if (c === ex1bCorrect) el.classList.add('correct');
+  else if (c === choice && c !== ex1bCorrect) el.classList.add('wrong');
+ });
+ if (choice === ex1bCorrect) {
+  showFeedback('ex1b-feedback', 'correct', 'Exact ! Une matrice symétrique réelle (M = Mᵀ) est toujours diagonalisable (théorème spectral). Ici M = Mᵀ car M_{ij} = M_{ji}.');
+ } else {
+  showFeedback('ex1b-feedback', 'wrong', 'Incorrect. La bonne réponse est B : c\'est le théorème spectral. M est symétrique (M = ((3,2,0),(2,2,2),(0,2,1)) = Mᵀ) → diagonalisable.');
+ }
+}
+
+function checkE2(choice) {
+ if (e2Done) return;
+ e2Done = true;
+ ['A','B','C','D'].forEach(c => {
+  const el = document.getElementById('e2' + c.toLowerCase());
+  el.disabled = true;
+  if (c === e2Correct) el.classList.add('correct');
+  else if (c === choice && c !== e2Correct) el.classList.add('wrong');
+ });
+ if (choice === e2Correct) {
+  showFeedback('e2-feedback', 'correct', 'Exact ! \\(p_M(\\lambda) = (2-\\lambda)(-\\lambda)(4-\\lambda)\\) s\'annule pour \\(\\lambda \\in \\{0, 2, 4\\}\\).');
+ } else {
+  showFeedback('e2-feedback', 'wrong', 'Non. Les racines de \\((2-\\lambda)(-\\lambda)(4-\\lambda)=0\\) sont \\(\\lambda=2\\), \\(\\lambda=0\\), \\(\\lambda=4\\) → {0, 2, 4}.');
+ }
+}
+
+// ══════════════════════════════════
+// QUIZ VRAI/FAUX
+// ══════════════════════════════════
+const quizData = [
+ {
+  q: "Si \\(M\\) est une matrice \\(3\\times 3\\) avec 3 valeurs propres distinctes, alors \\(M\\) est diagonalisable.",
+  answer: true,
+  expl: "VRAI — Des vecteurs propres associés à des valeurs propres distinctes sont linéairement indépendants. 3 v.p. distincts en dim 3 → base → diagonalisable."
+ },
+ {
+  q: "La matrice \\(\\begin{pmatrix}2&1\\\\0&2\\end{pmatrix}\\) est diagonalisable dans \\(\\mathbb{R}\\).",
+  answer: false,
+  expl: "FAUX — Son seul vecteur propre est \\(\\lambda=2\\) de mult. algébrique 2 mais dim(V₂) = 1 ≠ 2. Elle n'est pas diagonalisable (c'est une matrice de Jordan)."
+ },
+ {
+  q: "Si \\(\\lambda\\) est valeur propre de \\(M\\), alors \\(\\lambda^3\\) est valeur propre de \\(M^3\\).",
+  answer: true,
+  expl: "VRAI — Si \\(M\\vec{v} = \\lambda\\vec{v}\\), alors \\(M^3\\vec{v} = M^2(M\\vec{v}) = M^2(\\lambda\\vec{v}) = \\lambda M^2\\vec{v} = \\lambda^2 M\\vec{v} = \\lambda^3\\vec{v}\\)."
+ },
+ {
+  q: "Si \\(M\\) est diagonalisable, alors \\(\\det(M) \\neq 0\\).",
+  answer: false,
+  expl: "FAUX — La matrice nulle est diagonalisable (elle est déjà diagonale !), mais son déterminant est 0. Plus généralement, 0 peut être valeur propre d'une matrice diagonalisable."
+ },
+ {
+  q: "Le polynôme caractéristique de \\(M^T\\) (transposée) est égal à celui de \\(M\\).",
+  answer: true,
+  expl: "VRAI — \\(\\det(M^T - \\lambda I) = \\det((M-\\lambda I)^T) = \\det(M-\\lambda I)\\). Donc \\(p_{M^T} = p_M\\) et en particulier \\(\\text{Sp}(M^T) = \\text{Sp}(M)\\)."
+ },
+ {
+  q: "Si \\(D = B^{-1}MB\\) est diagonale, alors la colonne \\(i\\) de \\(B\\) est un vecteur propre de \\(M\\) associé à \\(D_{ii}\\).",
+  answer: true,
+  expl: "VRAI — De \\(MB = BD\\), en notant \\(\\vec{b}_i\\) la colonne \\(i\\) de \\(B\\) : \\(M\\vec{b}_i = D_{ii}\\vec{b}_i\\). C'est exactement la définition d'un vecteur propre."
+ },
+ {
+  q: "Une matrice symétrique \\(M = M^T\\) a nécessairement des valeurs propres toutes positives.",
+  answer: false,
+  expl: "FAUX — Une matrice symétrique a des valeurs propres RÉELLES (théorème spectral), mais elles peuvent être négatives. Ex: \\(M=\\begin{pmatrix}-1&0\\\\0&2\\end{pmatrix}\\)."
+ },
+ {
+  q: "Si \\(\\vec{v}\\) est vecteur propre de \\(M\\) associé à \\(\\lambda\\), alors \\(2\\vec{v}\\) est aussi vecteur propre de \\(M\\) associé à \\(\\lambda\\).",
+  answer: true,
+  expl: "VRAI — \\(M(2\\vec{v}) = 2M\\vec{v} = 2\\lambda\\vec{v} = \\lambda(2\\vec{v})\\). Tout multiple non nul d'un vecteur propre est aussi vecteur propre (avec la même valeur propre)."
+ }
+];
+
+let quizScore = 0;
+let quizAnswered = new Array(8).fill(false);
+
+function initQuiz() {
+ quizScore = 0;
+ quizAnswered = new Array(quizData.length).fill(false);
+ document.getElementById('qscore').textContent = '0';
+ document.getElementById('qtotal').textContent = quizData.length;
+ 
+ const container = document.getElementById('quiz-questions');
+ container.innerHTML = '';
+ quizData.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.marginBottom = '1rem';
+  div.innerHTML = `
+   <div style="margin-bottom:1rem;" id="qtext-${i}">${item.q}</div>
+   <div style="display:flex;gap:0.5rem;">
+    <button class="btn btn-success" id="q${i}-true" onclick="answerQuiz(${i}, true)">VRAI</button>
+    <button class="btn btn-danger" id="q${i}-false" onclick="answerQuiz(${i}, false)">FAUX</button>
+   </div>
+   <div class="feedback" id="q${i}-feedback"></div>
+  `;
+  container.appendChild(div);
+ });
+ 
+ // Render math
+ setTimeout(() => {
+  renderMathInElement(container, {
+   delimiters:[{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}],throwOnError:false
+  });
+ }, 100);
+}
+
+function answerQuiz(i, answer) {
+ if (quizAnswered[i]) return;
+ quizAnswered[i] = true;
+ 
+ document.getElementById('q'+i+'-true').disabled = true;
+ document.getElementById('q'+i+'-false').disabled = true;
+ 
+ const correct = (answer === quizData[i].answer);
+ if (correct) {
+  quizScore++;
+  document.getElementById('qscore').textContent = quizScore;
+  showFeedback('q'+i+'-feedback', 'correct', '' + quizData[i].expl);
+ } else {
+  showFeedback('q'+i+'-feedback', 'wrong', '' + quizData[i].expl);
+ }
+}
+
+function resetQuiz() {
+ initQuiz();
+}
+
+// ══════════════════════════════════
+// BOSS FIGHT
+// ══════════════════════════════════
+let bossTimer = null;
+let bossSeconds = 20 * 60;
+
+function startBoss() {
+ document.getElementById('boss-start').style.display = 'none';
+ document.getElementById('boss-fight').style.display = 'block';
+ bossSeconds = 20 * 60;
+ updateBossTimer();
+ bossTimer = setInterval(() => {
+  bossSeconds--;
+  updateBossTimer();
+  if (bossSeconds <= 0) {
+   clearInterval(bossTimer);
+   submitBoss();
+  }
+ }, 1000);
+}
+
+function updateBossTimer() {
+ const m = Math.floor(bossSeconds / 60);
+ const s = bossSeconds % 60;
+ const display = document.getElementById('boss-timer');
+ display.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+ if (bossSeconds <= 120) {
+  display.classList.add('urgent');
+ }
+}
+
+function submitBoss() {
+ clearInterval(bossTimer);
+ document.getElementById('boss-fight').style.display = 'none';
+ document.getElementById('boss-correction').style.display = 'block';
+ setTimeout(() => {
+  renderMathInElement(document.getElementById('boss-correction'), {
+   delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],throwOnError:false
+  });
+ }, 100);
+ window.scrollTo({top: document.getElementById('boss-correction').offsetTop - 80, behavior:'smooth'});
+}
+
+function resetBoss() {
+ clearInterval(bossTimer);
+ document.getElementById('boss-correction').style.display = 'none';
+ document.getElementById('boss-fight').style.display = 'none';
+ document.getElementById('boss-start').style.display = 'block';
+ document.querySelectorAll('#boss-fight textarea').forEach(t => t.value = '');
+ document.getElementById('boss-timer').classList.remove('urgent');
+}
+</script>
+</body>
+</html>
